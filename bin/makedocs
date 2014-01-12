@@ -1,0 +1,1 @@
+pandoc -s -S --toc docs/userguide.md -o docs/userguide.html

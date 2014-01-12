@@ -1,0 +1,2 @@
+#!/bin/bash
+cpp -g3 -Wall -pedantic -Wstrict-prototypes -Wextra $1 | grep -v "^#" | indent > tmp.c; gcc -g -Wall -pedantic tmp.c -o tmp

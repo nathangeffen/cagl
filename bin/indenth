@@ -1,0 +1,4 @@
+!/bin/bash
+
+astyle -A3 --convert-tabs -w $1
+

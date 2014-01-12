@@ -1,0 +1,11 @@
+cat
+Fat, lazy and lovable domestic pet
+giraffe
+strange animal with absurdly long neck
+lion
+Dangerous, lazy and lovable wild animal
+mouse
+type of cat food
+springbok
+type of lion food
+

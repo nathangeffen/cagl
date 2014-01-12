@@ -1,0 +1,71 @@
+CC 		= gcc
+
+C_INCLUDE_PATH 	:= $(C_INCLUDE_PATH):..
+
+TEST_EXE	= cagtest
+CFLAGS		=  -g3 -Wall -pedantic -Wstrict-prototypes -Wextra
+CXXFLAGS	= $(CFLAGS)
+LDFLAGS		= -g3
+
+TEST_SOURCES	= test_suite.c test.c test_dlist.c test_array.c test_hash.c \
+test_tree.c test_slist.c test_compound.c
+
+TEST_OBJS	= $(TEST_SOURCES:.c=.o)
+
+SOURCES 	= error.c prim.c common.c
+
+OBJS		= $(SOURCES:.c=.o)
+
+INCLUDES 	= test.h common.h concepts.h error.h \
+array.h hash.h dlist.h tree.h slist.h prim.h
+
+vpath %.c ../cagl
+vpath %.h ../cagl
+
+test-run: test-compile
+	./cagtest
+
+test-compile: $(TEST_EXE)
+
+$(TEST_EXE): $(TEST_OBJS) $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(TEST_OBJS) -o $(TEST_EXE)
+
+test_suite.o: test_suite.c $(INCLUDES)
+	$(CC) -c $(CFLAGS) $< -o $@
+
+test.o: test.h common.h error.h
+
+test_dlist.o: common.h concepts.h error.h test.h dlist.h prim.h
+
+test_hash.o: common.h concepts.h error.h test.h hash.h prim.h
+
+test_array.o: common.h concepts.h error.h test.h array.h prim.h
+
+test_tree.o: common.h concepts.h error.h test.h tree.h prim.h
+
+test_slist.o: common.h concepts.h error.h test.h slist.h prim.h
+
+test_compound.o: $(INCLUDES)
+
+error.o: error.h
+
+primitives.o: prim.h common.h concepts.h
+
+common.o: common.c common.h
+
+indent:
+	bash slash79 $(INCLUDES)
+
+test-release-run: test-release
+	./cagtest
+
+test-release: $(SOURCES) $(TEST_SOURCES)
+	$(CC) -Wall -flto -O3 -DNDEBUG $^ -o $(TEST_EXE)
+
+test-clean:
+	rm -f $(TEST_OBJS) $(OBJS) $(TEST_EXE)
+
+clean:
+	rm -f $(OBJS)
+
+.PHONY: test-compile test-run
