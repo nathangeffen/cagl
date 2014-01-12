@@ -1,6 +1,6 @@
 # C Almost Generic Library
 
-Last updated: 21 December 2013.
+Last updated: 12 January 2014.
 
 Version: 0.1
 
