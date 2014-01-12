@@ -50,7 +50,7 @@ Currently these containers are implemented: arrays, doubly-linked lists, singly 
     }
 ```
 
-Other examples will be included in the documentation.
+There are several more examples in the documentation.
 
 ## Installation
 
@@ -64,7 +64,7 @@ CAGL's installation is handled by autotools.
 	make
 	sudo make install
 
-How you compile CAGL programs might differ slightly across environments, but assuming you have a common, standard GNU/Linux distribution, the most likely scenario is that CAGL will be installed in /usr/local/lib and /usr/local/include and that you have *pkg-config* installed. To compile your program called *myprog.c* in development that use CAGL, you would typically do this:
+How you compile CAGL programs might differ slightly across environments, but assuming you have a common, standard GNU/Linux distribution, the most likely scenario is that CAGL will be installed in /usr/local/lib and /usr/local/include and that you have *pkg-config* installed. To compile your program called *myprog.c* in development that uses CAGL, you would typically do this:
 
     cc -g -Wall -pedantic myprog.c -o myprog `pkg-config --libs --cflags cagl-0.1`
 
