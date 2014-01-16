@@ -1,6 +1,6 @@
-/*! Tests for GDA hash.
+/*! Tests for CAGL hash.
 
-  \copyright Copyright 2013 University of Cape Town. All rights reserved.
+  \copyright Copyright 2013 Nathan Geffen. All rights reserved.
   \license GNU Lesser General Public License Copyright.
   See COPYING for the license text.
 

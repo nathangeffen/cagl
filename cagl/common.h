@@ -52,7 +52,7 @@
 
 #endif
 
-/* Only relevant if gda_error.h included. */
+/* Only relevant if error.h included. */
 
 #ifdef CAG_ERROR_H
 
