@@ -1,4 +1,4 @@
-/*! Test suite for GDA code.
+/*! Test suite for CAGL code.
 
     \copyright Copyright 2013 University of Cape Town. All rights reserved.
     \license This code is licensed under the FreeBSD Copyright.
@@ -30,7 +30,7 @@ int test_test(struct cag_test_series *tests)
 	CAG_CHECK(tmpnam(filename), "Could not generate temporary file name");
 	CAG_TEST(*tests,
 		 cag_test_init(&test_of_test,
-			       "Test of GDA test framework",
+			       "Test of CAGL test framework",
 			       CAG_V_ALL, NULL, filename) ==  CAG_SUCCESS,
 		 "cag_test: initialisation");
 	/* Check testing code. */
@@ -57,7 +57,7 @@ int test_test(struct cag_test_series *tests)
 	CAG_DEBUG_C89( ("Testing debug output macros C89: %d %d", 19, 89) );
 	#endif
 	CAG_TEST(*tests, cag_test_summary(&test_of_test) == 1,
-		 "gda-test: test summary returns number failures");
+		 "cag-test: test summary returns number failures");
 	return CAG_SUCCESS;
 error:
 	return CAG_ERROR;
@@ -66,7 +66,7 @@ error:
 int main(void)
 {
 	struct cag_test_series test;
-	CAG_CHECK(cag_test_init(&test, "Test of GDA",
+	CAG_CHECK(cag_test_init(&test, "Test of CAGL",
 				CAG_V_VERBOSE_FAILURES, NULL, NULL)
 		  == CAG_SUCCESS,
 		  "Error initializing test framework");
@@ -78,8 +78,10 @@ int main(void)
 	test_hash(&test);
 	test_tree(&test);
 	test_compound(&test);
-	cag_test_summary(&test);
-	return CAG_SUCCESS;
+	if (cag_test_summary(&test) > 0)
+		return CAG_ERROR;
+	else
+		return CAG_SUCCESS;
 error:
 	return CAG_ERROR;
 }

@@ -1,7 +1,9 @@
 /*! CAG supporting functions
 
-  \copyright Copyright 2013 University of Cape Town. All rights reserved.
+  \copyright Copyright 2014 Nathan Geffen.
+
   \license GNU Lesser General Public License Copyright.
+
   See COPYING for the license text.
 */
 

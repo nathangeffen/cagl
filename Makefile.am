@@ -14,6 +14,7 @@ lib_LTLIBRARIES = libcagl-@CAGL_API_VERSION@.la
 
 libcagl_@CAGL_API_VERSION@_la_SOURCES = cagl/common.c \
                                         cagl/error.c \
+					cagl/test.c \
                                         cagl/prim.c
 
 ## Instruct libtool to include ABI version information in the generated shared

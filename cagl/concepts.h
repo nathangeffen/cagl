@@ -3,7 +3,7 @@
 
     \copyright Copyright 2014 Nathan Geffen. All rights reserved.
 
-    \license This code is licensed under the FreeBSD Copyright.
+    \license This code is licensed under the GNU LESSER GENERAL PUBLIC LICENSE.
 
     \sa COPYING for the license text.
 

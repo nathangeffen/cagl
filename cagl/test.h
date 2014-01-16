@@ -1,7 +1,9 @@
-/*! GDA test framework.
+/*! CAGL test framework.
 
-    \copyright Copyright 2013 University of Cape Town. All rights reserved.
+    \copyright Nathan Geffen.
+
     \license GNU Lesser General Public License Copyright.
+
     See COPYING for the license text.
 
     This test framework is deliberately simple.

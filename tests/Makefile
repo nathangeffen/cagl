@@ -7,12 +7,12 @@ CFLAGS		=  -g3 -Wall -pedantic -Wstrict-prototypes -Wextra
 CXXFLAGS	= $(CFLAGS)
 LDFLAGS		= -g3
 
-TEST_SOURCES	= test_suite.c test.c test_dlist.c test_array.c test_hash.c \
+TEST_SOURCES	= test_suite.c test_dlist.c test_array.c test_hash.c \
 test_tree.c test_slist.c test_compound.c
 
 TEST_OBJS	= $(TEST_SOURCES:.c=.o)
 
-SOURCES 	= error.c prim.c common.c
+SOURCES 	= error.c prim.c common.c test.c
 
 OBJS		= $(SOURCES:.c=.o)
 

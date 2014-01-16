@@ -1,6 +1,8 @@
-% C Almost Generic Library User Guide and Reference
+% C Almost Generic Library Documentation
 %
 % January 2014
+
+# User Guide
 
 ## Introduction
 
@@ -1021,6 +1023,114 @@ int populate_dictionary(dictionary *d)
 }
 ```
 
+### Example: Adjacency list
+
+This example shows how to declare and define a container whose elements are containers. An adjacency list is used to represent graphs in computer science. It is typically implemented as an array of lists. In our example, the list elements are integers. This is simple to do.
+
+We first declare and define our list.
+
+```C
+#include "cagl/array.h"
+#include "cagl/slist.h"
+
+CAG_DEC_DEF_SLIST(islist, int);
+```
+
+Then we declare and define our array of lists:
+
+```C
+CAG_DEC_DEF_ALL_ARRAY(adj_slist, islist, CAG_STRUCT_ALLOC_STYLE,
+                      new_from_islist, free_islist, CAG_BYADR);
+```C
+
+The parameters are as follows:
+
+- *adj_slist* is the the name of the adjacency matrix type we're declaring and defining.
+
+- *islist* is the name of the type of singly-linked list of integers we've already declared and defined.
+
+- *CAG_STRUCT_ALLOC_STYLE* is a CAGL macro that is typically used when the elements of a container are a struct whose memory management must be handled by the higher-level container. In this case we want the singly linked lists to be memory managed by CAGL.
+
+- *new_from_islist* is a CAGL function defined for our singly linked list of integers. Every CAGL container has a *new_from_[container]* function defined. It is analogous to a C++ copy constructor and is needed for when containers are elements of other containers.
+
+- *free_islist* is needed to destroy lists and return them to the heap when our container is finished with them.
+
+- *CAG_BYADR* tells CAGL that the *new_from_islist* and *free_islist* functions take their parameters by address.
+
+While some of these parameters might seem complicated, they are always the same for CAGL containers whose elements are CAGL containers.
+
+Here's a first cut at how we could populate the list:
+
+```C
+static void populate_adj_slist(adj_slist *m, int num)
+{
+	int i, j;
+	for (i = 0; i < num; ++i) {
+		islist l;
+		if (new_islist(&l) == NULL) {
+			fprintf(stderr, "Out of memory %d", __LINE__);
+			exit(1);
+		}
+		for (j = 0; j < num; ++j) {
+			if (prepend_islist(&l, j) == NULL) {
+				fprintf(stderr, "Out of memory %d", __LINE__);
+				exit(1);
+			}
+		}
+		if (appendp_adj_slist(m, &l) == NULL) {
+				fprintf(stderr, "Out of memory %d", __LINE__);
+				exit(1);
+		}
+		free_islist(&l);
+	}
+}
+```
+
+The problem with this code is that we first create the whole list in *l*. Then when we call *appendp_adj_slist*, it recopies the entire list into the element created in the array using the *new_from_islist* function. This is wasteful. We can save half the time by first appending an empty list into the array. The *new_from_islist* function now has very little work to do because it copies from an empty list into a new list. We then prepend elements directly into the list element that has been created in the array.
+
+The following code shows how to populate the singly linked lists of the array efficiently.
+
+```C
+/*
+	Example of how to populate an adjacency list represented by a matrix
+	of singly-linked lists.
+
+    Parameters:
+
+	- m: the adjacency list
+
+	- num the number of entries to put in the list
+*/
+
+static void populate_adj_slist_efficient(adj_slist *m, int num)
+{
+	int i, j;
+	islist l;
+	islist *pl;
+
+	new_islist(&l);
+	for (i = 0; i < num; ++i) {
+		appendp_adj_slist(m, &l);
+		/* Note we will populate the added list itself, not l.
+		   We can populate l and then append it to the matrix,
+		   but this would be inefficient and result in l's elements
+		   being copied one-by-one into the element in the array.
+		*/
+		pl = back_adj_slist(m);
+		for (j = 0; j < num; ++j)
+			if (!prepend_islist(pl, j)) {
+				fprintf(stderr, "Out of memory %d", __LINE__);
+				exit(1);
+			}
+	}
+	free_islist(&l);
+}
+```
+
+For several examples of containers containing containers as elements, as well as a complicated example of a container within a container within a container, see *test_compound.c* in the tests directory of the CAGL distribution.
+
+# Reference
+
 ## Naming standards
 
 CAGL is easier to use if you understand the naming conventions:
@@ -1031,14 +1141,16 @@ CAGL is easier to use if you understand the naming conventions:
 
 - If you look at the CAGL source code, you'll notice some macros are prefixed *CAG_P_*. These are macros for internal use (the *P* is for private). Don't call them and don't depend on them to be unchanged or even continuing to exist between CAGL versions. The same goes for functions prefixed *cag_p_*.
 
-- The container declaration macros are:
+- The container declaration and definition macros are:
 
     - CAG_DEC_ARRAY, CAG_DEC_DLIST and CAG_DEC_SLIST. These declare the container and iterator struct, and function prototypes. Any module that uses a CAGL container must declare its structs and prototypes.
 	- CAG_DEC_CMP_ARRAY, CAG_DEC_CMP_DLIST, CAG_DEC_CMP_SLIST, CAG_DEC_CMP_TREE, CAG_DEC_CMP_HASH. These declare the container and iterator struct, and function prototypes for containers that require a comparison function.
 	- CAG_DEF_ARRAY, CAG_DEF_DLIST and CAG_DEF_SLIST. These define the functions for container types. These macros should only be used once per container type. They call corresponding CAG_DEF_ALL_  prefixed macros using default parameters and are intended to cover the most common cases.
 	- CAG_DEF_CMP_ARRAY, CAG_DEF_CMP_DLIST, CAG_DEF_CMP_SLIST, CAG_DEF_CMP_TREE and CAG_DEF_CMP_HASH. These define the functions for container types that require a comparison function. They call corresponding CAG_DEF_ALL_CMP__ prefixed macros using default parameters and are intended to cover the most common cases.
 	- CAG_DEC_DEF_ARRAY, CAG_DEC_DEF_DLIST, CAG_DEC_DEF_SLIST. These combine declarations and definitions in one call.
-	- CAF_DEC_DEF_CMP_ARRAY, CAG_DEC_DEF_CMP_DLIST, CAG_DEC_DEF_CMP_SLIST, CAG_DEC_DEF_CMP_HASH and CAG_DEC_DEF_CMP_TREE. These combine declarations and definitions in one call for container that require comparison functions.
+	- CAG_DEC_DEF_CMP_ARRAY, CAG_DEC_DEF_CMP_DLIST, CAG_DEC_DEF_CMP_SLIST, CAG_DEC_DEF_CMP_HASH and CAG_DEC_DEF_CMP_TREE. These combine declarations and definitions in one call for container that require comparison functions.
+	- CAG_DEF_ALL_ARRAY, CAG_DEF_ALL_DLIST and CAG_DEF_ALL_SLIST. These define the functions for container types. These macros should only be used once per container type. These expect more parameters than their like-named counterparts without *ALL* in them.
+	- CAG_DEF_ALL_CMP_ARRAY, CAG_DEF_ALL_CMP_DLIST, CAG_DEF_ALL_CMP_SLIST, CAG_DEF_ALL_CMP_TREE and CAG_DEF_ALL_CMP_HASH. These definition macros are the most flexible and have the most number of parameters, including a comparison function.
 
 - The functions generated for a container type are suffixed with the name of the container type.
 
@@ -1074,7 +1186,7 @@ See the file TODO.md for the features being considered for CAGL.
 
 ## Portability
 
-CAGL is compatible with ANSI C 1989 compliant compilers, as well as subsequent standardised versions of C.
+CAGL is compatible with ANSI C 1989 compliant compilers, as well as subsequent standard versions of C. The 1989 C definition specifies an archaic limitation that external variable names that share the first six characters do not have to be treated as unique. This is not a limitation for any modern C compiler and since adhering to it would have rendered CAGL impractical, it is ignored, as it is by most useful C libraries.
 
 The test suite currently compiles without warnings and executes 100% successfully using GNU C and Clang with these options:
 
@@ -1082,11 +1194,454 @@ The test suite currently compiles without warnings and executes 100% successfull
 
 It is intended that the test suite of future versions of CAGL will also be compiled, without generating warnings, and executed with Microsoft's and Intel's C compilers.
 
-Currently it is tested under GNU/Linux. Future tests should also be carried out under Windows and OS X.
+Currently CAGL is tested under GNU/Linux. Future tests should also be carried out under Windows and OS X.
 
-## Reference
+## Containers
 
-### Arrays
+In this reference guide the text *[container] is a general form that is substituted by the name of a specific container type in actual code. For example, consider an array of ints has been declared as follows:
+
+```C
+CAG_DEC_ARRAY(int_arr, int);
+```
+
+Then *[container]* is substituted with *int_arr* in code. E.g. *it_[container]* is replaced with *it_int_arr* in code.
+
+## Arrays
+
+CAGL arrays support random access and grow automatically.
+
+### Macros to declare and/or define arrays
+
+#### CAG_DEC_ARRAY
+
+##### Syntax
+
+```C
+CAG_DEC_ARRAY(container, type)
+```
+
+##### Description
+
+Declares a container type called *container* with elements of type *type*.
+
+#### CAG_DEF_ARRAY
+
+##### Syntax
+
+```C
+CAG_DEF_ARRAY(container, type);
+```
+
+##### Description
+
+Defines the functions for a CAGL array container type called *container*, which has elements of type *type*. Usually used in conjunction with *CAG_DEC_ARRAY*.
+
+#### CAG_DEC_DEF_ARRAY
+
+##### Syntax
+
+```C
+CAG_DEC_DEF_ARRAY(container, type)
+```
+
+
+##### Description
+
+This is equivalent to calling *CAG_DEC_ARRAY(container, type)* and *CAG_DEF_ARRAY(container, type)*.
+
+
+#### CAG_DEC_CMP_ARRAY
+
+##### Syntax
+
+```C
+CAG_DEC_CMP_ARRAY(container, type)
+```
+
+##### Description
+
+Declares a type called *container* which is a CAGL array container with elements of type *type*. In addition to declaring the same prototypes as *CAG_DEC_ARRAY* it also declares prototypes that facilitate ordering the container.
+
+
+#### CAG_DEF_CMP_ARRAY
+
+##### Syntax
+
+```C
+CAG_DEF_CMP_ARRAY(container, type, cmp_func);
+```
+
+Defines the functions for an orderable CAGL array container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMP_ARRAY*.
+
+The *cmp_func* function is of the form:
+
+```C
+int cmp_func(type e1, type e2);
+```
+
+#### CAG_DEC_DEF_CMP_ARRAY
+
+##### Syntax
+
+```C
+CAG_DEC_DEF_CMP_ARRAY(container, type, cmp_func);
+```
+
+##### Description
+
+This is equivalent to:
+
+```C
+CAG_DEC_CMP_ARRAY(container, type)* and *CAG_DEF_CMP_ARRAY(container, type, cmp_func)*.
+```
+
+#### CAG_DEF_ALL_ARRAY
+
+##### Syntax
+
+```C
+CAG_DEF_ALL(container, type, alloc_style, alloc_func, free_func, val_adr)
+```
+
+##### Description
+
+Defines the functions for a CAGL array container type. Usually used in conjunction with *CAG_DEC_ARRAY*.
+
+##### Parameters
+
+- container: Name of the container type
+
+- type: Type of the container's elements.
+
+- alloc_style: Allocation style for managing the creation of elements in the container. See [Allocation Style Macros].
+
+- alloc_func: Function that allocates memory and, optionally, initializes the element.
+
+	For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_ALLOC_FUNC*.
+
+	For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to *malloc* or *CAG_ALLOC* (which is by default equal to *malloc*).
+
+	For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *new_from_[container]* function.
+
+- free_func: Function to destroy an element and return its memory to the heap.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_FREE_FUNC*.
+
+	For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to free or CAG_FREE (which is by default equal to free).
+
+	For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *free_[container]* function.
+
+- val_adr: Indicates whether the allocation function, *alloc_func* and *free_func*, takes their parameters by address or by value. Both functions have to either take all their parameters by address or by value.
+
+	For an *alloc_func* of *CAG_NO_ALLOC_FUNC* it makes no difference what this is set to because it isn't used.
+
+    For an *alloc_func* of *malloc* or *CAG_ALLOC* this should usually be set to *CAG_BYVAL*. This might seem counter-intuitive because *malloc* and *free* take void parameters by address. But if the element of the container is a pointer, you want to pass it as is to *malloc* and *free*; you don't want to pass it by the address of the pointer.
+
+	If the element is a container and  *alloc_func* is a *new_from_[container]* function, then this should be set CAG_BYADR.
+
+	If *alloc_func* and *free_func* are custom written then it is up to the programmer, but *alloc_func* and *free_func* both have to use the same parameter passing method. Also if the container has a *cmp_func*, it too must have the same parameter passing method.
+
+#### CAG_DEC_DEF_ALL_ARRAY
+
+##### Syntax
+
+```C
+CAG_DEC_DEF_ALL_ARRAY(container, type, alloc_style, alloc_func, free_func, val_adr);
+```
+
+##### Description
+
+This is equivalent to:
+
+```C
+CAG_DEC_ARRAY(container, type)* and *CAG_DEF_ALL_ARRAY(container, type, alloc_style, alloc_func, free_func, val_adr);
+```
+
+##### CAG_DEF_ALL_CMP_ARRAY
+
+##### Syntax
+
+```C
+CAG_DEF_ALL_CMP_ARRAY(container, type, cmp_func, val_adr, alloc_style, alloc_func, free_func);
+```
+
+##### Description
+
+Defines the functions for an orderable CAGL array container type. Usually used in conjunction with [CAG_DEC_CMP_ARRAY].
+
+##### Parameters
+
+- container: Name of the container type
+
+- type: Type of the container's elements.
+
+- cmp_func: Comparison function for ordering the container. It is of the form:
+
+    ```C
+    int cmp_func(type e1, type e2);
+    ```
+
+- val_adr: Indicates whether the comparison function, *cmp_func*, allocation function, *alloc_func* and *free_func*, take their parameters by address or by value. All three functions have to either take all their parameters by address or by value.
+
+	For an *alloc_func* of *CAG_NO_ALLOC_FUNC* it makes no difference what this is set to because it isn't used.
+
+    For an *alloc_func* of *malloc* or *CAG_ALLOC* this should usually be set to *CAG_BYVAL*. This might seem counter-intuitive because *malloc* and *free* take void parameters by address. But if the element of the container is a pointer, you want to pass it as is to *malloc* and *free*; you don't want to pass it by the address of the pointer.
+
+	If the element is a container and  *alloc_func* is a *new_from_[container]* function, then this should be set CAG_BYADR.
+
+	If *alloc_func* and *free_func* are custom written then it is up to the programmer, but *alloc_func* and *free_func* both have to use the same parameter passing method. Also if the container has a *cmp_func*, it too must have the same parameter passing method.
+
+- alloc_style: Allocation style for managing the creation of elements in the container. See [Allocation Style Macros].
+
+- alloc_func: Function that allocates memory and, optionally, initializes the element.
+
+	For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_ALLOC_FUNC*.
+
+	For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to *malloc* or *CAG_ALLOC* (which is by default equal to *malloc*).
+
+	For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *new_from_[container]* function.
+
+- free_func: Function to destroy an element and return its memory to the heap.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_FREE_FUNC*.
+
+	For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to free or CAG_FREE (which is by default equal to free).
+
+	For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *free_[container]* function.
+
+
+### Structs and typedefs
+
+
+#### Iterator structs and typedefs
+
+```C
+struct iterator_[container]
+{
+  int value;
+};
+
+struct reverse_iterator_[container]
+{
+  int value;
+};
+
+typedef struct iterator_[container] iterator_[container];
+typedef struct reverse_iterator_[container] reverse_iterator_[container];
+typedef iterator_[container] *it_[container];
+typedef reverse_iterator_[container] *rit_[container];
+```
+
+#### Container struct and typedefs
+
+```C
+struct [container] ...
+typedef struct [container] [container];
+```
+
+The elements of the struct container should be considered private. Referring to them directly in user code is not recommended because they are not guaranteed to remain unchanged between CAGL versions.
+
+### Functions
+
+#### new
+
+##### Syntax
+
+```C
+[container] *new_[container] ([container] * array);
+```
+
+##### Description
+
+Initializes an array variable. The array's capacity is set to the CAGL default, *CAG_QUANTUM_ARRAY*. Every cagl container must be initialized with a call to a new function before any other operation is performed on the container.
+
+##### Parameters
+
+array
+  ~ The array to initialize.
+
+Return value
+  ~ On success, the initialized container, else NULL.
+
+##### Threading and concurrency
+
+The array parameter is modified. It is undefined to call a *new* function on a container more than once before calling a *free* function.
+
+##### Efficiency
+
+This is an O(1) operation. It allocates CAG_QUANTUM_ARRAY * sizeof(type) bytes from the heap.
+
+##### Example
+
+```C
+/* Demonstrates different uses of *new* on an array.
+
+   While in many environment it isn't generally necessary to free memory upon
+   exit of a program this demonstration does show how to exit the program
+   without leaving any memory leaks.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "cagl/array.h"
+
+/* Declare and define an array of integers. */
+CAG_DEC_DEF_ARRAY(int_arr, int);
+
+int main(void)
+{
+	int_arr a1, a2, a3, a4, a5;
+	int i;
+
+        /* Simplest use of new. Most users should use this version
+	   most of the time.
+	*/
+	if (!new_int_arr(&a1)) {
+		fprintf(stderr, "Error initialising with simple new.\n");
+		/* No need to free something that wasn't successfully
+		   initialized.
+		 */
+		exit(1);
+	}
+
+        /* Override CAGL default capacity with space for 10 elements. */
+	if (!new_with_capacity_int_arr(&a2, 10)) {
+		fprintf(stderr, "Error initialising with new_with_capacity.\n");
+		free_int_arr(&a1);
+		exit(1);
+	}
+
+        /* Insert 10 elements into a new array */
+	if (!new_with_size_int_arr(&a3, 10)) {
+		fprintf(stderr, "Error initialising with new_with_size.\n");
+		free_int_arr(&a1);
+		free_int_arr(&a2);
+		exit(1);
+	}
+
+	/* Use the new_many, free_many idiom. */
+	i = new_many_int_arr(&a4, &a5, NULL); /* Initialize multiple arrays. */
+	if (i <= 0) {
+		fprintf(stderr, "Only %d successfully initialized\n", i);
+		free_many_int_arr(i, &a4, &a5, NULL);
+		exit(1);
+	}
+
+	printf("Capacity of a1 is: %lu\n", a1.capacity);
+	printf("Size of a1 is: %lu\n", size_int_arr(&a1));
+	printf("Capacity of a2 is: %lu\n", a2.capacity);
+	printf("Size of a2 is: %lu\n", size_int_arr(&a2));
+	printf("Capacity of a3 is: %lu\n", a3.capacity);
+	printf("Size of a3 is: %lu\n", size_int_arr(&a3));
+	printf("Capacity of a4 is: %lu\n", a4.capacity);
+	printf("Size of a4 is: %lu\n", size_int_arr(&a4));
+	printf("Capacity of a5 is: %lu\n", a5.capacity);
+	printf("Size of a5 is: %lu\n", size_int_arr(&a5));
+
+        /* Return arrays to heap. */
+	free_many_int_arr(5, &a1, &a2, &a3, &a4, &a5, NULL);
+	return 0;
+}
+```
+
+#### new_with_capacity
+
+```C
+[container] *new_with_capacity_[container] ([container] * array, const size_t reserve);
+```
+
+##### Description
+
+Initializes an array and sets its capacity to a user-specified amount. The *reserve* species the number of elements to make space for, but the array is not actually set to the size of *reserve*. By default, once the capacity is reached, CAGL functions that need additional capacity will call realloc to attempt to get additional capacity.
+
+
+[container] *new_with_size_[container] ([container] * array, const size_t size);
+  ~ Initializes an array and inserts *size* elements into it. The values of the elements are not set and no assumptions should be made about their values. The capacity of the array is set to the minimum of *size* and *CAG_QUANTUM_ARRAY*.
+
+it_[container] set_min_size_[container] ([container] * array, it_[container] it,
+				 const size_t size);
+it_[container] set_exact_size_[container] ([container] * array, const size_t size);
+it_[container] next_[container] (it_[container] const it);
+it_[container] prev_[container] (it_[container] const it);
+rit_[container] rnext_[container] (rit_[container] const it);
+rit_[container] rprev_[container] (rit_[container] const it);
+it_[container] at_[container] (it_[container] it, const size_t n);
+rit_[container] rat_[container] (rit_[container] it, const size_t n);
+size_t distance_[container] (const it_[container] from, const it_[container] to);
+size_t rdistance_[container] (const rit_[container] from, const rit_[container] to);
+int lt_it_[container] (const it_[container] it1, const it_[container] it2);
+int lteq_it_[container] (const it_[container] it1, const it_[container] it2);
+int rlt_it_[container] (const rit_[container] it1, const rit_[container] it2);
+int rlteq_it_[container] (const rit_[container] it1, const rit_[container] it2);
+it_[container] begin_[container] (const [container] * array);
+it_[container] end_[container] (const [container] * array);
+rit_[container] rbegin_[container] (const [container] * array);
+rit_[container] rend_[container] (const [container] * array);
+size_t size_[container] (const [container] * array);
+it_[container] prepend_[container] ([container] * array, int const element);
+it_[container] append_[container] ([container] * array, int const element);
+it_[container] prependp_[container] ([container] * array, int const *element);
+rit_[container] rprepend_[container] ([container] * array, int const element);
+it_[container] appendp_[container] ([container] * array, int const *element);
+rit_[container] rprependp_[container] ([container] * array, int const *element);
+it_[container] insert_[container] ([container] * array, it_[container] position,
+			   int const element);
+it_[container] put_[container] ([container] * array, it_[container] position,
+			int const element);
+it_[container] insertp_[container] ([container] * array, it_[container] position,
+			    int const *element);
+rit_[container] rinsert_[container] ([container] * array, rit_[container] position,
+			     int const element);
+rit_[container] rappend_[container] ([container] * array, int const element);
+int *front_[container] (const [container] * array);
+int *back_[container] (const [container] * array);
+int *rfront_[container] (const [container] * array);
+int *rback_[container] (const [container] * array);
+it_[container] erase_[container] ([container] * array, it_[container] it);
+it_[container] erase_range_[container] ([container] * c, it_[container] from, it_[container] to);
+void free_[container] ([container] * array);
+it_[container] reverse_[container] (it_[container] first, it_[container] last);
+it_[container] reverse_all_[container] ([container] * c);
+it_[container] random_shuffle_[container] (const it_[container] from, it_[container] to);
+it_[container] random_shuffle_all_[container] ([container] * c);
+extern it_[container] (*const beg_[container]) (const [container] *);
+[container] *new_from_[container] ([container] * to, const [container] * from);
+int new_many_[container] ([container] * c, ...);
+size_t distance_all_[container] ([container] * c);
+void swap_[container] (it_[container] a, it_[container] b);
+it_[container] index_[container] ([container] * c, size_t n);
+it_[container] erase_all_[container] ([container] * c);
+void free_many_[container] (int max, [container] * c, ...);
+[container] *copy_[container] (it_[container] first, it_[container] last, [container] * c);
+[container] *copy_all_[container] (const [container] * c1, [container] * c2);
+int copy_many_[container] ([container] * c, ...);
+[container] *copy_if_[container] (it_[container] first, it_[container] last, [container] * c,
+			  int (*cond_func) (int *, void *), void *data);
+[container] *copy_if_all_[container] (const [container] * c1, [container] * c2,
+			      int (*cond_func) (int *, void *), void *data);
+it_[container] copy_over_[container] (it_[container] first, it_[container] last,
+			      it_[container] result);
+it_[container] find_[container] (it_[container] from, const it_[container] to,
+			 const int element, int (*cmp_func) (const int *,
+							     const int *));
+it_[container] findp_[container] (it_[container] from, const it_[container] to,
+			  const int *element, int (*cmp_func) (const int *,
+							       const int *));
+it_[container] find_all_[container] (const [container] * c, const int element,
+			     int (*cmp_func) (const int *, const int *));
+it_[container] findp_all_[container] ([container] * c, const int *element,
+			      int (*cmp_func) (const int *, const int *));
+extern rit_[container] (*const rbeg_[container]) (const [container] *);
+void rswap_[container] (rit_[container] a, rit_[container] b);
+rit_[container] rfind_[container] (rit_[container] from, const rit_[container] to,
+			   const int element, int (*cmp_func) (const int *,
+							       const int *));
+rit_[container] rfindp_[container] (rit_[container] from, const rit_[container] to,
+			    const int *element, int (*cmp_func) (const int *,
+								 const int
+								 *));
+[container] *rcopy_[container] (rit_[container] first, rit_[container] last, [container] * c);
+[container] *rcopy_all_[container] (const [container] * c1, [container] * c2);
 
 ### Singly-linked lists
 
@@ -1105,6 +1660,53 @@ Currently it is tested under GNU/Linux. Future tests should also be carried out 
 #### Reorderable
 
 #### Random access
+
+## Macros
+
+### Allocation Style Macros
+
+Containers need to know how to allocate memory for their elements. A parameter called *alloc_style* is used by the container definitions to determine this. Several predefined *allocation style* macros are provided.
+
+**ADVANCED:** Users can write their own allocation style macros but it is rare that this should be necessary. In the case that you do wish to write an allocation style macro, see how these are used in the containers (the code in cagl/hash.h is useful to examine). All allocation style macros must take these four parameters.
+
+to
+  ~ Element being created.
+
+from
+  ~ Element from which the *to* element is being created
+
+alloc_func
+  ~ Function for allocating the memory for an element
+
+free_code
+  ~ Function for freeing the memory of allocated for a container element. This function will only be called in certain cases where an error occurred after memory for an element has been successfully allocated, but must now be freed to undo the effects of the error.
+
+#### CAG_NO_ALLOC_STYLE
+
+```C
+#define CAG_SIMPLE_ALLOC_STYLE(to, from, alloc_func, free_code)               \
+    if(! (to = alloc_func(from))) free_code;
+```
+
+This allocation is typically used for containers that do not manage the memory of their elements or for elements that are primitive types.
+
+#### CAG_SIMPLE_ALLOC_STYLE
+
+```C
+#define CAG_SIMPLE_ALLOC_STYLE(to, from, alloc_func, free_code)               \
+    if(! (to = alloc_func(from))) free_code;
+```
+
+This allocation style is typically used for containers whose elements are pointers and need to be managed, e.g. elements that are C strings (char *).
+
+#### CAG_STRUCT_ALLOC_STYLE
+
+```C
+#define CAG_STRUCT_ALLOC_STYLE(to, from, alloc_func, free_code)               \
+    if(! (alloc_func(&to, &from))) free_code;
+```
+
+This allocation style is typically used for containers whose elements are complex structs which need custom allocation functions (analogous to C++ copy constructors) written for them.
 
 ### Modifying, enhancing and improving the CAGL
 

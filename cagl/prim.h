@@ -1,10 +1,15 @@
-/*! GDA primitive type containers.
+/*! \file Declarations for containers with primitive types.
 
-    \copyright Copyright 2013 University of Cape Town. All rights reserved.
-    \license This code is licensed under the FreeBSD Copyright.
-    See COPYING for the license text.
+    \copyright Copyright 2014 Nathan Geffen. All rights reserved.
 
-    This is code that is used throughout the GDA library.
+    \license This code is licensed under the GNU LESSER GENERAL PUBLIC LICENSE.
+
+    \sa COPYING for the license text.
+
+    \sa howtodev.rst to learn how this code works and how to modify it.
+
+    The code in this file is experimental. It may be removed from future
+    versions.
 */
 
 #ifndef CAG_PRIMITIVE_H

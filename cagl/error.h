@@ -1,12 +1,12 @@
-/*! GDA error framework.
+/*! \file Error handling for CAGL library.
 
-  \copyright Copyright 2013 University of Cape Town. All rights reserved.
-  \license GNU Lesser General Public License Copyright.
-  See COPYING for the license text.
+    \copyright Copyright 2014 Nathan Geffen. All rights reserved.
 
-  This is adapted from Learn C the Hard Way:
-  http://c.learncodethehardway.org/book/ex20.html
-  It has been modified to be compatible with C89.
+    \license This code is licensed under the GNU LESSER GENERAL PUBLIC LICENSE.
+
+    \sa COPYING for the license text.
+
+    \sa howtodev.rst to learn how this code works and how to modify it.
 */
 
 #ifndef CAG_ERROR_H

@@ -2,7 +2,7 @@
 
     \copyright Copyright 2014 Nathan Geffen. All rights reserved.
 
-    \license This code is licensed under the FreeBSD Copyright.
+    \license This code is licensed under the GNU LESSER GENERAL PUBLIC LICENSE.
 
     \sa COPYING for the license text.
 
@@ -922,7 +922,7 @@ CAG_DEC_ERASE_RANGE(function, container, iterator_type)                       \
     }
 
 
-/*! \brief Supporting private macros for GDA_SORT. */
+/*! \brief Supporting private macros for CAG_SORT. */
 
 #define CAG_P_INSERTION_SORT_LIMIT 32
 

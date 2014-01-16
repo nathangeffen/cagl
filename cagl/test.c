@@ -1,10 +1,12 @@
-/*! GDA test framework.
+/*! \file Testing framework code used by the CAGL library.
 
-    \copyright Copyright 2013 University of Cape Town. All rights reserved.
-    \license This code is licensed under the FreeBSD Copyright.
-    See COPYING for the license text.
+    \copyright Copyright 2014 Nathan Geffen. All rights reserved.
 
-    This test framework is deliberately simple.
+    \license This code is licensed under the GNU LESSER GENERAL PUBLIC LICENSE.
+
+    \sa COPYING for the license text.
+
+    \sa howtodev.rst to learn how this code works and how to modify it.
 */
 
 #include <stdio.h>

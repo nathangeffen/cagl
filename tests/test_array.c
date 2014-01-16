@@ -1,4 +1,4 @@
-/*! Tests for GDA arrays.
+/*! Tests for CAGL arrays.
 
   \copyright Copyright 2013 University of Cape Town. All rights reserved.
   \license GNU Lesser General Public License Copyright.
@@ -102,6 +102,7 @@ static void test_append(struct cag_test_series *tests)
 	rit_complex_array rit;
 	struct complex c;
 	int i;
+	size_t s;
 
 	CAG_CHECK(new_with_capacity_complex_array(&a, 2),
 		  "No memory for array");
@@ -165,14 +166,15 @@ static void test_append(struct cag_test_series *tests)
 		 "cag_array: distance after pointer prepend");
 	CAG_TEST(*tests, rit->value.real  == 8 && rit->value.imag == -8,
 		 "cag_array: rev iterator has value after rev pointer prepend");
-	for (i = 0; i < CAG_QUANTUM_ARRAY; ++i) {
+	s = a.capacity;
+	for (i = 0; i < (signed) s; ++i) {
 		c.real = i;
 		c.imag = -i;
 		it = append_complex_array(&a, c);
 	}
 	CAG_TEST(*tests, distance_complex_array(beg_complex_array(&a),
 						end_complex_array(&a))
-		 > CAG_QUANTUM_ARRAY && a.capacity == 2 * CAG_QUANTUM_ARRAY,
+		 > s && a.capacity == 2 * s,
 		 "cag_array: realloc of space after multiple appends");
 	free_complex_array(&a);
 error:

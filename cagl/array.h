@@ -20,7 +20,7 @@
     whenever the array is full.
 */
 
-#define CAG_QUANTUM_ARRAY 256
+#define CAG_QUANTUM_ARRAY 4
 
 /*! \brief Private macro used to allocate space for array. */
 
