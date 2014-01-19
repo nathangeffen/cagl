@@ -503,13 +503,10 @@ CAG_DEC_INSERTP_ARRAY(function, container, iterator_type, type)               \
                                    alloc_style, alloc_func)                   \
 CAG_DEC_INSERT_ARRAY(function, container, iterator_type, type)                \
 {                                                                             \
-    iterator_type it;                                                         \
     while (position != end(array) &&                                          \
             cmp_func(val_adr element, val_adr position->value) comparator 0)  \
         position = next(position);                                            \
-    CAG_P_INSERT_ARRAY(*array, iterator_type, it, position,                   \
-                       element, alloc_style, alloc_func);                     \
-    return position;                                                          \
+    return put_ ## container(array, position, element);                              \
 }
 
 #define CAG_DEF_INSERTP_ORDER_ARRAY(function, container, iterator_type,       \
@@ -518,12 +515,10 @@ CAG_DEC_INSERT_ARRAY(function, container, iterator_type, type)                \
                                     alloc_style, alloc_func)                  \
 CAG_DEC_INSERTP_ARRAY(function, container, iterator_type, type)               \
 {                                                                             \
-    iterator_type it;                                                         \
     while (it != end(array) &&                                                \
             cmp_func(val_adr element, val_adr it->value) comparator 0)        \
         it = next(it);                                                        \
-    CAG_P_INSERT_ARRAY(*array, iterator_type, it, position,                   \
-                       *element, alloc_style, alloc_func);                    \
+    return put_ ## container(array, position, element);                              \
 }
 
 /*! \brief Function declaration and definition to prepend an element to an array
@@ -573,6 +568,18 @@ CAG_DEC_ERASE_ARRAY(function, container, iterator_type)                       \
 */
 
 #define CAG_P_POST_ERASE_ARRAY(container, from, to) --to
+
+#define CAG_DEC_ERASE_RANGE_ARRAY(function, container, iterator_type)	\
+    iterator_type function(container *array,                           \
+                            iterator_type from, iterator_type to)
+
+#define CAG_DEF_ERASE_RANGE_ARRAY(function, container, iterator_type) \
+    CAG_DEC_ERASE_RANGE_ARRAY(function, container, iterator_type)  \
+    { \
+        while (to != from) \
+            erase_ ## container(array, to--); \
+        return to; \
+    }
 
 /*! \brief Function declaration and definition to return array memory to heap. */
 
@@ -663,8 +670,8 @@ CAG_DEC_ERASE_ARRAY(function, container, iterator_type)                       \
     CAG_DEC_BOUNDARY_ARRAY(rfront_ ## container, container, type);            \
     CAG_DEC_BOUNDARY_ARRAY(rback_ ## container, container, type);             \
     CAG_DEC_ERASE_ARRAY(erase_ ## container, container, it_ ## container);    \
-    CAG_DEC_ERASE_RANGE(erase_range_ ## container,                            \
-                        container, it_ ## container);                         \
+    CAG_DEC_ERASE_RANGE_ARRAY(erase_range_ ## container,                            \
+                              container, it_ ## container);                         \
     CAG_DEC_FREE_ARRAY(free_ ## container, container);                        \
     CAG_DEC_REORDERABLE(container, type);                                     \
     CAG_DEC_RANDOMACCESS(container, type)                                     \
@@ -732,9 +739,8 @@ CAG_DEF_BOUNDARY_ARRAY(rback_ ## container, container, type,                  \
                        begin, 1, value)                                       \
 CAG_DEF_ERASE_ARRAY(erase_ ## container, container,                           \
                     it_ ## container, free_func, val_adr)                     \
-CAG_DEF_ERASE_RANGE(erase_range_ ## container, container,                     \
-                    it_ ## container, erase_ ## container,                    \
-                    CAG_P_POST_ERASE_ARRAY)                                   \
+CAG_DEF_ERASE_RANGE_ARRAY(erase_range_ ## container, container,                     \
+                          it_ ## container)  \
 CAG_DEF_FREE_ARRAY(free_ ## container, container, begin,                      \
                    free_func, val_adr)                                        \
 CAG_DEF_REORDERABLE(container, type)                                          \

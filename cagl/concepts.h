@@ -23,9 +23,10 @@
     extern it_ ## container (* const beg_ ## container) (const container *);  \
     CAG_DEC_NEW_FROM(new_from_ ## container, container);                      \
     CAG_DEC_RET_MANY_ARG(new_many_ ## container, container);                  \
-    CAG_DEC_APPLY_CONTAINER(distance_all_ ## container, container, size_t);   \
+    CAG_DEC_APPLY_CONST_CONTAINER(distance_all_ ## container, container,      \
+                                  size_t);                                    \
     CAG_DEC_SWAP(swap_ ## container, it_ ## container);                       \
-    CAG_DEC_INDEX(index_ ## container, container); \
+    CAG_DEC_INDEX(index_ ## container, container);                            \
     CAG_DEC_APPLY_CONTAINER(erase_all_ ## container, container,               \
                             it_ ## container);                                \
     CAG_DEC_VOID_MANY_ARG(free_many_ ## container, container);                \
@@ -51,7 +52,8 @@
     CAG_DEF_NEW_FROM(new_from_ ## container, container)                       \
     CAG_DEF_RET_MANY_1_ARG(new_many_ ## container, container,                 \
                            new_ ## container)                                 \
-    CAG_DEF_APPLY_CONTAINER(distance_all_ ## container, container, size_t,    \
+    CAG_DEF_APPLY_CONST_CONTAINER(distance_all_ ## container,                 \
+                            container, size_t,                                \
                             distance_ ## container, begin_ ## container,      \
                             end_ ## container)                                \
     CAG_DEF_SWAP(swap_ ## container, it_ ## container, CAG_VALUE)             \

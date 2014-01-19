@@ -12,12 +12,12 @@ test_tree.c test_slist.c test_compound.c
 
 TEST_OBJS	= $(TEST_SOURCES:.c=.o)
 
-SOURCES 	= error.c prim.c common.c test.c
+SOURCES 	= error.c common.c test.c
 
 OBJS		= $(SOURCES:.c=.o)
 
 INCLUDES 	= test.h common.h concepts.h error.h \
-array.h hash.h dlist.h tree.h slist.h prim.h
+array.h hash.h dlist.h tree.h slist.h
 
 vpath %.c ../cagl
 vpath %.h ../cagl
@@ -35,21 +35,19 @@ test_suite.o: test_suite.c $(INCLUDES)
 
 test.o: test.h common.h error.h
 
-test_dlist.o: common.h concepts.h error.h test.h dlist.h prim.h
+test_dlist.o: common.h concepts.h error.h test.h dlist.h
 
-test_hash.o: common.h concepts.h error.h test.h hash.h prim.h
+test_hash.o: common.h concepts.h error.h test.h hash.h
 
-test_array.o: common.h concepts.h error.h test.h array.h prim.h
+test_array.o: common.h concepts.h error.h test.h array.h
 
-test_tree.o: common.h concepts.h error.h test.h tree.h prim.h
+test_tree.o: common.h concepts.h error.h test.h tree.h
 
-test_slist.o: common.h concepts.h error.h test.h slist.h prim.h
+test_slist.o: common.h concepts.h error.h test.h slist.h
 
 test_compound.o: $(INCLUDES)
 
 error.o: error.h
-
-primitives.o: prim.h common.h concepts.h
 
 common.o: common.c common.h
 

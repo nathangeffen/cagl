@@ -13,7 +13,6 @@
 #include "cagl/error.h"
 #include "cagl/test.h"
 #include "cagl/slist.h"
-#include "cagl/prim.h"
 
 struct complex {
 	double real;

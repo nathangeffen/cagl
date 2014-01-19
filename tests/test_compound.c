@@ -21,7 +21,7 @@
 
 #define CAG_SAFER 1
 
-CAG_DEC_DEF_DLIST(ilist, int);
+CAG_DEC_DEF_CMP_DLIST(ilist, int, CAG_CMP_DEFAULT);
 CAG_DEC_DEF_SLIST(islist, int);
 CAG_DEC_DEF_ARRAY(iarr, int);
 CAG_DEC_DEF_CMP_TREE(itree, int, CAG_CMP_DEFAULT);

@@ -290,7 +290,7 @@
 /*! \brief Generic *copy_over* function declaration and definition. */
 
 #define CAG_DEC_COPY_OVER(function, iterator_in, iterator_out)                \
-    iterator_out function(iterator_in first, iterator_in last,                \
+    iterator_out function(iterator_in first, const iterator_in last,          \
                           iterator_out result)
 
 #define CAG_DEF_COPY_OVER(function, iterator_in, iterator_out, input_next,    \
@@ -1229,6 +1229,20 @@ CAG_DEC_STABLE_SORT(function, iterator_type)                                  \
    E.g. used to define *distance_all*.
 */
 
+#define CAG_DEC_APPLY_CONST_CONTAINER(function, container, return_type)      \
+    return_type function(const container *c)
+
+#define CAG_DEF_APPLY_CONST_CONTAINER(function, container, return_type,       \
+                                apply_func, begin, end)                       \
+CAG_DEC_APPLY_CONST_CONTAINER(function, container, return_type)               \
+{                                                                             \
+    return apply_func(begin(c), end(c));                                      \
+}
+
+/*!\brief Version of *apply_container* for non-const container parameters.
+*/
+
+
 #define CAG_DEC_APPLY_CONTAINER(function, container, return_type)             \
     return_type function(container *c)
 
@@ -1238,6 +1252,7 @@ CAG_DEC_APPLY_CONTAINER(function, container, return_type)                     \
 {                                                                             \
     return apply_func(begin(c), end(c));                                      \
 }
+
 
 /*!\brief Pass an entire container to a function that operates on a sequence and
    returns a value. The applying function takes three parameters, the container

@@ -13,7 +13,6 @@
 #include "cagl/error.h"
 #include "cagl/test.h"
 #include "cagl/dlist.h"
-#include "cagl/prim.h"
 
 struct complex {
 	double real;
@@ -34,7 +33,7 @@ static int cmp_complex(const struct complex x, const struct complex y)
 }
 
 CAG_DEC_CMP_DLIST(complex_list, struct complex);
-
+CAG_DEC_CMP_DLIST(ilist, int);
 
 static void populate_list(complex_list *l1,
 			  const int from, const int to, const int step)
@@ -868,28 +867,28 @@ error_2:
 static void test_int_list(struct cag_test_series *tests)
 {
 	int i, total = 0;
-	cag_int_dlist l;
-	iterator_cag_int_dlist *it;
-	new_cag_int_dlist(&l);
-	append_cag_int_dlist(&l, 2);
+	ilist l;
+	iterator_ilist *it;
+	new_ilist(&l);
+	append_ilist(&l, 2);
 	for (i = 1; i < 5; ++i)
-		append_cag_int_dlist(&l, i);
-	for (i = 0, it = beg_cag_int_dlist(&l); it != end_cag_int_dlist(&l);
+		append_ilist(&l, i);
+	for (i = 0, it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next, ++i)
 		total += it->value;
 	CAG_TEST(*tests, i == 5 && total == 12,
-		 "cag_test: cag_int_dlist append");
-	free_cag_int_dlist(&l);
-	new_cag_int_dlist(&l);
+		 "cag_test: ilist append");
+	free_ilist(&l);
+	new_ilist(&l);
 	total = 0;
 	for (i = 1; i < 5; ++i)
-		appendp_cag_int_dlist(&l, &i);
-	for (i = 0, it = beg_cag_int_dlist(&l); it != end_cag_int_dlist(&l);
+		appendp_ilist(&l, &i);
+	for (i = 0, it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next, ++i)
 		total += it->value;
 	CAG_TEST(*tests, i == 4 && total == 10,
-		 "cag_test: cag_int_dlist pappend");
-	free_cag_int_dlist(&l);
+		 "cag_test: ilist pappend");
+	free_ilist(&l);
 }
 
 static void test_shuffle(struct cag_test_series *tests)
@@ -940,19 +939,19 @@ static void test_shuffle(struct cag_test_series *tests)
 void test_sort(struct cag_test_series *tests)
 {
 	int i, j, inorder = CAG_TRUE;
-	cag_int_dlist l;
-	iterator_cag_int_dlist *it;
+	ilist l;
+	iterator_ilist *it;
 
-	new_cag_int_dlist(&l);
+	new_ilist(&l);
 	j = 11;
 	for (i = 0; i < 11; ++i)
-		append_cag_int_dlist(&l, j - i);
-	it = sort_cag_int_dlist(beg_cag_int_dlist(&l),
-				end_cag_int_dlist(&l));
-	CAG_TEST(*tests, beg_cag_int_dlist(&l) == it,
+		append_ilist(&l, j - i);
+	it = sort_ilist(beg_ilist(&l),
+				end_ilist(&l));
+	CAG_TEST(*tests, beg_ilist(&l) == it,
 			"cag_test: sort returns iterator to beginning of sorted list");
 	i = -1;
-	for (it = beg_cag_int_dlist(&l); it != end_cag_int_dlist(&l);
+	for (it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next) {
 		if (it->value < i) {
 			inorder = CAG_FALSE;
@@ -961,14 +960,14 @@ void test_sort(struct cag_test_series *tests)
 		i = it->value;
 	}
 	CAG_TEST(*tests, inorder == CAG_TRUE &&
-		 distance_cag_int_dlist(beg_cag_int_dlist(&l),
-					end_cag_int_dlist(&l)) == 11,
+		 distance_ilist(beg_ilist(&l),
+					end_ilist(&l)) == 11,
 		 "cag_test: list in order after sort backward list");
-	rsort_cag_int_dlist(rbeg_cag_int_dlist(&l),
-			    rend_cag_int_dlist(&l));
+	rsort_ilist(rbeg_ilist(&l),
+			    rend_ilist(&l));
 	i = 402;
 	inorder = CAG_TRUE;
-	for (it = beg_cag_int_dlist(&l); it != end_cag_int_dlist(&l);
+	for (it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next) {
 		if (it->value > i) {
 			inorder = CAG_FALSE;
@@ -979,16 +978,16 @@ void test_sort(struct cag_test_series *tests)
 	CAG_TEST(*tests, inorder == CAG_TRUE,
 		 "cag_test: list in order after reverse sort backward list");
 
-	free_cag_int_dlist(&l);
+	free_ilist(&l);
 
-	new_cag_int_dlist(&l);
+	new_ilist(&l);
 	for (i = 0; i < 400; ++i)
-		append_cag_int_dlist(&l, rand() % 400);
-	sort_cag_int_dlist(beg_cag_int_dlist(&l),
-			   end_cag_int_dlist(&l));
+		append_ilist(&l, rand() % 400);
+	sort_ilist(beg_ilist(&l),
+			   end_ilist(&l));
 	i = -1;
 	inorder = CAG_TRUE;
-	for (it = beg_cag_int_dlist(&l); it != end_cag_int_dlist(&l);
+	for (it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next) {
 		if (it->value < i) {
 			inorder = CAG_FALSE;
@@ -998,16 +997,16 @@ void test_sort(struct cag_test_series *tests)
 	}
 	CAG_TEST(*tests, inorder == CAG_TRUE,
 		 "cag_test: list in order after sort random list");
-	free_cag_int_dlist(&l);
+	free_ilist(&l);
 
-	new_cag_int_dlist(&l);
+	new_ilist(&l);
 	for (i = 0; i < 100; ++i)
-		append_cag_int_dlist(&l, rand() % 200);
-	rsort_cag_int_dlist(rbeg_cag_int_dlist(&l),
-			    rend_cag_int_dlist(&l));
+		append_ilist(&l, rand() % 200);
+	rsort_ilist(rbeg_ilist(&l),
+			    rend_ilist(&l));
 	i = 201;
 	inorder = CAG_TRUE;
-	for (it = beg_cag_int_dlist(&l); it != end_cag_int_dlist(&l);
+	for (it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next) {
 		if (it->value > i) {
 			inorder = CAG_FALSE;
@@ -1017,72 +1016,72 @@ void test_sort(struct cag_test_series *tests)
 	}
 	CAG_TEST(*tests, inorder == CAG_TRUE,
 		 "cag_test: list in order after reverse sort random list");
-	free_cag_int_dlist(&l);
+	free_ilist(&l);
 }
 
 void test_stable_sort(struct cag_test_series *tests)
 {
 	int i, inorder = CAG_TRUE;
-	cag_int_dlist l;
-	iterator_cag_int_dlist *it;
+	ilist l;
+	iterator_ilist *it;
 	complex_list cl;
 	it_complex_list cit;
 	struct complex c;
 
-	new_cag_int_dlist(&l);
+	new_ilist(&l);
 
 	for (i = 0; i < 501; ++i)
-		append_cag_int_dlist(&l, 501 - i);
-	it = stable_sort_cag_int_dlist(beg_cag_int_dlist(&l),
-								   end_cag_int_dlist(&l));
-	CAG_TEST(*tests, beg_cag_int_dlist(&l) == it,
+		append_ilist(&l, 501 - i);
+	it = stable_sort_ilist(beg_ilist(&l),
+								   end_ilist(&l));
+	CAG_TEST(*tests, beg_ilist(&l) == it,
 			 "cag_test: stable sort returns iterator to begin of sorted list");
 	i = -1;
-	for (it = beg_cag_int_dlist(&l); it != end_cag_int_dlist(&l);
+	for (it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next)
 		if (it->value < i) inorder = CAG_FALSE;
 	CAG_TEST(*tests, inorder == CAG_TRUE &&
-		 distance_cag_int_dlist(beg_cag_int_dlist(&l),
-					end_cag_int_dlist(&l)) == 501,
+		 distance_ilist(beg_ilist(&l),
+					end_ilist(&l)) == 501,
 		 "cag_test: list in order after stable sort backward list");
-	free_cag_int_dlist(&l);
-	new_cag_int_dlist(&l);
+	free_ilist(&l);
+	new_ilist(&l);
 	for (i = 0; i < 51; ++i)
-		append_cag_int_dlist(&l, rand() % 200);
-	stable_sort_cag_int_dlist(beg_cag_int_dlist(&l),
-				  end_cag_int_dlist(&l));
+		append_ilist(&l, rand() % 200);
+	stable_sort_ilist(beg_ilist(&l),
+				  end_ilist(&l));
 	i = -1;
-	for (it = beg_cag_int_dlist(&l); it != end_cag_int_dlist(&l);
+	for (it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next)
 		if (it->value <= i) inorder = CAG_FALSE;
 	CAG_TEST(*tests, inorder == CAG_TRUE,
 		 "cag_test: list in order after stable sort backward list");
-	free_cag_int_dlist(&l);
+	free_ilist(&l);
 
-	new_cag_int_dlist(&l);
+	new_ilist(&l);
 	for (i = 0; i < 51; ++i)
-		append_cag_int_dlist(&l, 51 - i);
-	rstable_sort_cag_int_dlist(rbeg_cag_int_dlist(&l),
-				   rend_cag_int_dlist(&l));
+		append_ilist(&l, 51 - i);
+	rstable_sort_ilist(rbeg_ilist(&l),
+				   rend_ilist(&l));
 	i = 52;
-	for (it = beg_cag_int_dlist(&l); it != end_cag_int_dlist(&l);
+	for (it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next)
 		if (it->value > i) inorder = CAG_FALSE;
 	CAG_TEST(*tests, inorder == CAG_TRUE,
 		 "cag_test: list in order after stable sort backward list");
-	free_cag_int_dlist(&l);
-	new_cag_int_dlist(&l);
+	free_ilist(&l);
+	new_ilist(&l);
 	for (i = 0; i < 51; ++i)
-		append_cag_int_dlist(&l, rand() % 200);
-	rstable_sort_cag_int_dlist(rbeg_cag_int_dlist(&l),
-				   rend_cag_int_dlist(&l));
+		append_ilist(&l, rand() % 200);
+	rstable_sort_ilist(rbeg_ilist(&l),
+				   rend_ilist(&l));
 	i = 201;
-	for (it = beg_cag_int_dlist(&l); it != end_cag_int_dlist(&l);
+	for (it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next)
 		if (it->value >= i) inorder = CAG_FALSE;
 	CAG_TEST(*tests, inorder == CAG_TRUE,
 		 "cag_test: list in order after stable sort backward list");
-	free_cag_int_dlist(&l);
+	free_ilist(&l);
 	new_complex_list(&cl);
 	c.real = 4.0;
 	c.imag = 0.0;
@@ -1132,31 +1131,31 @@ void test_stable_sort(struct cag_test_series *tests)
 void test_stable_sort_macro(struct cag_test_series *tests)
 {
 	int i, inorder = CAG_TRUE;
-	cag_int_dlist l;
-	iterator_cag_int_dlist *it;
+	ilist l;
+	iterator_ilist *it;
 	complex_list cl;
 	it_complex_list cit;
 	struct complex c;
 
-	new_cag_int_dlist(&l);
+	new_ilist(&l);
 	for (i = 0; i < 101; ++i)
-		append_cag_int_dlist(&l, 101 - i);
+		append_ilist(&l, 101 - i);
 
-	CAG_STABLE_SORT(beg_cag_int_dlist(&l), end_cag_int_dlist(&l),
-			cag_int_dlist, iterator_cag_int_dlist,
-			new_cag_int_dlist, free_cag_int_dlist,
-			beg_cag_int_dlist, end_cag_int_dlist,
-			next_cag_int_dlist, at_cag_int_dlist,
-			distance_cag_int_dlist, appendp_cag_int_dlist,
+	CAG_STABLE_SORT(beg_ilist(&l), end_ilist(&l),
+			ilist, iterator_ilist,
+			new_ilist, free_ilist,
+			beg_ilist, end_ilist,
+			next_ilist, at_ilist,
+			distance_ilist, appendp_ilist,
 			CAG_CMP_DEFAULT, CAG_BYADR);
 
 	i = -1;
-	for (it = beg_cag_int_dlist(&l); it != end_cag_int_dlist(&l);
+	for (it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next)
 		if (it->value < i) inorder = CAG_FALSE;
 	CAG_TEST(*tests, inorder == CAG_TRUE,
 		 "cag_test: list in order after macro stable sort");
-	free_cag_int_dlist(&l);
+	free_ilist(&l);
 
 	new_complex_list(&cl);
 	c.real = 4.0;

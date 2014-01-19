@@ -14,8 +14,7 @@ lib_LTLIBRARIES = libcagl-@CAGL_API_VERSION@.la
 
 libcagl_@CAGL_API_VERSION@_la_SOURCES = cagl/common.c \
                                         cagl/error.c \
-					cagl/test.c \
-                                        cagl/prim.c
+					cagl/test.c
 
 ## Instruct libtool to include ABI version information in the generated shared
 ## library file (.so).  The library ABI version is defined in configure.ac, so
@@ -37,7 +36,6 @@ nobase_cagl_include_HEADERS = 	cagl/common.h \
 				cagl/dlist.h \
 				cagl/error.h \
 				cagl/hash.h \
-				cagl/prim.h \
 				cagl/test.h \
 				cagl/slist.h \
 				cagl/tree.h

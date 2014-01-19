@@ -15,7 +15,6 @@
 #include "cagl/error.h"
 #include "cagl/test.h"
 #include "cagl/array.h"
-#include "cagl/prim.h"
 
 struct complex {
 	double real;
@@ -50,6 +49,7 @@ static int cmpp_complex(const struct complex *x, const struct complex *y)
 CAG_DEC_CMP_ARRAY(complex_array, struct complex);
 CAG_DEC_CMP_ARRAY(complexp_array, struct complex);
 CAG_DEC_CMP_ARRAY(string_array, char *);
+CAG_DEC_CMP_ARRAY(iarr, int);
 
 static void test_default_sort(struct cag_test_series *tests)
 {
@@ -971,28 +971,28 @@ static void test_stable_sort(struct cag_test_series *tests)
 static void test_int_array(struct cag_test_series *tests)
 {
 	int i, total = 0;
-	cag_int_array l;
-	iterator_cag_int_array *it;
-	new_cag_int_array(&l);
-	append_cag_int_array(&l, 2);
+	iarr l;
+	iterator_iarr *it;
+	new_iarr(&l);
+	append_iarr(&l, 2);
 	for (i = 1; i < 5; ++i)
-		append_cag_int_array(&l, i);
-	for (i = 0, it = beg_cag_int_array(&l); it != end_cag_int_array(&l);
-	     it = next_cag_int_array(it), ++i)
+		append_iarr(&l, i);
+	for (i = 0, it = beg_iarr(&l); it != end_iarr(&l);
+	     it = next_iarr(it), ++i)
 		total += it->value;
 	CAG_TEST(*tests, i == 5 && total == 12,
-		 "cag_array: cag_int_array append");
-	free_cag_int_array(&l);
-	new_cag_int_array(&l);
+		 "cag_array: iarr append");
+	free_iarr(&l);
+	new_iarr(&l);
 	total = 0;
 	for (i = 1; i < 5; ++i)
-		appendp_cag_int_array(&l, &i);
-	for (i = 0, it = beg_cag_int_array(&l); it != end_cag_int_array(&l);
+		appendp_iarr(&l, &i);
+	for (i = 0, it = beg_iarr(&l); it != end_iarr(&l);
 	     ++it, ++i)
 		total += it->value;
 	CAG_TEST(*tests, i == 4 && total == 10,
-		 "cag_array: cag_int_array pappend");
-	free_cag_int_array(&l);
+		 "cag_array: iarr pappend");
+	free_iarr(&l);
 }
 
 static void test_abstract(struct cag_test_series *tests)

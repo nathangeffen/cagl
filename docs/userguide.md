@@ -1,10 +1,8 @@
-% C Almost Generic Library Documentation
+% C Almost Generic Library Manual
 %
 % January 2014
 
-# User Guide
-
-## Introduction
+# Introduction
 
 The C Almost Generic Library (CAGL) provides *almost* generic containers and algorithms to manipulate them.
 
@@ -52,13 +50,13 @@ int main(void)
 }
 ```
 
-## Installation
+# Installation
 
-The CAGL source code is available on github at <https://github.com/nathangeffen/libcag>.
+The CAGL source code is available on github at <https://github.com/nathangeffen/cagl>.
 
-Installation instructions are contained in the README.md file.
+Installation instructions are contained in the README.md file. If you're familiar with the standard *autotools* installation (e.g. *./configure; make; sudo make install*), installation is straightforward.
 
-## Purpose
+# Purpose
 
 Despite its age, C remains one of the most popular programming languages. It is fast and simple. Well-written C code is easy for most programmers to understand. It is widely used in embedded devices and vies with Java for top spot on the Tiobe Programming Index.
 
@@ -76,9 +74,9 @@ Also, CAGL implements iterators, although these are not as flexible as the ones 
 
 CAGL is influenced by the C++ STL, but because C does not provide C++ syntactic features that make the STL possible (such as function overloading, constructors,  destructors, templates, exceptions etc), the CAGL has to differ significantly from the STL. Nevertheless, for programmers who have to use C or prefer C's simplicity over C++, the CAGL is potentially a convenient, time-saving, simple-to-use, even elegant library.
 
-## Basic use
+# Basic use
 
-The CAGL is implemented almost entirely using C macros. These macros generate a set of functions for a container. Many of these functions are generic but have to be named uniquely for each container type.
+The CAGL is implemented almost entirely using C macros. These macros generate a set of functions for a container. Many of these functions are generic but have to be named uniquely for each container type because C doesn't support function overloading.
 
 For example, the macro to declare and define a vanilla array of integers is     *CAG_DEC_DEF_ARRAY*. So this code declares *int_arr* which is a type name for an array of *int*.
 
@@ -117,9 +115,9 @@ Now to declare a variable which is an array of integers, you do this:
 int_arr iarr;
 ```
 
-### Compiling CAGL programs
+## Compiling CAGL programs
 
-The library is called *almost* generic because the generic functions that are generated for different container types have to have different names because C doesn't support function overloading. The library is also *almost* type safe, but not quite. C allows a function with pointer parameters to be called with pointers of a different type. This is usually a programming mistake. However mature C compilers will give warnings when this happens. An important principle of CAGL is that when you use it you should get no compiler warnings (at least as far as your use of CAGL goes).
+The library is called *almost* generic for several reasons, the main one being that the generic functions that are generated for different container types must have different names because C doesn't support function overloading. The library is also *almost* type safe, but not quite. C allows a function with pointer parameters to be called with pointers of a different type. This is usually a programming mistake. However mature C compilers will give warnings when this happens. An important principle of CAGL is that when you use it you should get no compiler warnings (at least as far as your use of CAGL goes).
 
 When compiling a program that uses CAGL with *gcc* or *clang* using *-Wall -pedantic* any compiler warnings that arise in connection with CAGL should be considered errors. Conversely, any C compiler compliant with [ISO C 1990](http://en.wikipedia.org/wiki/ANSI_C#C89_and_C90) or later should compile well-written CAGL programs without warnings. For example, in development, you can compile the examples in this user guide using this (on GNU/Linux systems):
 
@@ -141,34 +139,36 @@ Because CAGL generates many functions, only some of which your program might use
 
 	gcc -Wall -pedantic -O3 -flto nameofprog.c cag_common.o  -o nameofprog
 
-### CAGL's main macros and functions
+Compiling with the *-flto* option can be slow, so you will likely only use it when compiling release builds.
+
+## CAGL's main macros and functions
 
 Every CAGL macro and function is prefixed *CAG_* (for macros) or *cag_* (for functions). Please consider this the namespace for CAGL and do not prefix your own code with *CAG_*.
 
 The CAGL container include files are:
 
-cag/array.h
+cagl/array.h
   ~ For declaring and defining automatically sized arrays similar to a C++ STL *vector*.
 
-cag/dlist.h
+cagl/dlist.h
   ~ For declaring and defining doubly-linked lists similar to a C++ STL *list*.
 
-cag/slist.h
+cagl/slist.h
   ~ For declaring and defining singly-linked lists similar to a C++11 STL *forward_list*.
 
-cag/tree.h
+cagl/tree.h
   ~ For declaring and defining balanced binary trees (implemented as red-black trees) similar to a C++ STL *map*.
 
-cag/hash.h
+cagl/hash.h
   ~ For declaring and defining hash tables similar to a C++11 *unordered_map*.
 
 The simplest way to declare and define a container whose elements are a particular type is to do this:
 
 ```
-CAG_DEC_DEF_[CONTAINER](name of container type, element type, ... other parameters ...);
+CAG_DEC_DEF_[ARRAY/DLIST/SLIST/HASH/TREE](name of container type, element type, ... other parameters ...);
 ```
 
-This declares a doubly-linked list of doubles type and defines its supporting functions:
+This declares a doubly-linked list of doubles type and forward and reverse iterators for it. It also defines its supporting functions:
 
 ```C
 CAG_DEC_DEF_DLIST(dbl_list, double);
@@ -267,7 +267,7 @@ The parameters of the call to CAG_DEF_ALL_CMP_TREE are as follows:
 
 Now you can insert strings into a *string_tree* container without worrying about allocating or deallocating its memory. CAGL will handle this for you.
 
-### Example: Euclidean points
+## Example: Euclidean points
 
 There are numerous examples of how to use the CAGL in the test suite programs. Here is a simple example with Euclidean points.
 
@@ -331,7 +331,7 @@ void populate_ordered(points *a, int numpoints, double x_start,
 
 This function takes a list by address as its first parameter. It will populate it with *numpoints* points. The first *x* point will be *x_start* and each *y* point will be the corresponding *x* point multiplied by gradient.
 
-We use the CAGL generated *append_points* function to put each new point at the back of the list. For doubly-linked lists and arrays, the efficiency of the *append_[container type]* function is O(1).
+We use the CAGL generated *append_points* function to put each new point at the back of the list. For doubly-linked lists and arrays, the efficiency of the *append_[container type]* function is constant.
 
 For a program for personal use, the above is sufficient, but for a production ready system, there is a problem.The *append_points* function can fail. It might not be able to allocate memory for the new point. It returns an iterator of type *it_points*. If the append was successful, this will be a pointer to the newly appended point, else it will be NULL.
 
@@ -503,7 +503,7 @@ double shortest_distance_using_iterators(points *a)
 
 Every CAGL container has functions called *beg_[container]*, *begin_[container]* (exactly the same as *beg_[container]*), *next_[container]*, *distance_[container]*, *distance_all_[container]* and *end_[container]*.
 
-So which is the better method to use? For lists, *distance_all* is an O(n) operation. So is *index_* but for arrays these are both O(1) operations. Undoubtedly for lists, the iterator version is more efficient. But if you declare *points* as an array type instead of a doubly-linked list type, then there is little to separate the efficiency of the two implementations.
+So which is the better method to use? For lists, *distance_all* is an O(n) operation. So is *index_* but for arrays these are both constant-time operations. Undoubtedly for lists, the iterator version is more efficient. But if you declare *points* as an array type instead of a doubly-linked list type, then there is little to separate the efficiency of the two implementations.
 
 Here is our complete *main()* function which uses both of these shortest distance functions:
 
@@ -574,7 +574,7 @@ And here's sample output:
     Shortest distance using iterators is: 6.7
 
 
-### Example: Deck of cards
+## Example: Deck of cards
 
 Let's use CAGL to manage a deck of cards which we'll store in an array. To keep things simple, we'll write all the code in one file this time. We'll also order our cards according to the [high-card by suit[(http://en.wikipedia.org/wiki/High_card_by_suit) convention. To compare the order of two cards, first compare their rank. If the ranks are the same, compare their suits alphabetically. So clubs is lowest, followed by diamonds, hearts and spades.
 
@@ -810,7 +810,7 @@ The output might look like this:
     After shuffling the deck
     AD 6D KC AH 4H 4S 10H 9C 5S 2C 3S 7C 7H JC 10C 3D 6C 6H 3H 10D QH QC 8S KD JD 9S 2S 6S 4D 7D AC JS 5D 3C KS QS AS 4C KH 8C 8H 2H 5C 9D 2D 7S 9H 8D JH 5H 10S QD
 
-### Example: a dictionary
+## Example: a dictionary
 
 In this example, we want to create a dictionary for storing words and their meanings. In other words we want a balanced binary tree whose elements are this:
 
@@ -961,11 +961,11 @@ int main(void)
 
 This is the output:
 
-    cat: Fat, lazy and lovable domestic pet
-    giraffe: strange animal with absurdly long neck
-    lion: Dangerous, lazy and lovable wild animal
-    mouse: type of cat food
-    springbok: type of lion food
+| cat: Fat, lazy and lovable domestic pet
+| giraffe: strange animal with absurdly long neck
+| lion: Dangerous, lazy and lovable wild animal
+| mouse: type of cat food
+| springbok: type of lion food
 
 Note that it's in alphabetical order even though we inserted the entries arbitrarily. The CAGL binary tree container functions always add entries in alphabetical order and unless you wilfully find a way to invalidate the order of the tree, the tree will remain ordered. This is in contrast to arrays and lists. It's valid to scramble the order of any CAGL array or list, but the tree container is always ordered.
 
@@ -1023,7 +1023,7 @@ int populate_dictionary(dictionary *d)
 }
 ```
 
-### Example: Adjacency list
+## Example: Adjacency list
 
 This example shows how to declare and define a container whose elements are containers. An adjacency list is used to represent graphs in computer science. It is typically implemented as an array of lists. In our example, the list elements are integers. This is simple to do.
 
@@ -1129,9 +1129,8 @@ static void populate_adj_slist_efficient(adj_slist *m, int num)
 
 For several examples of containers containing containers as elements, as well as a complicated example of a container within a container within a container, see *test_compound.c* in the tests directory of the CAGL distribution.
 
-# Reference
 
-## Naming standards
+# Naming standards
 
 CAGL is easier to use if you understand the naming conventions:
 
@@ -1166,7 +1165,7 @@ CAGL is easier to use if you understand the naming conventions:
 
 - Functions that operate on a range typically can also operate on the entire container and a *_all* version will be defined. E.g. *sort_all_[container]* and *random_shuffle_all_[container]*.
 
-## Design principles
+# Design principles
 
 CAGL is designed with these principles in mind:
 
@@ -1184,7 +1183,7 @@ While containers other than arrays, lists, trees and hash tables are envisaged f
 
 See the file TODO.md for the features being considered for CAGL.
 
-## Portability
+# Portability
 
 CAGL is compatible with ANSI C 1989 compliant compilers, as well as subsequent standard versions of C. The 1989 C definition specifies an archaic limitation that external variable names that share the first six characters do not have to be treated as unique. This is not a limitation for any modern C compiler and since adhering to it would have rendered CAGL impractical, it is ignored, as it is by most useful C libraries.
 
@@ -1196,76 +1195,66 @@ It is intended that the test suite of future versions of CAGL will also be compi
 
 Currently CAGL is tested under GNU/Linux. Future tests should also be carried out under Windows and OS X.
 
-## Containers
-
-In this reference guide the text *[container] is a general form that is substituted by the name of a specific container type in actual code. For example, consider an array of ints has been declared as follows:
-
-```C
-CAG_DEC_ARRAY(int_arr, int);
-```
-
-Then *[container]* is substituted with *int_arr* in code. E.g. *it_[container]* is replaced with *it_int_arr* in code.
-
-## Arrays
+# Arrays
 
 CAGL arrays support random access and grow automatically.
 
-### Macros to declare and/or define arrays
+## Macros to declare and/or define arrays
 
-#### CAG_DEC_ARRAY
+### CAG_DEC_ARRAY {-}
 
-##### Syntax
+#### Syntax {-}
 
 ```C
 CAG_DEC_ARRAY(container, type)
 ```
 
-##### Description
+#### Description {-}
 
 Declares a container type called *container* with elements of type *type*.
 
-#### CAG_DEF_ARRAY
+### CAG_DEF_ARRAY {-}
 
-##### Syntax
+#### Syntax {-}
 
 ```C
 CAG_DEF_ARRAY(container, type);
 ```
 
-##### Description
+#### Description {-}
 
 Defines the functions for a CAGL array container type called *container*, which has elements of type *type*. Usually used in conjunction with *CAG_DEC_ARRAY*.
 
-#### CAG_DEC_DEF_ARRAY
+### CAG_DEC_DEF_ARRAY {-}
 
-##### Syntax
+#### Syntax {-}
 
 ```C
 CAG_DEC_DEF_ARRAY(container, type)
 ```
 
 
-##### Description
+#### Description {-}
 
 This is equivalent to calling *CAG_DEC_ARRAY(container, type)* and *CAG_DEF_ARRAY(container, type)*.
 
 
-#### CAG_DEC_CMP_ARRAY
+### CAG_DEC_CMP_ARRAY {-}
 
-##### Syntax
+#### Syntax {-}
 
 ```C
 CAG_DEC_CMP_ARRAY(container, type)
 ```
 
-##### Description
+#### Description {-}
 
 Declares a type called *container* which is a CAGL array container with elements of type *type*. In addition to declaring the same prototypes as *CAG_DEC_ARRAY* it also declares prototypes that facilitate ordering the container.
 
 
-#### CAG_DEF_CMP_ARRAY
+### CAG_DEF_CMP_ARRAY {-}
 
-##### Syntax
+#### Syntax {-}
 
 ```C
 CAG_DEF_CMP_ARRAY(container, type, cmp_func);
@@ -1279,15 +1268,15 @@ The *cmp_func* function is of the form:
 int cmp_func(type e1, type e2);
 ```
 
-#### CAG_DEC_DEF_CMP_ARRAY
+### CAG_DEC_DEF_CMP_ARRAY {-}
 
-##### Syntax
+#### Syntax {-}
 
 ```C
 CAG_DEC_DEF_CMP_ARRAY(container, type, cmp_func);
 ```
 
-##### Description
+#### Description {-}
 
 This is equivalent to:
 
@@ -1295,19 +1284,19 @@ This is equivalent to:
 CAG_DEC_CMP_ARRAY(container, type)* and *CAG_DEF_CMP_ARRAY(container, type, cmp_func)*.
 ```
 
-#### CAG_DEF_ALL_ARRAY
+### CAG_DEF_ALL_ARRAY {-}
 
-##### Syntax
+#### Syntax {-}
 
 ```C
 CAG_DEF_ALL(container, type, alloc_style, alloc_func, free_func, val_adr)
 ```
 
-##### Description
+#### Description {-}
 
 Defines the functions for a CAGL array container type. Usually used in conjunction with *CAG_DEC_ARRAY*.
 
-##### Parameters
+#### Parameters {-}
 
 - container: Name of the container type
 
@@ -1341,35 +1330,31 @@ Defines the functions for a CAGL array container type. Usually used in conjuncti
 
 	If *alloc_func* and *free_func* are custom written then it is up to the programmer, but *alloc_func* and *free_func* both have to use the same parameter passing method. Also if the container has a *cmp_func*, it too must have the same parameter passing method.
 
-#### CAG_DEC_DEF_ALL_ARRAY
+### CAG_DEC_DEF_ALL_ARRAY {-}
 
-##### Syntax
+#### Syntax {-}
 
 ```C
 CAG_DEC_DEF_ALL_ARRAY(container, type, alloc_style, alloc_func, free_func, val_adr);
 ```
 
-##### Description
+#### Description {-}
 
-This is equivalent to:
+This is equivalent to calling CAG_DEC_ARRAY(container, type) followed by CAG_DEF_ALL_ARRAY(container, type, alloc_style, alloc_func, free_func, val_adr).
 
-```C
-CAG_DEC_ARRAY(container, type)* and *CAG_DEF_ALL_ARRAY(container, type, alloc_style, alloc_func, free_func, val_adr);
-```
+### CAG_DEF_ALL_CMP_ARRAY {-}
 
-##### CAG_DEF_ALL_CMP_ARRAY
-
-##### Syntax
+#### Syntax {-}
 
 ```C
 CAG_DEF_ALL_CMP_ARRAY(container, type, cmp_func, val_adr, alloc_style, alloc_func, free_func);
 ```
 
-##### Description
+#### Description {-}
 
 Defines the functions for an orderable CAGL array container type. Usually used in conjunction with [CAG_DEC_CMP_ARRAY].
 
-##### Parameters
+#### Parameters {-}
 
 - container: Name of the container type
 
@@ -1409,239 +1394,497 @@ Defines the functions for an orderable CAGL array container type. Usually used i
 
 	For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *free_[container]* function.
 
+## Array structs and functions
 
-### Structs and typedefs
+In this reference guide *C* is used to refer to a container type and *T* is used to refer to an element type. In code, C and T must be substituted with the names of the container and element type names respectively.
 
+The functions below are documented in [Functions][#Functions].
 
-#### Iterator structs and typedefs
+Only use the functions, structs and typedefs documented here in your array containers. If you notice that a function, struct or typedef that is declared in the code is omitted here, then it is best to assume it is experimental or private and subject to change in future versions of CAGL (including bug fixes) without warning or explanation.
+
 
 ```C
-struct iterator_[container]
-{
-  int value;
+
+/* Iterators */
+struct iterator_C {
+    T value;
 };
-
-struct reverse_iterator_[container]
-{
-  int value;
+struct reverse_iterator_C {
+    T value;
 };
+typedef struct iterator_C iterator_C;
+typedef struct reverse_iterator_C reverse_iterator_C;
+typedef iterator_C *it_C;
+typedef reverse_iterator_C *rit_C;
 
-typedef struct iterator_[container] iterator_[container];
-typedef struct reverse_iterator_[container] reverse_iterator_[container];
-typedef iterator_[container] *it_[container];
-typedef reverse_iterator_[container] *rit_[container];
+/* Container struct */
+struct C {
+    size_t capacity; /* Treat as read-only */
+    ... /* internal variables */
+};
+typedef struct C C;
+
+/***************************/
+/* NEW AND FREE FUNCTIONS. */
+/***************************/
+
+/* Initialize *array* and return pointer to it. */
+C *new_C(C * array);
+
+/* Initialize *array* and allocate space for *capacity* elements.
+   Returns pointer to *array*. */
+C *new_with_capacity_C(C * array, const size_t capacity);
+
+/* Initialize array and allocate space for at least *size* new elements.
+   Fill the array with size elements.
+*/
+C *new_with_size_C(C * array, const size_t size);
+
+/* Applies new to *to* and copies the contents of *from* into it.
+   Essential for containers that are the elements of containers and whose
+   memory must be managed by the parent container.
+   Returns a pointer to *to*.
+   O(n) operation, where n is the number of elements in *from*.
+*/
+C *new_from_C(C * to, const C * from);
+
+/* Call *new_C* on every argument (which must all be pointers to container
+   variables) except the last which must be NULL. Returns immediately if an
+   error occurs (i.e. no further container variables will be initialized).
+   Returns the number of successfully initialized container variables.
+   While marginally less efficient than calling *new_C* yourself on every
+   container, this is convenient in functions that have to initialize many
+   container variables. Works well in conjunction with *free_many_C*.
+*/
+int new_many_C(C * c, ...);
+
+/* Destroys *array* and returns its memory to heap.
+   This should be called when the array is no longer used.
+*/
+void free_C(C * array);
+
+/* Calls *free_C* on a maximum of *max* container variables specified by the
+   second argument onwards. The last argument must be NULL. This is slightly
+   less  efficient than calling *free_C* yourself on each variable, but
+   this can be convenient in functions that need to use many containers.
+*/
+void free_many_C(int max, C * c1, ...);
+
+/**********************/
+/* ITERATOR FUNCTIONS */
+/**********************/
+
+/* Set the array to have a minimum number of *size* elements.
+   Useful before calling *copy_over*.
+*/
+it_C set_min_size_C(C * array, it_C it, const size_t size);
+
+/* Set the array to have exactly *size* elements. If there are already more than
+   size elements, erase the excess ones.  Useful before calling *copy_over*,
+   but beware that data can be erased.
+*/
+it_C set_exact_size_C(C * array, const size_t size);
+
+/* Return the next iterator in the array.
+   Forward and reverse iterator versions supplied.
+   For arrays these are equivalent to ++it and --it respectively.
+*/
+it_C next_C(it_C const it);
+rit_C rnext_C(rit_C const it);
+
+
+/* Return the previous iterator in the array.
+   Forward and reverse iterator versions supplied.
+   For arrays these are equivalent to --it and ++it respectively.
+*/
+it_C prev_C(it_C const it);
+rit_C rprev_C(rit_C const it);
+
+
+/* Return the iterator *n* elements away from *it*.
+   Forward and reverse iterator versions supplied.
+   For arrays Equivalent to  it + n and it - n respectively.
+*/
+it_C at_C(it_C it, const size_t n);
+rit_C rat_C(rit_C it, const size_t n);
+
+/* Returns an iterator to the *n*th element of the array. */
+it_C index_C(C * array, size_t n);
+
+/* Return the number of elements from *from* to *to* excluding *to*.
+   Forward and reverse iterator versions supplied, as well as *all* version
+   over entire container. *size_C* is equivalent to *distance_all* but is
+   only available for arrays.
+   For arrays, equivalent to: to - from and from - to for forward and reverse
+   iterator versions repectively.
+*/
+size_t distance_C(const it_C from, const it_C to);
+size_t rdistance_C(const rit_C from, const rit_C to);
+size_t distance_all_C(const C * c);
+size_t size_C(const C * array);
+
+/* Indicates whether *it1* comes before *it2*. If it does then
+   returns 1 else 0.
+   Forward and reverse iterator versions supplied.
+*/
+int lt_it_C(const it_C it1, const it_C it2);
+int rlt_it_C(const rit_C it1, const rit_C it2);
+
+/* Indicates whether *it1* comes before or is the same position as *it2*.
+   If it is then returns 1 else 0.
+   Forward and reverse iterator versions supplied.
+*/
+int lteq_it_C(const it_C it1, const it_C it2);
+int rlteq_it_C(const rit_C it1, const rit_C it2);
+
+/* Returns an iterator pointing to the first element in the array (or last
+   element for reverse iterator version).
+   Forward and reverse iterator versions supplied.
+   *beg_C* and *rbeg_C* are synonyms for *begin_C* and *rbegin_C* respectively.
+*/
+it_C begin_C(const C * array);
+it_C beg_C = begin_C;
+rit_C rbegin_C(const C * array);
+rit_C rbeg_C = rbegin_C;
+
+
+/* Returns an iterator pointing one past the last element in the array (or
+   one before the first element for reverse iterator version).
+   Forward and reverse iterator versions supplied.
+*/
+it_C end_C(const C * array);
+rit_C rend_C(const C * array);
+
+/*******************************/
+/* ELEMENT INSERTION FUNCTIONS */
+/*******************************/
+
+/* Appends *element* to the end of *array*. Versions for passing the element
+   by value and by address are provided.
+   Returns iterator pointing to the appended element if successful, else NULL.
+   These are efficient constant time ways to add elements to an array.
+*/
+it_C append_C(C * array, T const element);
+it_C appendp_C(C * array, T const *element);
+
+
+/* Prepends *element* to the beginning of *array*. Versions for passing the
+   element by value and by address are provided.
+   Returns iterator pointing to the prepended element if successful, else NULL.
+   This is a slow O(n) time way of adding elements to an array.
+*/
+it_C prepend_C(C * array, T const element);
+it_C prependp_C(C * array, T const *element);
+
+
+/* Inserts *element* before *position* into *array*. Versions for passing the
+   element by value and by address are provided.
+   Returns iterator pointing to the prepended element if successful, else NULL.
+   Every container is required to have a *put_C* function which inserts an
+   element. Unless you're writing new containers, you're unlikely to need to
+   use it.
+   The efficiency of these functions is proportional to the size of the array
+   minus *position*. The higher the value of *position*, the quicker the
+   operation.
+*/
+it_C insert_C(C * array, it_C position, T const element);
+it_C insertp_C(C * array, it_C position, T const *element);
+it_C put_C(C * array, it_C position, T const element);
+
+/* ORDERED INSERTIONS */
+
+/* Ordered insertion functions are only available to containers defined with a
+   *CMP* macro (i.e. have a user-supplied *cmp_func*), support bidirectional
+   iterators and are reorderable.  Currently the only CAGL containers that
+   support these are arrays and doubly linked lists.
+
+   Returns an iterator to the inserted element.
+*/
+
+/* Insert *element* at the first position encountered for which a comparison
+   is true, starting from *position*.
+
+   By value and address versions are supplied.
+
+*/
+it_C insert_gt_C(C * array, it_C position, T const element);
+it_C insert_gteq_C(C * array, it_C position, T const element);
+it_C insert_lt_C(C * array, it_C position, T const element);
+it_C insert_lteq_C(C * array, it_C position, T const element);
+
+
+
+/*******************************/
+/* ELEMENT RETRIEVAL FUNCTIONS */
+/*******************************/
+
+/* Returns pointer to first element of *array*. */
+T *front_C(const C * array);
+
+/* Returns pointer to last element of array. */
+T *back_C(const C * array);
+
+/************************/
+/* COMPARISON FUNCTIONS */
+/************************/
+
+/* Comparison functions are only defined for container types declared with a
+   definition macro that has CMP in it's name. They make use of the *cmp_func*
+   function that the user has supplied.
+*/
+
+/* Compares the element in each of two iterators by calling the user-supplied
+   *cmp_func* function and returning its return value.
+
+   Return value:
+
+   - If *cmp_func* returns a non-zero value for elements at corresponding
+     positions in the two ranges being compared, then this is the value
+     returned.
+
+   - If all corresponding elements are equal (i.e. *cmp_func* returns 0 for all
+     comparisons) and both ranges (or containers) have exactly the same number
+     of elements, then 0 is returned (i.e. the ranges compared are precisely
+     equal).
+
+   - If all corresponding elements are equal (i.e. *cmp_func* returns 0 for all
+     comparisons) and the first range (or container) has more elements than the
+     second one, then 1 is returned (i.e. the first range is greater than the
+     second range).
+
+   - If all corresponding elements are equal (i.e. *cmp_func* returns 0 for all
+     comparisons) and the second range (or container) has more elements than the
+     first one, then 01 is returned (i.e. the first range is less than the
+     second range).
+
+   See also *equal_range_C*.
+*/
+int cmp_C(const it_C it1, const it_C it2);
+int cmp_range_C(it_C from_1, const it_C to_1, it_C from_2,
+		const it_C to_2);
+int cmp_all_C(const C * c1, const C * c2);
+
+
+/* Compares the elements in a range by calling the user-supplied
+   *cmp_func* function and returning its return value. The comparisons
+   stop once the first range or container has been iterated.
+
+   If there are fewer elements in the second range or container than the first,
+   then behaviour is undefined.
+
+   Returns 0 if all calls to *cmp_func* return zero, else returns the first
+   non-zero value of cmp_func.
+
+*/
+int equal_range_C(it_C from_1, const it_C to_1, it_C from_2);
+int equal_all_C(const C * c1, const C * c2);
+
+/*******************/
+/* ERASE FUNCTIONS */
+/*******************/
+
+/* Erase the element pointed to by *it* from *array*.
+
+   Returns iterator pointing to element that will now occupy the space
+   where the erased element was.
+
+   Time complexity: O(n) on average where n is the number of elements in
+   the array.
+
+*/
+it_C erase_C(C * array, it_C it);
+
+/* Erases all elements in the range [from, to).
+   Returns *to*.
+*/
+it_C erase_range_C(C * c, it_C from, it_C to);
+
+/* Empties *array*. The size (*distance_all_C*) of *array* will be zero after
+   this.
+   Returns an iterator equivalent to *end_C(array)*.
+*/
+it_C erase_all_C(C * array);
+
+/*************************/
+/* REORDERING OPERATIONS */
+/*************************/
+
+/* SORT */
+
+/* Sort the elements [from, to). Only defined for containers with comparison
+   functions. Reverse iterator and *all* versions supplied.
+   To sort in reverse order, use the *rsort* versions.
+   Average efficiency O(n log n). While worst case is O(n^2), it is extremely
+   unlikely to occur. Implemented as a highly optimized Quicksort.
+*/
+it_C sort_C(it_C from, it_C to);
+it_C sort_all_C(C * c);
+rit_C rsort_C(rit_C from, rit_C to);
+rit_C rsort_all_C(C * c);
+
+/* Stable sorts the elements [from, to). In contrast to *sort_C* these functions
+   maintain the same order of elements whose keys are equal.
+   Only defined for containers with comparison functions. Reverse iterator and
+   *all* versions supplied.
+   To sort in reverse order, use the *rsort* versions.
+   Efficiency is O(n log n). Implemented as a Mergesort.
+*/
+it_C stable_sort_C(it_C from, it_C to);
+rit_C rstable_sort_C(rit_C from, rit_C to);
+it_C stable_sort_all_C(C * c);
+
+
+/* REVERSE */
+
+/* Reverses elements in the range[from, to). *range* and *all* versions
+   supplied.
+   Returns an iterator to the new first element in the range.
+   O(n) operation, where n is the size of the range.
+*/
+it_C reverse_C(it_C from, it_C to);
+it_C reverse_all_C(C * array);
+
+
+/* SHUFFLE */
+
+/* Shuffles the elements in the range [from, to). *range* and *all* versions
+   supplied.
+   Returns an iterator to the new first element in the range.
+   O(n) operation, where n is the size of the range.
+*/
+it_C random_shuffle_C(const it_C from, it_C to);
+it_C random_shuffle_all_C(C * c);
+
+
+/* SWAP */
+
+/* Swaps the elements of two iterators.*/
+void swap_C(it_C a, it_C b);
+void rswap_C(rit_C a, rit_C b);
+
+
+/* COPY */
+
+/* CAGL supports two types of copying functions. The *copy_over_C* functions are
+   similar to the C++ STL *copy* template function.  For these you must have
+   sufficient space in the container to which you're copying. On the other hand
+   *copy_C* and *copy_all_C* are similar to C++ copy constructors. When they
+   copy, they allocate memory for each element in the copied to array.
+*/
+
+/* Copies the elements in the range [from, to) into *c*, which must be
+   initialized but is generally empty. Space is allocated for *c*.
+
+   The reverse iterator version copies the elements in reverse to *c*.
+
+   Returns pointer to *c* upon success, else NULL.
+*/
+C *copy_C(it_C from, it_C to, C * c);
+C *rcopy_C(rit_C first, rit_C last, C * c);
+
+/* Copies all the elements in *c1* to *c2*,  which must be
+   initialized but is generally empty. Space is allocated for *c2*.
+
+   The reverse iterator version copies the elements in reverse to *c2*.
+
+   Returns pointer to *c2* upon success, else NULL.
+*/
+C *copy_all_C(const C * c1, C * c2);
+C *rcopy_all_C(const C * c1, C * c2);
+
+/* Copies *c* to each of its subsequent arguments, which must be containers
+   of the same type as *c*. Last parameter must be NULL. Space is allocated
+   for each of the recipient containers.
+   Returns the number of containers which have been successfully copied to.
+*/
+int copy_many_C(C * c, ...);
+
+/* Copies the elements in the range [from, to) into *c*, which must be
+   initialized but is generally empty, for those elements for which *cond_func*
+   returns true.
+   Space is allocated for *c*.
+   Returns pointer to *c* upon success, else NULL.
+*/
+C *copy_if_C(it_C first, it_C last, C * c, int (*cond_func) (T *, void *),
+	     void *data);
+
+/* Copies elements in *c1*, for which *cond_func* returns TRUE,
+   to *c2*,  which must be initialized but is generally empty.
+   Space is allocated for *c2*.
+   Returns pointer to *c2* upon success, else NULL.
+*/
+C *copy_if_all_C(const C * c1, C * c2, int (*cond_func) (T *, void *),
+		 void *data);
+
+/* Copies elements in the range [from, to) over result for as many elements
+   as there are from *from* to *to*.
+   There must be sufficient space in the remainder of the container to which
+   *result* points.
+*/
+it_C copy_over_C(it_C from, const it_C to, it_C result);
+
+/*************/
+/* SEARCHING */
+/*************/
+
+/* Linear search for *element*, which is passed by value,
+   in the range [from, to).
+
+   By value, by address, *all*, forward and reverse iterator versions supplied.
+
+   The *cmp_func* function, which is passed as a parameter, should return 0 if
+   its two parameters are equal.
+
+   Returns an iterator pointing to an element if found, else *to*.  O(n)
+   efficiency.
+*/
+it_C find_C(it_C from, const it_C to, const T element,
+	    int (*cmp_func) (const T *, const T *));
+it_C findp_C(it_C from, const it_C to, const T * element,
+	     int (*cmp_func) (const T *, const T *));
+it_C find_all_C(const C * c, const T element,
+		int (*cmp_func) (const T *, const T *));
+it_C findp_all_C(C * c, const T * element,
+		 int (*cmp_func) (const T *, const T *));
+rit_C rfind_C(rit_C from, const rit_C to, const T element,
+	      int (*cmp_func) (const T *, const T *));
+rit_C rfindp_C(rit_C from, const rit_C to, const T * element,
+	       int (*cmp_func) (const T *, const T *));
+
+
+
+it_C insert_gt_C(C * array, it_C position, T const element);
+it_C insert_gteq_C(C * array, it_C position, T const element);
+it_C insert_lt_C(C * array, it_C position, T const element);
+it_C insert_lteq_C(C * array, it_C position, T const element);
+
+
+
+it_C search_C(it_C first, const it_C last, T const key);
+it_C searchp_C(it_C first, const it_C last, T const *key);
+it_C search_all_C(C * c, T d);
+it_C searchp_all_C(C * c, T * d);
+int rcmp_C(const rit_C it1, const it_C it2);
+int rcmp_range_C(rit_C from_1, const rit_C to_1, it_C from_2,
+		 const it_C to_2);
+int rcmp_all_C(const C * c1, const C * c2);
+int requal_range_C(rit_C from_1, const rit_C to_1, it_C from_2);
+int requal_all_C(const C * c1, const C * c2);
+rit_C rsearch_C(rit_C first, const rit_C last, T const key);
+rit_C rsearchp_C(rit_C first, const rit_C last, T const *key);
+it_C lower_bound_C(it_C first, it_C last, T const key);
+rit_C lower_rbound_C(rit_C first, rit_C last, T const key);
+it_C lower_boundp_C(it_C first, it_C last, T const *key);
+rit_C lower_rboundp_C(rit_C first, rit_C last, T const *key);
+it_C lower_bound_all_C(C * c, T d);
+it_C lower_boundp_all_C(C * c, T * d);
+int binary_search_C(it_C first, it_C last, T const key);
+int binary_rsearch_C(rit_C first, rit_C last, T const key);
+int binary_searchp_C(it_C first, it_C last, T const *key);
+int binary_rsearchp_C(rit_C first, rit_C last, T const *key);
+int binary_search_all_C(C * c, T d);
+int binary_searchp_all_C(C * c, T * d);
 ```
-
-#### Container struct and typedefs
-
-```C
-struct [container] ...
-typedef struct [container] [container];
-```
-
-The elements of the struct container should be considered private. Referring to them directly in user code is not recommended because they are not guaranteed to remain unchanged between CAGL versions.
-
-### Functions
-
-#### new
-
-##### Syntax
-
-```C
-[container] *new_[container] ([container] * array);
-```
-
-##### Description
-
-Initializes an array variable. The array's capacity is set to the CAGL default, *CAG_QUANTUM_ARRAY*. Every cagl container must be initialized with a call to a new function before any other operation is performed on the container.
-
-##### Parameters
-
-array
-  ~ The array to initialize.
-
-Return value
-  ~ On success, the initialized container, else NULL.
-
-##### Threading and concurrency
-
-The array parameter is modified. It is undefined to call a *new* function on a container more than once before calling a *free* function.
-
-##### Efficiency
-
-This is an O(1) operation. It allocates CAG_QUANTUM_ARRAY * sizeof(type) bytes from the heap.
-
-##### Example
-
-```C
-/* Demonstrates different uses of *new* on an array.
-
-   While in many environment it isn't generally necessary to free memory upon
-   exit of a program this demonstration does show how to exit the program
-   without leaving any memory leaks.
- */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include "cagl/array.h"
-
-/* Declare and define an array of integers. */
-CAG_DEC_DEF_ARRAY(int_arr, int);
-
-int main(void)
-{
-	int_arr a1, a2, a3, a4, a5;
-	int i;
-
-        /* Simplest use of new. Most users should use this version
-	   most of the time.
-	*/
-	if (!new_int_arr(&a1)) {
-		fprintf(stderr, "Error initialising with simple new.\n");
-		/* No need to free something that wasn't successfully
-		   initialized.
-		 */
-		exit(1);
-	}
-
-        /* Override CAGL default capacity with space for 10 elements. */
-	if (!new_with_capacity_int_arr(&a2, 10)) {
-		fprintf(stderr, "Error initialising with new_with_capacity.\n");
-		free_int_arr(&a1);
-		exit(1);
-	}
-
-        /* Insert 10 elements into a new array */
-	if (!new_with_size_int_arr(&a3, 10)) {
-		fprintf(stderr, "Error initialising with new_with_size.\n");
-		free_int_arr(&a1);
-		free_int_arr(&a2);
-		exit(1);
-	}
-
-	/* Use the new_many, free_many idiom. */
-	i = new_many_int_arr(&a4, &a5, NULL); /* Initialize multiple arrays. */
-	if (i <= 0) {
-		fprintf(stderr, "Only %d successfully initialized\n", i);
-		free_many_int_arr(i, &a4, &a5, NULL);
-		exit(1);
-	}
-
-	printf("Capacity of a1 is: %lu\n", a1.capacity);
-	printf("Size of a1 is: %lu\n", size_int_arr(&a1));
-	printf("Capacity of a2 is: %lu\n", a2.capacity);
-	printf("Size of a2 is: %lu\n", size_int_arr(&a2));
-	printf("Capacity of a3 is: %lu\n", a3.capacity);
-	printf("Size of a3 is: %lu\n", size_int_arr(&a3));
-	printf("Capacity of a4 is: %lu\n", a4.capacity);
-	printf("Size of a4 is: %lu\n", size_int_arr(&a4));
-	printf("Capacity of a5 is: %lu\n", a5.capacity);
-	printf("Size of a5 is: %lu\n", size_int_arr(&a5));
-
-        /* Return arrays to heap. */
-	free_many_int_arr(5, &a1, &a2, &a3, &a4, &a5, NULL);
-	return 0;
-}
-```
-
-#### new_with_capacity
-
-```C
-[container] *new_with_capacity_[container] ([container] * array, const size_t reserve);
-```
-
-##### Description
-
-Initializes an array and sets its capacity to a user-specified amount. The *reserve* species the number of elements to make space for, but the array is not actually set to the size of *reserve*. By default, once the capacity is reached, CAGL functions that need additional capacity will call realloc to attempt to get additional capacity.
-
-
-[container] *new_with_size_[container] ([container] * array, const size_t size);
-  ~ Initializes an array and inserts *size* elements into it. The values of the elements are not set and no assumptions should be made about their values. The capacity of the array is set to the minimum of *size* and *CAG_QUANTUM_ARRAY*.
-
-it_[container] set_min_size_[container] ([container] * array, it_[container] it,
-				 const size_t size);
-it_[container] set_exact_size_[container] ([container] * array, const size_t size);
-it_[container] next_[container] (it_[container] const it);
-it_[container] prev_[container] (it_[container] const it);
-rit_[container] rnext_[container] (rit_[container] const it);
-rit_[container] rprev_[container] (rit_[container] const it);
-it_[container] at_[container] (it_[container] it, const size_t n);
-rit_[container] rat_[container] (rit_[container] it, const size_t n);
-size_t distance_[container] (const it_[container] from, const it_[container] to);
-size_t rdistance_[container] (const rit_[container] from, const rit_[container] to);
-int lt_it_[container] (const it_[container] it1, const it_[container] it2);
-int lteq_it_[container] (const it_[container] it1, const it_[container] it2);
-int rlt_it_[container] (const rit_[container] it1, const rit_[container] it2);
-int rlteq_it_[container] (const rit_[container] it1, const rit_[container] it2);
-it_[container] begin_[container] (const [container] * array);
-it_[container] end_[container] (const [container] * array);
-rit_[container] rbegin_[container] (const [container] * array);
-rit_[container] rend_[container] (const [container] * array);
-size_t size_[container] (const [container] * array);
-it_[container] prepend_[container] ([container] * array, int const element);
-it_[container] append_[container] ([container] * array, int const element);
-it_[container] prependp_[container] ([container] * array, int const *element);
-rit_[container] rprepend_[container] ([container] * array, int const element);
-it_[container] appendp_[container] ([container] * array, int const *element);
-rit_[container] rprependp_[container] ([container] * array, int const *element);
-it_[container] insert_[container] ([container] * array, it_[container] position,
-			   int const element);
-it_[container] put_[container] ([container] * array, it_[container] position,
-			int const element);
-it_[container] insertp_[container] ([container] * array, it_[container] position,
-			    int const *element);
-rit_[container] rinsert_[container] ([container] * array, rit_[container] position,
-			     int const element);
-rit_[container] rappend_[container] ([container] * array, int const element);
-int *front_[container] (const [container] * array);
-int *back_[container] (const [container] * array);
-int *rfront_[container] (const [container] * array);
-int *rback_[container] (const [container] * array);
-it_[container] erase_[container] ([container] * array, it_[container] it);
-it_[container] erase_range_[container] ([container] * c, it_[container] from, it_[container] to);
-void free_[container] ([container] * array);
-it_[container] reverse_[container] (it_[container] first, it_[container] last);
-it_[container] reverse_all_[container] ([container] * c);
-it_[container] random_shuffle_[container] (const it_[container] from, it_[container] to);
-it_[container] random_shuffle_all_[container] ([container] * c);
-extern it_[container] (*const beg_[container]) (const [container] *);
-[container] *new_from_[container] ([container] * to, const [container] * from);
-int new_many_[container] ([container] * c, ...);
-size_t distance_all_[container] ([container] * c);
-void swap_[container] (it_[container] a, it_[container] b);
-it_[container] index_[container] ([container] * c, size_t n);
-it_[container] erase_all_[container] ([container] * c);
-void free_many_[container] (int max, [container] * c, ...);
-[container] *copy_[container] (it_[container] first, it_[container] last, [container] * c);
-[container] *copy_all_[container] (const [container] * c1, [container] * c2);
-int copy_many_[container] ([container] * c, ...);
-[container] *copy_if_[container] (it_[container] first, it_[container] last, [container] * c,
-			  int (*cond_func) (int *, void *), void *data);
-[container] *copy_if_all_[container] (const [container] * c1, [container] * c2,
-			      int (*cond_func) (int *, void *), void *data);
-it_[container] copy_over_[container] (it_[container] first, it_[container] last,
-			      it_[container] result);
-it_[container] find_[container] (it_[container] from, const it_[container] to,
-			 const int element, int (*cmp_func) (const int *,
-							     const int *));
-it_[container] findp_[container] (it_[container] from, const it_[container] to,
-			  const int *element, int (*cmp_func) (const int *,
-							       const int *));
-it_[container] find_all_[container] (const [container] * c, const int element,
-			     int (*cmp_func) (const int *, const int *));
-it_[container] findp_all_[container] ([container] * c, const int *element,
-			      int (*cmp_func) (const int *, const int *));
-extern rit_[container] (*const rbeg_[container]) (const [container] *);
-void rswap_[container] (rit_[container] a, rit_[container] b);
-rit_[container] rfind_[container] (rit_[container] from, const rit_[container] to,
-			   const int element, int (*cmp_func) (const int *,
-							       const int *));
-rit_[container] rfindp_[container] (rit_[container] from, const rit_[container] to,
-			    const int *element, int (*cmp_func) (const int *,
-								 const int
-								 *));
-[container] *rcopy_[container] (rit_[container] first, rit_[container] last, [container] * c);
-[container] *rcopy_all_[container] (const [container] * c1, [container] * c2);
 
 ### Singly-linked lists
 
@@ -1653,15 +1896,15 @@ rit_[container] rfindp_[container] (rit_[container] from, const rit_[container] 
 
 ### Iterators
 
-#### Forward
+#### Forward {-}
 
-#### Bidirectional
+#### Bidirectional {-}
 
-#### Reorderable
+#### Reorderable {-}
 
-#### Random access
+#### Random access {-}
 
-## Macros
+# Useful macros
 
 ### Allocation Style Macros
 
@@ -1681,7 +1924,7 @@ alloc_func
 free_code
   ~ Function for freeing the memory of allocated for a container element. This function will only be called in certain cases where an error occurred after memory for an element has been successfully allocated, but must now be freed to undo the effects of the error.
 
-#### CAG_NO_ALLOC_STYLE
+#### CAG_NO_ALLOC_STYLE {-}
 
 ```C
 #define CAG_SIMPLE_ALLOC_STYLE(to, from, alloc_func, free_code)               \
@@ -1690,7 +1933,7 @@ free_code
 
 This allocation is typically used for containers that do not manage the memory of their elements or for elements that are primitive types.
 
-#### CAG_SIMPLE_ALLOC_STYLE
+#### CAG_SIMPLE_ALLOC_STYLE {-}
 
 ```C
 #define CAG_SIMPLE_ALLOC_STYLE(to, from, alloc_func, free_code)               \
@@ -1699,7 +1942,7 @@ This allocation is typically used for containers that do not manage the memory o
 
 This allocation style is typically used for containers whose elements are pointers and need to be managed, e.g. elements that are C strings (char *).
 
-#### CAG_STRUCT_ALLOC_STYLE
+#### CAG_STRUCT_ALLOC_STYLE {-}
 
 ```C
 #define CAG_STRUCT_ALLOC_STYLE(to, from, alloc_func, free_code)               \
@@ -2007,3 +2250,186 @@ This document is released under the GNU Free Documentation License version 1.3. 
 # Credits
 
 CAGL has been written by Nathan Geffen. (nathangeffen at gmail.com).
+
+
+# Appendix: Detailed function blueprint documentation
+
+
+# Detailed function documentation
+
+**WORK IN PROGRESS ON THIS PART OF THE MANUAL**
+
+This part of the manual is going to be a long work in progress. The aim is to document every CAGL function blueprint with the following: syntax, description, parameters, data races, time and space complexity and an example.
+
+## new {#array-new}
+
+### Syntax {-}
+
+```C
+[container] *new_[container] ([container] * array);
+```
+
+### Description {-}
+
+Initializes a container variable. Every CAGL container variable must be initialized with a call to a new function before any other operation is performed on the container. It is undefined to call a *new* function on a container more than once before calling a *free* function. For every call of *new* on a container variable there should be a corresponding call to *free*.
+
+### Parameters {-}
+
+array
+  ~ The array to initialize.
+
+Return value
+  ~ On success, the initialized container, else NULL.
+
+### Data races {-}
+
+The array parameter is modified.
+
+### Complexity {-}
+
+This is an O(1) operation. It allocates CAG_QUANTUM_ARRAY * sizeof(type) bytes from the heap.
+
+### Example {-}
+
+```C
+/* Demonstrates different uses of *new* on an array.
+
+   While in many environment it isn't generally necessary to free memory upon
+   exit of a program this demonstration does show how to exit the program
+   without leaving any memory leaks.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "cagl/array.h"
+
+/* Declare and define an array of integers. */
+CAG_DEC_DEF_ARRAY(int_arr, int);
+
+int main(void)
+{
+	int_arr a1, a2, a3, a4, a5;
+	int i;
+
+        /* Simplest use of new. Most users should use this version
+	   most of the time.
+	*/
+	if (!new_int_arr(&a1)) {
+		fprintf(stderr, "Error initialising with simple new.\n");
+		/* No need to free something that wasn't successfully
+		   initialized.
+		 */
+		exit(1);
+	}
+
+        /* Override CAGL default capacity with space for 10 elements. */
+	if (!new_with_capacity_int_arr(&a2, 10)) {
+		fprintf(stderr, "Error initialising with new_with_capacity.\n");
+		free_int_arr(&a1);
+		exit(1);
+	}
+
+        /* Insert 10 elements into a new array */
+	if (!new_with_size_int_arr(&a3, 10)) {
+		fprintf(stderr, "Error initialising with new_with_size.\n");
+		free_int_arr(&a1);
+		free_int_arr(&a2);
+		exit(1);
+	}
+
+	/* Use the new_many, free_many idiom. */
+	i = new_many_int_arr(&a4, &a5, NULL); /* Initialize multiple arrays. */
+	if (i <= 0) {
+		fprintf(stderr, "Only %d successfully initialized\n", i);
+		free_many_int_arr(i, &a4, &a5, NULL);
+		exit(1);
+	}
+
+	printf("Capacity of a1 is: %lu\n", a1.capacity);
+	printf("Size of a1 is: %lu\n", size_int_arr(&a1));
+	printf("Capacity of a2 is: %lu\n", a2.capacity);
+	printf("Size of a2 is: %lu\n", size_int_arr(&a2));
+	printf("Capacity of a3 is: %lu\n", a3.capacity);
+	printf("Size of a3 is: %lu\n", size_int_arr(&a3));
+	printf("Capacity of a4 is: %lu\n", a4.capacity);
+	printf("Size of a4 is: %lu\n", size_int_arr(&a4));
+	printf("Capacity of a5 is: %lu\n", a5.capacity);
+	printf("Size of a5 is: %lu\n", size_int_arr(&a5));
+
+        /* Return arrays to heap. */
+	free_many_int_arr(5, &a1, &a2, &a3, &a4, &a5, NULL);
+	return 0;
+}
+```
+
+## new_with_capacity
+
+### Syntax
+
+```C
+[container] *new_with_capacity_[container] ([container] * array,
+	    				   const size_t capacity);
+```
+
+### Description {-}
+
+Initializes an array and sets its capacity to a user-specified amount. The *capacity* specifies the number of elements to make space for, but the array size is initialized to zero. By default, once the capacity is reached, CAGL functions that add further elements will call realloc to attempt to get additional capacity.
+
+### Parameters {-}
+
+array
+  ~ The array to initialize.
+
+capacity
+  ~ Enough memory is allocated to accommodate *capacity* elements in the array.
+
+Return value
+  ~ On success, the initialized container, else NULL.
+
+### Data races {-}
+
+The array parameter is modified.
+
+### Complexity {-}
+
+This is an O(1) operation. It allocates CAG_QUANTUM_ARRAY * sizeof(type) bytes from the heap.
+
+### Example {-}
+
+See the example for [new_[container]][#array-new].
+
+## new_with_size {-}
+
+### Syntax {-}
+
+```C
+[container] *new_with_size_[container] ([container] * array, const size_t size);
+```
+
+### Description {-}
+
+Initializes an array and inserts *size* elements into it. The values of the elements are not set and no assumptions should be made about their values. The capacity of the array is set to the minimum of *size* and *CAG_QUANTUM_ARRAY*. It is useful to initialize an array using this function before calling *copy_over*.
+
+### Parameters {-}
+
+array
+  ~ The array to initialize.
+
+size
+  ~ The array is initialized to have *size* elements.
+
+Return value
+  ~ On success, the initialized container with *size* elements, else NULL.
+
+
+### Data races {-}
+
+The array parameter is modified.
+
+### Complexity {-}
+
+This is an O(1) operation.
+
+### Example {-}
+
+See the example for [new_[container]][#array-new].
