@@ -220,7 +220,7 @@
                             it_ ## container);                                \
     CAG_DEC_RANDOM_SHUFFLE(random_shuffle_ ## container, it_ ## container);   \
     CAG_DEC_APPLY_CONTAINER(random_shuffle_all_ ## container, container,      \
-                            it_ ## container)                                 \
+                            it_ ## container)                                \
 
 #define CAG_DEF_REORDERABLE(container, type)                                  \
     CAG_DEF_REVERSE(reverse_ ## container, it_ ## container,                  \
@@ -245,7 +245,23 @@
     CAG_DEC_APPLY_CONTAINER(rsort_all_ ## container, container,                \
                             rit_ ## container);                                \
     CAG_DEC_APPLY_CONTAINER(stable_sort_all_ ## container, container,         \
-                            it_ ## container)                                 \
+                            it_ ## container);                                 \
+    CAG_DEC_INSERT_ORDER(insert_gt_ ## container, container,                  \
+                         it_ ## container, type);                                   \
+    CAG_DEC_INSERT_ORDER(insert_gteq_ ## container, container,                \
+                         it_ ## container, type);                                   \
+    CAG_DEC_INSERT_ORDER(insert_lt_ ## container, container,                  \
+                         it_ ## container, type);                                   \
+    CAG_DEC_INSERT_ORDER(insert_lteq_ ## container, container,                \
+                         it_ ## container, type);                                   \
+    CAG_DEC_INSERTP_ORDER(insertp_gt_ ## container, container,                  \
+                         it_ ## container, type);                                   \
+    CAG_DEC_INSERTP_ORDER(insertp_gteq_ ## container, container,                \
+                         it_ ## container, type);                                   \
+    CAG_DEC_INSERTP_ORDER(insertp_lt_ ## container, container,                  \
+                         it_ ## container, type);                                   \
+    CAG_DEC_INSERTP_ORDER(insertp_lteq_ ## container, container,                \
+                         it_ ## container, type)                                   \
 
 #define CAG_DEF_CMP_REORDERABLE(container, type, cmp_func, val_adr)           \
     CAG_DEF_SORT(sort_ ## container, it_ ## container, type,                  \
@@ -269,6 +285,23 @@
     CAG_DEF_APPLY_CONTAINER(stable_sort_all_ ## container, container,         \
                             it_ ## container, stable_sort_ ## container,      \
                             begin_ ## container, end_ ## container)           \
+    CAG_DEF_INSERT_ORDER(insert_gt_ ## container, container,                  \
+                         it_ ## container, type, cmp_func, val_adr, >)                                   \
+    CAG_DEF_INSERT_ORDER(insert_gteq_ ## container, container,                \
+                         it_ ## container, type, cmp_func, val_adr, >=)                                   \
+    CAG_DEF_INSERT_ORDER(insert_lt_ ## container, container,                  \
+                         it_ ## container, type, cmp_func, val_adr, <)                                   \
+    CAG_DEF_INSERT_ORDER(insert_lteq_ ## container, container,                \
+                         it_ ## container, type, cmp_func, val_adr, <=)                                   \
+    CAG_DEF_INSERTP_ORDER(insertp_gt_ ## container, container,                  \
+                         it_ ## container, type, cmp_func, val_adr, >)                                   \
+    CAG_DEF_INSERTP_ORDER(insertp_gteq_ ## container, container,                \
+                         it_ ## container, type, cmp_func, val_adr, >=)                                   \
+    CAG_DEF_INSERTP_ORDER(insertp_lt_ ## container, container,                  \
+                         it_ ## container, type, cmp_func, val_adr, <)                                   \
+    CAG_DEF_INSERTP_ORDER(insertp_lteq_ ## container, container,                \
+                         it_ ## container, type, cmp_func, val_adr, <=)                                   \
+
 
 #define CAG_DEC_RANDOMACCESS(container, type)                                 \
     CAG_DEC_BIDIRECTIONAL(container, type)                                    \

@@ -496,31 +496,6 @@ CAG_DEC_INSERTP_ARRAY(function, container, iterator_type, type)               \
     return position;                                                          \
 }
 
-
-#define CAG_DEF_INSERT_ORDER_ARRAY(function, container, iterator_type,        \
-                                   type, prev, next, end,                     \
-                                   cmp_func, val_adr, comparator,             \
-                                   alloc_style, alloc_func)                   \
-CAG_DEC_INSERT_ARRAY(function, container, iterator_type, type)                \
-{                                                                             \
-    while (position != end(array) &&                                          \
-            cmp_func(val_adr element, val_adr position->value) comparator 0)  \
-        position = next(position);                                            \
-    return put_ ## container(array, position, element);                              \
-}
-
-#define CAG_DEF_INSERTP_ORDER_ARRAY(function, container, iterator_type,       \
-                                    type, prev, next, end,                    \
-                                    cmp_func, val_adr, comparator,            \
-                                    alloc_style, alloc_func)                  \
-CAG_DEC_INSERTP_ARRAY(function, container, iterator_type, type)               \
-{                                                                             \
-    while (it != end(array) &&                                                \
-            cmp_func(val_adr element, val_adr it->value) comparator 0)        \
-        it = next(it);                                                        \
-    return put_ ## container(array, position, element);                              \
-}
-
 /*! \brief Function declaration and definition to prepend an element to an array
    which is a matter of calling the insert function with the begin position.
    By value and address versions provided.
@@ -661,6 +636,8 @@ CAG_DEC_ERASE_ARRAY(function, container, iterator_type)                       \
                          type);                                               \
     CAG_DEC_INSERTP_ARRAY(insertp_ ## container, container, it_ ## container, \
                           type);                                              \
+    CAG_DEC_INSERTP_ARRAY(putp_ ## container, container, it_ ## container, \
+                          type);                                              \
     CAG_DEC_INSERT_ARRAY(rinsert_ ## container, container, rit_ ## container, \
                          type);                                               \
     CAG_DEC_PREPEND_ARRAY(rappend_ ## container, container, rit_ ## container,\
@@ -725,6 +702,8 @@ CAG_DEF_INSERT_ARRAY(put_ ## container, container, it_ ## container,          \
                      type, alloc_style, alloc_func)                           \
 CAG_DEF_INSERTP_ARRAY(insertp_ ## container, container, it_ ## container,     \
                       type, alloc_style, alloc_func)                          \
+CAG_DEF_INSERTP_ARRAY(putp_ ## container, container, it_ ## container,     \
+                      type, alloc_style, alloc_func)                          \
 CAG_DEF_PREPEND_ARRAY(prepend_ ## container, container, it_ ## container,     \
                       type, begin_ ## container, insert_ ## container)        \
 CAG_DEF_PREPENDP_ARRAY(prependp_ ## container, container, it_ ## container,   \
@@ -768,20 +747,18 @@ CAG_DEF_ALL_ARRAY(container, type, alloc_style, alloc_func,                   \
 
 #define CAG_DEC_CMP_ARRAY(container, type)                                    \
     CAG_DEC_ARRAY(container, type);                                           \
-    CAG_DEC_INSERT_ARRAY(insert_gt_ ## container, container,                  \
-                         it_ ## container, type);                             \
-    CAG_DEC_INSERT_ARRAY(insert_gteq_ ## container, container,                \
-                         it_ ## container, type);                             \
-    CAG_DEC_INSERT_ARRAY(insert_lt_ ## container, container,                  \
-                         it_ ## container, type);                             \
-    CAG_DEC_INSERT_ARRAY(insert_lteq_ ## container, container,                \
-                         it_ ## container, type);                             \
     CAG_DEC_STABLE_SORT(stable_sort_ ## container,                            \
                         it_ ## container);                                    \
     CAG_DEC_STABLE_SORT(rstable_sort_ ## container,                           \
                         rit_ ## container);                                   \
     CAG_DEC_CMP_REORDERABLE(container, type);                                 \
     CAG_DEC_CMP_RANDOMACCESS(container, type)
+
+/*! \brief Identical to CAG_DEC_CMP_ARRAY but provided for users who
+    want consistent names.
+*/
+
+#define CAG_DEC_CMPP_ARRAY CAG_DEC_CMP_ARRAY
 
 /* \brief Define functions for an array that must remain ordered and has a
    comparison function.
@@ -792,46 +769,6 @@ CAG_DEF_ALL_ARRAY(container, type, alloc_style, alloc_func,                   \
                               free_func)                                      \
 CAG_DEF_ALL_ARRAY(container, type,                                            \
                   alloc_style, alloc_func, free_func, val_adr);               \
-CAG_DEF_INSERT_ORDER_ARRAY(insert_gt_ ## container, container,                \
-                           it_ ## container, type,                            \
-                           prev_ ## container, next_ ## container,            \
-                           end_ ## container, cmp_func, val_adr, >,           \
-                           alloc_style, alloc_func)                           \
-CAG_DEF_INSERT_ORDER_ARRAY(insert_lt_ ## container, container,                \
-                           it_ ## container, type,                            \
-                           prev_ ## container, next_ ## container,            \
-                           end_ ## container, cmp_func, val_adr, <,           \
-                           alloc_style, alloc_func)                           \
-CAG_DEF_INSERT_ORDER_ARRAY(insert_gteq_ ## container, container,              \
-                           it_ ## container, type,                            \
-                           prev_ ## container, next_ ## container,            \
-                           end_ ## container, cmp_func, val_adr, >=,          \
-                           alloc_style, alloc_func)                           \
-CAG_DEF_INSERT_ORDER_ARRAY(insert_lteq_ ## container, container,              \
-                           it_ ## container, type,                            \
-                           prev_ ## container, next_ ## container,            \
-                           end_ ## container, cmp_func, val_adr, <=,          \
-                           alloc_style, alloc_func)                           \
-CAG_DEF_INSERT_ORDER_ARRAY(insertp_gt_ ## container, container,               \
-                           it_ ## container, type,                            \
-                           prev_ ## container, next_ ## container,            \
-                           end_ ## container, cmp_func, val_adr, >,           \
-                           alloc_style, alloc_func)                           \
-CAG_DEF_INSERT_ORDER_ARRAY(insertp_lt_ ## container, container,               \
-                           it_ ## container, type,                            \
-                           prev_ ## container, next_ ## container,            \
-                           end_ ## container, cmp_func, val_adr, <,           \
-                           alloc_style, alloc_func)                           \
-CAG_DEF_INSERT_ORDER_ARRAY(insertp_gteq_ ## container, container,             \
-                           it_ ## container, type,                            \
-                           prev_ ## container, next_ ## container,            \
-                           end_ ## container, cmp_func, val_adr, >=,          \
-                           alloc_style, alloc_func)                           \
-CAG_DEF_INSERT_ORDER_ARRAY(insertp_lteq_ ## container, container,             \
-                           it_ ## container, type,                            \
-                           prev_ ## container, next_ ## container,            \
-                           end_ ## container, cmp_func, val_adr, <=,          \
-                           alloc_style, alloc_func)                           \
 CAG_DEF_STABLE_SORT(stable_sort_ ## container,                                \
                     container, it_ ## container,                              \
                     new_ ## container, free_ ## container,                    \
@@ -867,11 +804,29 @@ typedef container CAG_P_CMB(container ## _cmp,  __LINE__)
                           CAG_NO_ALLOC_STYLE, CAG_NO_ALLOC_FUNC,              \
                           CAG_NO_FREE_FUNC)
 
+/*! \brief Same as CAG_DEF_CMP_ARRAY but cmp_fun takes parameters by address. */
+
+#define CAG_DEF_CMPP_ARRAY(container, type, cmp_func)                          \
+    CAG_DEF_ALL_CMP_ARRAY(container, type, cmp_func, CAG_BYADR,               \
+                          CAG_NO_ALLOC_STYLE, CAG_NO_ALLOC_FUNC,              \
+                          CAG_NO_FREE_FUNC)
+
 /*! \brief Analogous to CAG_DEC_DEF_ARRAY but for ordered arrays. */
 
 #define CAG_DEC_DEF_CMP_ARRAY(container, type, cmp_func)                      \
     CAG_DEC_CMP_ARRAY(container, type);                                       \
     CAG_DEF_CMP_ARRAY(container, type, cmp_func)
+
+/*! \brief Same as CAG_DEC_DEF_CMP_ARRAY but cmp_func takes its parameters
+    by address.
+*/
+
+#define CAG_DEC_DEF_CMPP_ARRAY(container, type, cmp_func)                      \
+    CAG_DEC_CMPP_ARRAY(container, type);                                       \
+    CAG_DEF_CMPP_ARRAY(container, type, cmp_func)
+
+/*! \brief Analogous to CAG_DEC_DEF_ALL_ARRAY but for ordered arrays. */
+
 
 #define CAG_DEC_DEF_ALL_CMP_ARRAY(container, type, cmp_func,                  \
                                   val_adr, alloc_style, alloc_func,           \

@@ -887,6 +887,7 @@ CAG_DEC_CHECK_INTEGRITY_TREE(function, container, iterator_type)              \
     CAG_DEC_BIDIRECTIONAL(container, type);                                   \
     CAG_DEC_CMP_BIDIRECTIONAL(container, type)
 
+
 /*! \brief Definitions of tree functions. */
 
 #define CAG_DEF_ALL_CMP_TREE(container, type, cmp_func, val_adr,              \
@@ -960,6 +961,19 @@ CAG_DEF_ALL_CMP_TREE(container, type, cmp_func, val_adr,             \
                          CAG_NO_ALLOC_STYLE, CAG_NO_ALLOC_FUNC, CAG_NO_FREE_FUNC)
 
 
+/*! \brief Identical to CAG_DEC_CMP_TREE but provided for users who
+    want consistent names.
+*/
+
+#define CAG_DEC_CMPP_TREE CAG_DEC_CMP_TREE
+
+
+/*! \brief Same as CAG_DEF_CMP_TREE but cmp_fun takes parameters by address. */
+
+#define CAG_DEF_CMPP_TREE(container, type, cmp_func)                           \
+    CAG_DEF_ALL_CMP_TREE(container, type, cmp_func, CAG_BYADR,                \
+                         CAG_NO_ALLOC_STYLE, CAG_NO_ALLOC_FUNC, CAG_NO_FREE_FUNC)
+
 /*! \brief Used to declare and define a tree in one macro.  Useful
    usually for small programs where the container will only be used in one
    module.
@@ -968,5 +982,10 @@ CAG_DEF_ALL_CMP_TREE(container, type, cmp_func, val_adr,             \
 #define CAG_DEC_DEF_CMP_TREE(container, type, cmp_func)                       \
     CAG_DEC_CMP_TREE(container, type);                                        \
     CAG_DEF_CMP_TREE(container, type, cmp_func)
+
+#define CAG_DEC_DEF_CMPP_TREE(container, type, cmp_func)                       \
+    CAG_DEC_CMPP_TREE(container, type);                                        \
+    CAG_DEF_CMPP_TREE(container, type, cmp_func)
+
 
 #endif /* CAG_TREE_H */

@@ -1360,19 +1360,27 @@ Defines the functions for an orderable CAGL array container type. Usually used i
 
 - type: Type of the container's elements.
 
-- cmp_func: Comparison function for ordering the container. It is of the form:
+- cmp_func: Comparison function for ordering the container. It is of one of
+  these forms:
 
     ```C
     int cmp_func(type e1, type e2);
     ```
 
+    ```C
+    int cmp_func(type *e1, type *e2);
+    ```
+
+  If the first form is used then val_adr should be set to CAG_BYVAL. For the
+  second form it should be set to CAG_BYADR.
+
 - val_adr: Indicates whether the comparison function, *cmp_func*, allocation function, *alloc_func* and *free_func*, take their parameters by address or by value. All three functions have to either take all their parameters by address or by value.
 
-	For an *alloc_func* of *CAG_NO_ALLOC_FUNC* it makes no difference what this is set to because it isn't used.
+    For an *alloc_func* of *CAG_NO_ALLOC_FUNC* it makes no difference what this is set to because it isn't used.
 
     For an *alloc_func* of *malloc* or *CAG_ALLOC* this should usually be set to *CAG_BYVAL*. This might seem counter-intuitive because *malloc* and *free* take void parameters by address. But if the element of the container is a pointer, you want to pass it as is to *malloc* and *free*; you don't want to pass it by the address of the pointer.
 
-	If the element is a container and  *alloc_func* is a *new_from_[container]* function, then this should be set CAG_BYADR.
+    If the element is a container and  *alloc_func* is a *new_from_[container]* function, then this should be set CAG_BYADR.
 
 	If *alloc_func* and *free_func* are custom written then it is up to the programmer, but *alloc_func* and *free_func* both have to use the same parameter passing method. Also if the container has a *cmp_func*, it too must have the same parameter passing method.
 
@@ -1390,22 +1398,21 @@ Defines the functions for an orderable CAGL array container type. Usually used i
 
     For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_FREE_FUNC*.
 
-	For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to free or CAG_FREE (which is by default equal to free).
+    For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to free or CAG_FREE (which is by default equal to free).
 
-	For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *free_[container]* function.
+    For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *free_[container]* function.
 
 ## Array structs and functions
 
 In this reference guide *C* is used to refer to a container type and *T* is used to refer to an element type. In code, C and T must be substituted with the names of the container and element type names respectively.
 
-The functions below are documented in [Functions][#Functions].
+The functions below are documented in [Functions](#functions).
 
 Only use the functions, structs and typedefs documented here in your array containers. If you notice that a function, struct or typedef that is declared in the code is omitted here, then it is best to assume it is experimental or private and subject to change in future versions of CAGL (including bug fixes) without warning or explanation.
 
+### Iterator structs and typedefs {-}
 
 ```C
-
-/* Iterators */
 struct iterator_C {
     T value;
 };
@@ -1416,18 +1423,27 @@ typedef struct iterator_C iterator_C;
 typedef struct reverse_iterator_C reverse_iterator_C;
 typedef iterator_C *it_C;
 typedef reverse_iterator_C *rit_C;
+```
 
-/* Container struct */
+### Container structs and typedefs {-}
+
+```C
 struct C {
     size_t capacity; /* Treat as read-only */
     ... /* internal variables */
 };
 typedef struct C C;
+```
 
-/***************************/
-/* NEW AND FREE FUNCTIONS. */
-/***************************/
+### New and free functions {-}
 
+There are several functions to create (new) and destroy (free) arrays. Usually users would use *new_C* and *free_C*.
+
+Every CAGL container must have a *new* function executed on it before any other operations. Failure to do this will result in writing to uninitialized or unallocated memory.
+
+Every CAGL container should have a *free* function executed on it when it is no longer needed. Failure to do this will result in memory leaks.
+
+```C
 /* Initialize *array* and return pointer to it. */
 C *new_C(C * array);
 
@@ -1469,11 +1485,11 @@ void free_C(C * array);
    this can be convenient in functions that need to use many containers.
 */
 void free_many_C(int max, C * c1, ...);
+```
 
-/**********************/
-/* ITERATOR FUNCTIONS */
-/**********************/
+### Iterator functions {-}
 
+```C
 /* Set the array to have a minimum number of *size* elements.
    Useful before calling *copy_over*.
 */
@@ -1511,15 +1527,16 @@ rit_C rat_C(rit_C it, const size_t n);
 /* Returns an iterator to the *n*th element of the array. */
 it_C index_C(C * array, size_t n);
 
-/* Return the number of elements from *from* to *to* excluding *to*.
+/* Return the number of elements from *first* to *last* excluding *last*.
    Forward and reverse iterator versions supplied, as well as *all* version
    over entire container. *size_C* is equivalent to *distance_all* but is
    only available for arrays.
-   For arrays, equivalent to: to - from and from - to for forward and reverse
-   iterator versions repectively.
+
+   For arrays, equivalent to: last - first and first - last for forward and
+   reverse iterator versions respectively.
 */
-size_t distance_C(const it_C from, const it_C to);
-size_t rdistance_C(const rit_C from, const rit_C to);
+size_t distance_C(const it_C first, const it_C last);
+size_t rdistance_C(const rit_C first, const rit_C last);
 size_t distance_all_C(const C * c);
 size_t size_C(const C * array);
 
@@ -1554,11 +1571,20 @@ rit_C rbeg_C = rbegin_C;
 */
 it_C end_C(const C * array);
 rit_C rend_C(const C * array);
+```
 
-/*******************************/
-/* ELEMENT INSERTION FUNCTIONS */
-/*******************************/
 
+### Element insertion functions {-}
+
+The most efficient way to insert an element into an array is to append it. This is a constant time operation. Therefore the most efficient functions here are:
+
+- append_C
+- appendp_C
+- rprepend_C
+- rprependp_C
+
+
+```C
 /* Appends *element* to the end of *array*. Versions for passing the element
    by value and by address are provided.
    Returns iterator pointing to the appended element if successful, else NULL.
@@ -1590,9 +1616,11 @@ it_C prependp_C(C * array, T const *element);
 it_C insert_C(C * array, it_C position, T const element);
 it_C insertp_C(C * array, it_C position, T const *element);
 it_C put_C(C * array, it_C position, T const element);
+```
 
-/* ORDERED INSERTIONS */
+#### Ordered insertions {-}
 
+```C
 /* Ordered insertion functions are only available to containers defined with a
    *CMP* macro (i.e. have a user-supplied *cmp_func*), support bidirectional
    iterators and are reorderable.  Currently the only CAGL containers that
@@ -1604,30 +1632,52 @@ it_C put_C(C * array, it_C position, T const element);
 /* Insert *element* at the first position encountered for which a comparison
    is true, starting from *position*.
 
+   These are only defined for reorderable CAGL containers (currently only arrays
+   and doubly linked lists) for which a *cmp_func* has been supplied by the
+   user via a container declaration macro with CMP in it.
+
    By value and address versions are supplied.
 
+   The comparisons are determined by the second name of the function after
+   *insert_* and *insertp_*:
+
+   - gt - the element is inserted at the first position at which it would
+     be  greater than all elements starting at *position*.
+
+   - gteq - the element is inserted at the first position at which it would
+     be  greater than or equal to all elements starting at *position*.
+
+   - lt - the element is inserted at the first position at which it would
+     be  less than all elements starting at *position*.
+
+   - lteq - the element is inserted at the first position at which it would
+     be  less than or equal to all elements starting at *position*.
+
+     Returns an iterator pointing to the element that has been inserted.
 */
 it_C insert_gt_C(C * array, it_C position, T const element);
 it_C insert_gteq_C(C * array, it_C position, T const element);
 it_C insert_lt_C(C * array, it_C position, T const element);
 it_C insert_lteq_C(C * array, it_C position, T const element);
+it_C insertp_gt_C(C * array, it_C position, T const *element);
+it_C insertp_gteq_C(C * array, it_C position, T const *element);
+it_C insertp_lt_C(C * array, it_C position, T const *element);
+it_C insertp_lteq_C(C * array, it_C position, T const *element);
+```
 
+### Element retrieval functions {-}
 
-
-/*******************************/
-/* ELEMENT RETRIEVAL FUNCTIONS */
-/*******************************/
-
+```C
 /* Returns pointer to first element of *array*. */
 T *front_C(const C * array);
 
 /* Returns pointer to last element of array. */
 T *back_C(const C * array);
+```
 
-/************************/
-/* COMPARISON FUNCTIONS */
-/************************/
+### Comparison functions {-}
 
+```C
 /* Comparison functions are only defined for container types declared with a
    definition macro that has CMP in it's name. They make use of the *cmp_func*
    function that the user has supplied.
@@ -1657,13 +1707,20 @@ T *back_C(const C * array);
      first one, then 01 is returned (i.e. the first range is less than the
      second range).
 
+   The reverse iterator versions compare the ranges or containers by moving in
+   opposite directions, i.e. they test to see if the one range is exactly equal
+   to the reverse of the other.
+
    See also *equal_range_C*.
 */
 int cmp_C(const it_C it1, const it_C it2);
 int cmp_range_C(it_C from_1, const it_C to_1, it_C from_2,
 		const it_C to_2);
 int cmp_all_C(const C * c1, const C * c2);
-
+int rcmp_C(const rit_C it1, const it_C it2);
+int rcmp_range_C(rit_C from_1, const rit_C to_1, it_C from_2,
+		 const it_C to_2);
+int rcmp_all_C(const C * c1, const C * c2);
 
 /* Compares the elements in a range by calling the user-supplied
    *cmp_func* function and returning its return value. The comparisons
@@ -1675,14 +1732,19 @@ int cmp_all_C(const C * c1, const C * c2);
    Returns 0 if all calls to *cmp_func* return zero, else returns the first
    non-zero value of cmp_func.
 
+   The reverse iterator versions compare the ranges or containers by moving in
+   opposite directions, i.e. they test to see if the one range is exactly equal
+   to the reverse of the other.
 */
 int equal_range_C(it_C from_1, const it_C to_1, it_C from_2);
 int equal_all_C(const C * c1, const C * c2);
+int requal_range_C(rit_C from_1, const rit_C to_1, it_C from_2);
+int requal_all_C(const C * c1, const C * c2);
+```
 
-/*******************/
-/* ERASE FUNCTIONS */
-/*******************/
+### Erase functions {-}
 
+```C
 /* Erase the element pointed to by *it* from *array*.
 
    Returns iterator pointing to element that will now occupy the space
@@ -1694,92 +1756,101 @@ int equal_all_C(const C * c1, const C * c2);
 */
 it_C erase_C(C * array, it_C it);
 
-/* Erases all elements in the range [from, to).
-   Returns *to*.
+/* Erases all elements in the range [first, last).
+   Returns *last*.
 */
-it_C erase_range_C(C * c, it_C from, it_C to);
+it_C erase_range_C(C * c, it_C first, it_C last);
 
 /* Empties *array*. The size (*distance_all_C*) of *array* will be zero after
    this.
    Returns an iterator equivalent to *end_C(array)*.
 */
 it_C erase_all_C(C * array);
+```
 
-/*************************/
-/* REORDERING OPERATIONS */
-/*************************/
+### Reordering functions {-}
 
-/* SORT */
+#### Sorting {-}
 
-/* Sort the elements [from, to). Only defined for containers with comparison
+```C
+/* Sort the elements [first, last). Only defined for containers with comparison
    functions. Reverse iterator and *all* versions supplied.
    To sort in reverse order, use the *rsort* versions.
    Average efficiency O(n log n). While worst case is O(n^2), it is extremely
    unlikely to occur. Implemented as a highly optimized Quicksort.
 */
-it_C sort_C(it_C from, it_C to);
+it_C sort_C(it_C first, it_C last);
 it_C sort_all_C(C * c);
-rit_C rsort_C(rit_C from, rit_C to);
+rit_C rsort_C(rit_C first, rit_C last);
 rit_C rsort_all_C(C * c);
 
-/* Stable sorts the elements [from, to). In contrast to *sort_C* these functions
-   maintain the same order of elements whose keys are equal.
+/* Stable sorts the elements [first, last). In contrast to *sort_C* these
+   functions maintain the same order of elements whose keys are equal.
+
    Only defined for containers with comparison functions. Reverse iterator and
    *all* versions supplied.
+
    To sort in reverse order, use the *rsort* versions.
    Efficiency is O(n log n). Implemented as a Mergesort.
 */
-it_C stable_sort_C(it_C from, it_C to);
-rit_C rstable_sort_C(rit_C from, rit_C to);
+it_C stable_sort_C(it_C first, it_C last);
+rit_C rstable_sort_C(rit_C first, rit_C last);
 it_C stable_sort_all_C(C * c);
+```
 
+#### Reversing {-}
 
-/* REVERSE */
-
-/* Reverses elements in the range[from, to). *range* and *all* versions
+```C
+/* Reverses elements in the range[first, last). *range* and *all* versions
    supplied.
+
    Returns an iterator to the new first element in the range.
+
    O(n) operation, where n is the size of the range.
 */
-it_C reverse_C(it_C from, it_C to);
+it_C reverse_C(it_C first, it_C last);
 it_C reverse_all_C(C * array);
+```
 
+#### Shuffling {-}
 
-/* SHUFFLE */
-
-/* Shuffles the elements in the range [from, to). *range* and *all* versions
+```C
+/* Shuffles the elements in the range [first, last). *range* and *all* versions
    supplied.
    Returns an iterator to the new first element in the range.
-   O(n) operation, where n is the size of the range.
+
+   Time complexity: This is an O(n) operation, where n is the size of the range.
 */
-it_C random_shuffle_C(const it_C from, it_C to);
+it_C random_shuffle_C(const it_C first, it_C last);
 it_C random_shuffle_all_C(C * c);
+```
 
+### Swap functions {-}
 
-/* SWAP */
-
+```C
 /* Swaps the elements of two iterators.*/
 void swap_C(it_C a, it_C b);
 void rswap_C(rit_C a, rit_C b);
+```
+
+### Copy functions {-}
+
+CAGL supports two types of copying functions. The *copy_over_C* functions are
+similar to the C++ STL *copy* template function.  For these you must have
+sufficient space in the container to which you're copying. On the other hand
+*copy_C* and *copy_all_C* are similar to C++ copy constructors. When they copy,
+they allocate memory for each element in the copied to array.
 
 
-/* COPY */
-
-/* CAGL supports two types of copying functions. The *copy_over_C* functions are
-   similar to the C++ STL *copy* template function.  For these you must have
-   sufficient space in the container to which you're copying. On the other hand
-   *copy_C* and *copy_all_C* are similar to C++ copy constructors. When they
-   copy, they allocate memory for each element in the copied to array.
-*/
-
-/* Copies the elements in the range [from, to) into *c*, which must be
+```C
+/* Copies the elements in the range [first, last) into *c*, which must be
    initialized but is generally empty. Space is allocated for *c*.
 
    The reverse iterator version copies the elements in reverse to *c*.
 
    Returns pointer to *c* upon success, else NULL.
 */
-C *copy_C(it_C from, it_C to, C * c);
+C *copy_C(it_C first, it_C last, C * c);
 C *rcopy_C(rit_C first, rit_C last, C * c);
 
 /* Copies all the elements in *c1* to *c2*,  which must be
@@ -1799,7 +1870,7 @@ C *rcopy_all_C(const C * c1, C * c2);
 */
 int copy_many_C(C * c, ...);
 
-/* Copies the elements in the range [from, to) into *c*, which must be
+/* Copies the elements in the range [first, last) into *c*, which must be
    initialized but is generally empty, for those elements for which *cond_func*
    returns true.
    Space is allocated for *c*.
@@ -1816,97 +1887,124 @@ C *copy_if_C(it_C first, it_C last, C * c, int (*cond_func) (T *, void *),
 C *copy_if_all_C(const C * c1, C * c2, int (*cond_func) (T *, void *),
 		 void *data);
 
-/* Copies elements in the range [from, to) over result for as many elements
-   as there are from *from* to *to*.
+/* Copies elements in the range [first, last) over result for as many elements
+   as there are from *first* to *last*.
    There must be sufficient space in the remainder of the container to which
    *result* points.
 */
-it_C copy_over_C(it_C from, const it_C to, it_C result);
+it_C copy_over_C(it_C first, const it_C last, it_C result);
+```
 
-/*************/
-/* SEARCHING */
-/*************/
+### Searching {-}
 
-/* Linear search for *element*, which is passed by value,
-   in the range [from, to).
+#### Linear search {-}
+
+```C
+/* Linear search for *element* in the range [first, last).
+
+   This differs from the *search_C* functions in that these are available to all
+   containers, but in contrast to the *search_C* functions, a *cmp_func*
+   function must be passed as a parameter to these functions.
 
    By value, by address, *all*, forward and reverse iterator versions supplied.
 
    The *cmp_func* function, which is passed as a parameter, should return 0 if
-   its two parameters are equal.
+   its two parameters are equal. It takes both its operands by address.
 
-   Returns an iterator pointing to an element if found, else *to*.  O(n)
-   efficiency.
+   Returns an iterator pointing to an element if found, else *to*.
+
+   Time complexity: O(n) where n is the number of elements in the range.
 */
-it_C find_C(it_C from, const it_C to, const T element,
+it_C find_C(it_C first, const it_C last, const T element,
 	    int (*cmp_func) (const T *, const T *));
-it_C findp_C(it_C from, const it_C to, const T * element,
+it_C findp_C(it_C first, const it_C last, const T * element,
 	     int (*cmp_func) (const T *, const T *));
 it_C find_all_C(const C * c, const T element,
 		int (*cmp_func) (const T *, const T *));
 it_C findp_all_C(C * c, const T * element,
 		 int (*cmp_func) (const T *, const T *));
-rit_C rfind_C(rit_C from, const rit_C to, const T element,
+rit_C rfind_C(rit_C first, const rit_C last, const T element,
 	      int (*cmp_func) (const T *, const T *));
-rit_C rfindp_C(rit_C from, const rit_C to, const T * element,
+rit_C rfindp_C(rit_C first, const rit_C last, const T * element,
 	       int (*cmp_func) (const T *, const T *));
 
+/* Linear search for *element* in the range [first, last).
 
+   This differs from the *find_C* functions in that these are only available
+   to types declared with container declaration macros that have *CMP* in them.
+   They make use of the supplied *cmp_func* function.
 
-it_C insert_gt_C(C * array, it_C position, T const element);
-it_C insert_gteq_C(C * array, it_C position, T const element);
-it_C insert_lt_C(C * array, it_C position, T const element);
-it_C insert_lteq_C(C * array, it_C position, T const element);
+   By value, by address, *all*, forward and reverse iterator versions supplied.
 
+   Returns an iterator pointing to an element if found, else *to*.
+   In the *all* versions, if the keys are not *end_C(c)* is returned.
 
-
+   Time complexity: O(n) where n is the number of elements in the range.
+*/
 it_C search_C(it_C first, const it_C last, T const key);
 it_C searchp_C(it_C first, const it_C last, T const *key);
-it_C search_all_C(C * c, T d);
-it_C searchp_all_C(C * c, T * d);
-int rcmp_C(const rit_C it1, const it_C it2);
-int rcmp_range_C(rit_C from_1, const rit_C to_1, it_C from_2,
-		 const it_C to_2);
-int rcmp_all_C(const C * c1, const C * c2);
-int requal_range_C(rit_C from_1, const rit_C to_1, it_C from_2);
-int requal_all_C(const C * c1, const C * c2);
 rit_C rsearch_C(rit_C first, const rit_C last, T const key);
 rit_C rsearchp_C(rit_C first, const rit_C last, T const *key);
+it_C search_all_C(C * c, T d);
+it_C searchp_all_C(C * c, T * d);
+```
+
+#### Binary search {-}
+
+```C
+/* Binary search for the lower bound of *key*. The lower bound is the first
+   element less than or equal to the key.
+
+   These are only available to ordered types declared with container declaration
+   macros that have *CMP* in them. They make use of the supplied *cmp_func*
+   function. Currently these functions are supported for arrays, doubly-linked
+   lists and trees.
+
+   Returns an iterator pointing to the lower bound element. If all the elements
+   in the range compare less than *element*, the function returns *last* (as
+   with the C++ STL).
+*/
 it_C lower_bound_C(it_C first, it_C last, T const key);
-rit_C lower_rbound_C(rit_C first, rit_C last, T const key);
 it_C lower_boundp_C(it_C first, it_C last, T const *key);
-rit_C lower_rboundp_C(rit_C first, rit_C last, T const *key);
 it_C lower_bound_all_C(C * c, T d);
 it_C lower_boundp_all_C(C * c, T * d);
+
+/* Binary search for an element equal to *key*.
+
+   These are only available to ordered types declared with container declaration
+   macros that have *CMP* in them. They make use of the supplied *cmp_func*
+   function. Currently these functions are supported for arrays, doubly-linked
+   lists and trees.
+
+   Returns true if the element is found else false.
+*/
 int binary_search_C(it_C first, it_C last, T const key);
-int binary_rsearch_C(rit_C first, rit_C last, T const key);
 int binary_searchp_C(it_C first, it_C last, T const *key);
-int binary_rsearchp_C(rit_C first, rit_C last, T const *key);
 int binary_search_all_C(C * c, T d);
 int binary_searchp_all_C(C * c, T * d);
 ```
 
-### Singly-linked lists
+## Singly-linked lists
 
-### Doubly-linked lists
+## Doubly-linked lists
 
-### Hash tables
+## Hash tables
 
-### Balanced binary trees
+## Balanced binary trees
 
-### Iterators
+## Iterators
 
-#### Forward {-}
+### Forward {-}
 
-#### Bidirectional {-}
+### Bidirectional {-}
 
-#### Reorderable {-}
+### Reorderable {-}
 
-#### Random access {-}
+### Random access {-}
 
 # Useful macros
 
-### Allocation Style Macros
+## Allocation Style Macros
 
 Containers need to know how to allocate memory for their elements. A parameter called *alloc_style* is used by the container definitions to determine this. Several predefined *allocation style* macros are provided.
 
@@ -1924,7 +2022,7 @@ alloc_func
 free_code
   ~ Function for freeing the memory of allocated for a container element. This function will only be called in certain cases where an error occurred after memory for an element has been successfully allocated, but must now be freed to undo the effects of the error.
 
-#### CAG_NO_ALLOC_STYLE {-}
+### CAG_NO_ALLOC_STYLE {-}
 
 ```C
 #define CAG_SIMPLE_ALLOC_STYLE(to, from, alloc_func, free_code)               \
@@ -1933,7 +2031,7 @@ free_code
 
 This allocation is typically used for containers that do not manage the memory of their elements or for elements that are primitive types.
 
-#### CAG_SIMPLE_ALLOC_STYLE {-}
+### CAG_SIMPLE_ALLOC_STYLE {-}
 
 ```C
 #define CAG_SIMPLE_ALLOC_STYLE(to, from, alloc_func, free_code)               \
@@ -1942,7 +2040,7 @@ This allocation is typically used for containers that do not manage the memory o
 
 This allocation style is typically used for containers whose elements are pointers and need to be managed, e.g. elements that are C strings (char *).
 
-#### CAG_STRUCT_ALLOC_STYLE {-}
+### CAG_STRUCT_ALLOC_STYLE {-}
 
 ```C
 #define CAG_STRUCT_ALLOC_STYLE(to, from, alloc_func, free_code)               \
@@ -2252,16 +2350,13 @@ This document is released under the GNU Free Documentation License version 1.3. 
 CAGL has been written by Nathan Geffen. (nathangeffen at gmail.com).
 
 
-# Appendix: Detailed function blueprint documentation
-
-
-# Detailed function documentation
+# Appendix: Detailed function blueprint documentation {#functions} {-}
 
 **WORK IN PROGRESS ON THIS PART OF THE MANUAL**
 
 This part of the manual is going to be a long work in progress. The aim is to document every CAGL function blueprint with the following: syntax, description, parameters, data races, time and space complexity and an example.
 
-## new {#array-new}
+## new {#array-new -}
 
 ### Syntax {-}
 

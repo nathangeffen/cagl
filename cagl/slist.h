@@ -781,6 +781,13 @@ typedef container CAG_P_CMB(container ## _cmp_1,  __LINE__)
     CAG_DEC_CMP_FORWARD(container, type)
 
 
+/*! \brief Identical to CAG_DEC_CMP_SLIST but provided for users who
+    want consistent names.
+*/
+
+#define CAG_DEC_CMPP_SLIST CAG_DEC_CMP_SLIST
+
+
 /*! \brief Define ordered slist functions. */
 
 #define CAG_DEF_ALL_CMP_SLIST(container, type, cmp_func, val_adr,             \
@@ -819,11 +826,27 @@ typedef container CAG_P_CMB(container ## _cmp_2,  __LINE__)
                           CAG_NO_ALLOC_STYLE, CAG_NO_ALLOC_FUNC,              \
                           CAG_NO_FREE_FUNC)
 
-/*! \brief Analogous to CAG_DEC_DEF_DLIST but for ordered lists. */
+/*! \brief Same as CAG_DEF_CMP_SLIST but cmp_func takes parameters by address. */
+
+#define CAG_DEF_CMPP_SLIST(container, type, cmp_func)                          \
+    CAG_DEF_ALL_CMP_SLIST(container, type, cmp_func, CAG_BYADR,               \
+                          CAG_NO_ALLOC_STYLE, CAG_NO_ALLOC_FUNC,              \
+                          CAG_NO_FREE_FUNC)
+
+
+/*! \brief Analogous to CAG_DEC_DEF_SLIST but for ordered lists. */
 
 #define CAG_DEC_DEF_CMP_SLIST(container, type, cmp_func)                      \
     CAG_DEC_CMP_SLIST(container, type);                                       \
     CAG_DEF_CMP_SLIST(container, type, cmp_func)
+
+/*! \brief Analogous to CAG_DEC_DEF_CMP_SLIST but cmp_func takes its parameters
+    by address.
+*/
+
+#define CAG_DEC_DEF_CMPP_SLIST(container, type, cmp_func)                      \
+    CAG_DEC_CMPP_SLIST(container, type);                                       \
+    CAG_DEF_CMPP_SLIST(container, type, cmp_func)
 
 
 #endif                          /* CAG_SLIST */

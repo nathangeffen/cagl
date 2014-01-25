@@ -335,22 +335,6 @@ CAG_DEC_INSERTP_DLIST(function, container, iterator_type, type)               \
     return node;                                                              \
 }
 
-#define CAG_DEF_INSERT_ORDER_DLIST(function, container,                       \
-                                   iterator_type, type,                       \
-                                   prev, next, cmp_func, val_adr, comparator, \
-                                   alloc_style, alloc_func)                   \
-CAG_DEC_INSERT_DLIST(function, container, iterator_type,                      \
-                     type)                                                    \
-{                                                                             \
-    iterator_type node;                                                       \
-    while (it->next != NULL &&                                                \
-            cmp_func(val_adr element, val_adr it->value) comparator 0)        \
-        it = it->next;                                                        \
-    _CAG_ALLOC_INSERT_DLIST(it, node, prev, next,                             \
-                            element, alloc_style, alloc_func);                \
-    return node;                                                              \
-}
-
 #define CAG_DEF_INSERTP_ORDER_DLIST(function, container,                      \
                                     iterator_type, type,                      \
                                     prev, next, cmp_func, val_adr, comparator,\
@@ -367,7 +351,7 @@ CAG_DEC_INSERTP_DLIST(function, container, iterator_type,                     \
     return node;                                                              \
 }
 
-/*! \brief Function declaration and definition for *put*. */
+/*! \brief Function declaration and definition for *put* and putp. */
 
 #define CAG_DEC_PUT_DLIST(function, container, iterator_type, type)           \
     iterator_type function(container *dlist, iterator_type it,                \
@@ -380,6 +364,19 @@ CAG_DEC_INSERTP_DLIST(function, container, iterator_type,                     \
         assert(dlist);                                                        \
         return insert_ ## container(it, element);                             \
     }
+
+#define CAG_DEC_PUTP_DLIST(function, container, iterator_type, type)           \
+    iterator_type function(container *dlist, iterator_type it,                \
+                           type const *element)
+
+
+#define CAG_DEF_PUTP_DLIST(function, container, iterator_type, type)           \
+    CAG_DEC_PUTP_DLIST(function, container, iterator_type, type)               \
+    {                                                                         \
+        assert(dlist);                                                        \
+        return insertp_ ## container(it, element);                             \
+    }
+
 
 /*! \brief Macros and function declaration and definitions for appending
     and prepending to list. By value and address versions supplied.
@@ -555,6 +552,8 @@ CAG_DEC_ERASE_DLIST(function, container, iterator_type)                       \
                           it_ ## container, type);                            \
     CAG_DEC_PUT_DLIST(put_ ## container, container,                           \
                       it_ ## container, type);                                \
+    CAG_DEC_PUTP_DLIST(putp_ ## container, container,                           \
+                       it_ ## container, type);                                \
     CAG_DEC_ERASE_DLIST(erase_ ## container, container,                       \
                         it_ ## container);                                    \
     CAG_DEC_ERASE_RANGE(erase_range_ ## container, container,                 \
@@ -624,6 +623,8 @@ CAG_DEF_INSERTP_DLIST(insertp_ ## container, container,                       \
                       alloc_style, alloc_func)                                \
 CAG_DEF_PUT_DLIST(put_ ## container, container,                               \
                   it_ ## container, type)                                     \
+CAG_DEF_PUTP_DLIST(putp_ ## container, container,                               \
+                   it_ ## container, type)                                     \
 CAG_DEF_ERASE_DLIST(erase_ ## container, container,                           \
                     it_ ## container, prev, next, free_func, val_adr)         \
 CAG_DEF_ERASE_RANGE(erase_range_ ## container, container,                     \
@@ -655,28 +656,19 @@ CAG_DEF_ALL_DLIST(container, type, alloc_style, alloc_func,                   \
 
 #define CAG_DEC_CMP_DLIST(container, type)                                    \
     CAG_DEC_DLIST(container, type);                                           \
-    CAG_DEC_INSERT_DLIST(insert_gt_ ## container, container,                  \
-                         it_ ## container, type);                             \
-    CAG_DEC_INSERT_DLIST(insert_gteq_ ## container, container,                \
-                         it_ ## container, type);                             \
-    CAG_DEC_INSERT_DLIST(insert_lt_ ## container, container,                  \
-                         it_ ## container, type);                             \
-    CAG_DEC_INSERT_DLIST(insert_lteq_ ## container, container,                \
-                         it_ ## container, type);                             \
-    CAG_DEC_INSERTP_DLIST(insertp_gt_ ## container, container,                \
-                          it_ ## container, type);                            \
-    CAG_DEC_INSERTP_DLIST(insertp_gteq_ ## container, container,              \
-                          it_ ## container, type);                            \
-    CAG_DEC_INSERTP_DLIST(insertp_lt_ ## container, container,                \
-                          it_ ## container, type);                            \
-    CAG_DEC_INSERTP_DLIST(insertp_lteq_ ## container, container,              \
-                          it_ ## container, type);                            \
     CAG_DEC_STABLE_SORT(stable_sort_ ## container,                            \
                         it_ ## container);                                    \
     CAG_DEC_STABLE_SORT(rstable_sort_ ## container,                           \
                         rit_ ## container);                                   \
     CAG_DEC_CMP_REORDERABLE(container, type);                                 \
     CAG_DEC_CMP_BIDIRECTIONAL(container, type)
+
+/*! \brief Identical to CAG_DEC_CMP_DLIST but provided for users who
+    want consistent names.
+*/
+
+#define CAG_DEC_CMPP_DLIST CAG_DEC_CMP_DLIST
+
 
 /* \brief Define functions for a dlist that must remain ordered and has a
    comparison function.
@@ -686,38 +678,6 @@ CAG_DEF_ALL_DLIST(container, type, alloc_style, alloc_func,                   \
                               alloc_style, alloc_func, free_func)             \
 CAG_DEF_ALL_DLIST(container, type,                                            \
                   alloc_style, alloc_func, free_func, val_adr);               \
-CAG_DEF_INSERT_ORDER_DLIST(insert_gt_ ## container, container,                \
-                           it_ ## container, type,                            \
-                           prev, next, cmp_func, val_adr, >,                  \
-                           alloc_style, alloc_func)                           \
-CAG_DEF_INSERT_ORDER_DLIST(insert_lt_ ## container, container,                \
-                           it_ ## container, type,                            \
-                           prev, next, cmp_func, val_adr, <,                  \
-                           alloc_style, alloc_func)                           \
-CAG_DEF_INSERT_ORDER_DLIST(insert_gteq_ ## container, container,              \
-                           it_ ## container, type,                            \
-                           prev, next, cmp_func, val_adr, >=,                 \
-                           alloc_style, alloc_func)                           \
-CAG_DEF_INSERT_ORDER_DLIST(insert_lteq_ ## container, container,              \
-                           it_ ## container, type,                            \
-                           prev, next, cmp_func, val_adr, <=,                 \
-                           alloc_style, alloc_func)                           \
-CAG_DEF_INSERTP_ORDER_DLIST(insertp_gt_ ## container, container,              \
-                            it_ ## container, type,                           \
-                            prev, next, cmp_func, val_adr, >,                 \
-                            alloc_style, alloc_func)                          \
-CAG_DEF_INSERTP_ORDER_DLIST(insertp_lt_ ## container, container,              \
-                            it_ ## container, type,                           \
-                            prev, next, cmp_func, val_adr, <,                 \
-                            alloc_style, alloc_func)                          \
-CAG_DEF_INSERTP_ORDER_DLIST(insertp_gteq_ ## container, container,            \
-                            it_ ## container, type,                           \
-                            prev, next, cmp_func, val_adr, >=,                \
-                            alloc_style, alloc_func)                          \
-CAG_DEF_INSERTP_ORDER_DLIST(insertp_lteq_ ## container, container,            \
-                            it_ ## container, type,                           \
-                            prev, next, cmp_func, val_adr, <=,                \
-                            alloc_style, alloc_func)                          \
 CAG_DEF_STABLE_SORT(stable_sort_ ## container,                                \
                     container, it_ ## container,                              \
                     new_ ## container, free_ ## container,                    \
@@ -755,10 +715,26 @@ typedef container CAG_P_CMB(container ## _cmp,  __LINE__)
                           CAG_NO_ALLOC_STYLE, CAG_NO_ALLOC_FUNC,              \
                           CAG_NO_FREE_FUNC)
 
+/*! \brief Same as CAG_DEF_CMP_DLIST but cmp_func takes parameters by address. */
+
+#define CAG_DEF_CMPP_DLIST(container, type, cmp_func)                          \
+    CAG_DEF_ALL_CMP_DLIST(container, type, cmp_func, CAG_BYADR,               \
+                          CAG_NO_ALLOC_STYLE, CAG_NO_ALLOC_FUNC,              \
+                          CAG_NO_FREE_FUNC)
+
+
 /*! \brief Analogous to CAG_DEC_DEF_DLIST but for ordered lists. */
 
 #define CAG_DEC_DEF_CMP_DLIST(container, type, cmp_func)                      \
     CAG_DEC_CMP_DLIST(container, type);                                       \
     CAG_DEF_CMP_DLIST(container, type, cmp_func)
+
+/*! \brief Same as CAG_DEC_DEF_CMP_DLIST but cmp_func takes its parameters
+    by address.
+*/
+
+#define CAG_DEC_DEF_CMPP_DLIST(container, type, cmp_func)                      \
+    CAG_DEC_CMPP_DLIST(container, type);                                       \
+    CAG_DEF_CMPP_DLIST(container, type, cmp_func)
 
 #endif                          /* CAG_DLIST */

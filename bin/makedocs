@@ -1,1 +1,1 @@
-pandoc -s -S -c style.css --toc docs/userguide.md --toc-depth=2 -N --columns=80 -o docs/userguide.html
+pandoc -s -S -c style.css --toc docs/userguide.md --toc-depth=3 -N --columns=80 -o docs/userguide.html

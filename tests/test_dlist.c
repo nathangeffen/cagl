@@ -229,15 +229,15 @@ static void test_insert_order(struct cag_test_series *tests)
 
 	new_complex_list(&l);
 	c.real = 6;
-	insert_gt_complex_list(beg_complex_list(&l), c);
+	insert_gt_complex_list(&l, beg_complex_list(&l), c);
 	c.real = 0;
-	insert_gt_complex_list(beg_complex_list(&l), c);
+	insert_gt_complex_list(&l, beg_complex_list(&l), c);
 	c.real = 4;
-	insert_gt_complex_list(beg_complex_list(&l), c);
+	insert_gt_complex_list(&l, beg_complex_list(&l), c);
 	c.real = 8;
-	insert_gt_complex_list(beg_complex_list(&l), c);
+	insert_gt_complex_list(&l, beg_complex_list(&l), c);
 	c.real = 2;
-	insert_gt_complex_list(beg_complex_list(&l), c);
+	insert_gt_complex_list(&l, beg_complex_list(&l), c);
 	for (it = beg_complex_list(&l); it != end_complex_list(&l);
 	     it = it->next)
 		if (it->value.real < t) {
@@ -249,7 +249,7 @@ static void test_insert_order(struct cag_test_series *tests)
 	CAG_TEST(*tests,  d == 5 && inorder == CAG_TRUE,
 		 "cag_dlist: insert ordered values");
 	c.real = 3.0;
-	it = insert_gt_complex_list(beg_complex_list(&l), c);
+	it = insert_gt_complex_list(&l, beg_complex_list(&l), c);
 	CAG_TEST(*tests, it->prev->value.real == 2.0 &&
 		 it->value.real == 3.0 &&
 		 it->next->value.real == 4.0 &&
@@ -257,14 +257,14 @@ static void test_insert_order(struct cag_test_series *tests)
 				       end_complex_list(&l)) == d+1,
 		 "cag_dlist: insert gt middle");
 	c.real = 20.0;
-	it = insert_gt_complex_list(beg_complex_list(&l), c);
+	it = insert_gt_complex_list(&l, beg_complex_list(&l), c);
 	CAG_TEST(*tests, it->prev->value.real == 8.0 &&
 		 it->value.real == 20.0 &&
 		 distance_complex_list(beg_complex_list(&l),
 				       end_complex_list(&l)) == d+2,
 		 "cag_dlist: insert gt end");
 	c.real = -1.0;
-	it = insert_gt_complex_list(beg_complex_list(&l), c);
+	it = insert_gt_complex_list(&l, beg_complex_list(&l), c);
 	CAG_TEST(*tests, it == beg_complex_list(&l) &&
 		 it->next->value.real == 0.0 &&
 		 it->value.real == -1.0 &&
@@ -273,20 +273,20 @@ static void test_insert_order(struct cag_test_series *tests)
 		 "cag_dlist: insert gt beginning");
 	c.real = -0.5;
 	c.imag = 10.0;
-	it = insert_gt_complex_list(beg_complex_list(&l), c);
+	it = insert_gt_complex_list(&l, beg_complex_list(&l), c);
 	CAG_TEST(*tests, it->prev->value.real == -1.0 &&
 		 it->value.real == -0.5 &&
 		 distance_complex_list(beg_complex_list(&l),
 				       end_complex_list(&l)) == d+4,
 		 "cag_dlist: insert gt one beyond beginning");
 	c.imag = 5.0;
-	it = insert_gt_complex_list(beg_complex_list(&l), c);
+	it = insert_gt_complex_list(&l, beg_complex_list(&l), c);
 	CAG_TEST(*tests, it->prev->value.real == -1.0 &&
 		 it->value.real == -0.5 &&
 		 distance_complex_list(beg_complex_list(&l),
 				       end_complex_list(&l)) == d+5,
 		 "cag_dlist: insert gt duplicate stable");
-	it = insert_gteq_complex_list(beg_complex_list(&l), c);
+	it = insert_gteq_complex_list(&l, beg_complex_list(&l), c);
 	CAG_TEST(*tests, it->prev->value.real == -0.5 &&
 		 it->value.real == -0.5 &&
 		 distance_complex_list(beg_complex_list(&l),
@@ -299,7 +299,7 @@ static void test_insert_order(struct cag_test_series *tests)
 	d = distance_complex_list(beg_complex_list(&l), end_complex_list(&l));
 	c.real = 3.0;
 	c.imag = 1.0;
-	it = insert_lt_complex_list(beg_complex_list(&l), c);
+	it = insert_lt_complex_list(&l, beg_complex_list(&l), c);
 	CAG_TEST(*tests, it->next->value.real == 2.0 &&
 		 it->value.real == 3.0 &&
 		 it->prev->value.real == 4.0 &&
@@ -307,7 +307,7 @@ static void test_insert_order(struct cag_test_series *tests)
 				       end_complex_list(&l)) == d+1,
 		 "cag_dlist: insert lt middle");
 	c.imag = 2.0;
-	it = insert_lt_complex_list(beg_complex_list(&l), c);
+	it = insert_lt_complex_list(&l, beg_complex_list(&l), c);
 	CAG_TEST(*tests, it->next->value.real == 3.0 &&
 		 it->value.real == 3.0 &&
 		 it->prev->value.real == 4.0 &&
@@ -315,7 +315,7 @@ static void test_insert_order(struct cag_test_series *tests)
 				       end_complex_list(&l)) == d+2,
 		 "cag_dlist: insert lt duplicate stable");
 	c.imag = 3.0;
-	it = insert_lteq_complex_list(beg_complex_list(&l), c);
+	it = insert_lteq_complex_list(&l, beg_complex_list(&l), c);
 	CAG_TEST(*tests, it->prev->value.real == 3.0 &&
 		 it->value.real == 3.0 &&
 		 it->next->value.real == 2.0 &&
@@ -336,15 +336,15 @@ static void test_insertp_order(struct cag_test_series *tests)
 
 	new_complex_list(&l);
 	c.real = 6;
-	insertp_gt_complex_list(beg_complex_list(&l), &c);
+	insertp_gt_complex_list(&l, beg_complex_list(&l), &c);
 	c.real = 0;
-	insertp_gt_complex_list(beg_complex_list(&l), &c);
+	insertp_gt_complex_list(&l, beg_complex_list(&l), &c);
 	c.real = 4;
-	insertp_gt_complex_list(beg_complex_list(&l), &c);
+	insertp_gt_complex_list(&l, beg_complex_list(&l), &c);
 	c.real = 8;
-	insertp_gt_complex_list(beg_complex_list(&l), &c);
+	insertp_gt_complex_list(&l, beg_complex_list(&l), &c);
 	c.real = 2;
-	insertp_gt_complex_list(beg_complex_list(&l), &c);
+	insertp_gt_complex_list(&l, beg_complex_list(&l), &c);
 	for (it = beg_complex_list(&l); it != end_complex_list(&l);
 	     it = it->next)
 		if (it->value.real < t) {

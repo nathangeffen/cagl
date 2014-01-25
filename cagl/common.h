@@ -1222,6 +1222,39 @@ CAG_DEC_STABLE_SORT(function, iterator_type)                                  \
     return from;                                                              \
 }
 
+
+/*! \brief Function declaration and definitions used to do an ordered insert.
+   By value and by address versions implemented.
+*/
+
+
+#define CAG_DEC_INSERT_ORDER(function, container, iterator_type, type) \
+    iterator_type function(container *c, iterator_type position, type element)
+
+#define CAG_DEF_INSERT_ORDER(function, container, iterator_type, type, \
+                             cmp_func, val_adr, comparator) \
+CAG_DEC_INSERT_ORDER(function, container, iterator_type, type) \
+{                                                                             \
+    while (position != end_ ## container(c) &&                                          \
+            cmp_func(val_adr element, val_adr position->value) comparator 0)  \
+        position = next_ ## container(position);                                            \
+    return put_ ## container(c, position, element);                       \
+}
+
+#define CAG_DEC_INSERTP_ORDER(function, container, iterator_type, type) \
+    iterator_type function(container *c, iterator_type position, type *element)
+
+#define CAG_DEF_INSERTP_ORDER(function, container, iterator_type,  type, \
+                             cmp_func, val_adr, comparator) \
+CAG_DEC_INSERTP_ORDER(function, container, iterator_type, type) \
+{                                                                             \
+    while (position != end_ ## container(c) &&                                          \
+            cmp_func(val_adr *element, val_adr position->value) comparator 0)  \
+        position = next_ ## container(position);                                            \
+    return putp_ ## container(c, position, element);                       \
+}
+
+
 /*!\brief Pass an entire container to a function that operates on a sequence and
    returns a value. The applying function takes two parameters, the begin and
    end of the sequence.

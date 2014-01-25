@@ -483,6 +483,12 @@ CAG_DEC_FREE_HASH(function, container)                                        \
     CAG_DEC_FREE_HASH(free_ ## container, container);                         \
     CAG_DEC_FORWARD(container, type)
 
+/*! \brief Identical to CAG_DEC_CMP_HASH but provided for users who
+    want consistent names.
+*/
+
+#define CAG_DEC_CMPP_HASH CAG_DEC_CMP_HASH
+
 /*! \brief Definitions of hash functions. */
 
 #define CAG_DEF_CMP_ALL_HASH(container, type, cmp_func, val_adr, hash_func,   \
@@ -534,6 +540,14 @@ typedef container CAG_P_CMB(container,  __LINE__)
                          hash_func, length_func,                              \
                          CAG_NO_ALLOC_STYLE, CAG_ALLOC_DEFAULT, CAG_NO_FREE_FUNC)
 
+/*! \brief Same as CAG_DEF_CMP_HASH but cmp_func takes parameters by address. */
+
+#define CAG_DEF_CMPP_HASH(container, type, cmp_func, hash_func, length_func)   \
+    CAG_DEF_CMP_ALL_HASH(container, type, cmp_func, CAG_BYADR,                \
+                         hash_func, length_func,                              \
+                         CAG_NO_ALLOC_STYLE, CAG_ALLOC_DEFAULT, CAG_NO_FREE_FUNC)
+
+
 /*! \brief Used to declare and define a hash table in one macro.  Useful usually
    for small programs where the container will only be used in one module.
 */
@@ -541,6 +555,14 @@ typedef container CAG_P_CMB(container,  __LINE__)
 #define CAG_DEC_DEF_CMP_HASH(container, type, cmp_func, hash_func, length_func)   \
     CAG_DEC_CMP_HASH(container, type);                                        \
     CAG_DEF_CMP_HASH(container, type, cmp_func, hash_func, length_func)
+
+/*! \brief Same as CAG_DEC_DEF_CMP_ARRAY but cmp_func takes its parameters
+    by address.
+*/
+#define CAG_DEC_DEF_CMPP_HASH(container, type, cmp_func, hash_func, length_func)   \
+    CAG_DEC_CMPP_HASH(container, type);                                        \
+    CAG_DEF_CMPP_HASH(container, type, cmp_func, hash_func, length_func)
+
 
 /*! \brief Declare and define macros for a hash table whose elements are structs
    composed of two strings.  This is a common use-case, e.g. for a dictionary
