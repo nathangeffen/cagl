@@ -1,5 +1,7 @@
 #!/bin/sh
 
+## Syntax: makefunclist file
+
 ## Parse CAGL declaration functions and generate function list
 ## and function description templates.
 

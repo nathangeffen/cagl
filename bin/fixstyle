@@ -1,0 +1,18 @@
+#!/bin/sh
+
+## Syntax: fixstyle [C include files]
+
+## Formats C include files according to CAGL style.
+
+set -e
+
+suffix=$(date +%Y%m%d%H%M)
+
+for file in "$@"
+do
+    cp $file $file.$suffix
+    astyle -A3 --convert-tabs -w $file
+    python3 bin/slashafter.py < $file > tmp_$suffix.h
+    cp tmp_$suffix.h $file
+    rm tmp_$suffix.h
+done

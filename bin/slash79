@@ -1,6 +1,0 @@
-for file in "$@"
-do
-    astyle -A3 --convert-tabs -w $file
-    python3 slash79.py < $file > tmp123.h
-    cp tmp123.h $file
-done
