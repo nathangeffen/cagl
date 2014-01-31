@@ -21,11 +21,11 @@
 
 #define CAG_SAFER 1
 
-CAG_DEC_DEF_CMP_DLIST(ilist, int, CAG_CMP_DEFAULT);
+CAG_DEC_DEF_CMP_DLIST(ilist, int, CAG_CMP_PRIMITIVE);
 CAG_DEC_DEF_SLIST(islist, int);
 CAG_DEC_DEF_ARRAY(iarr, int);
-CAG_DEC_DEF_CMP_TREE(itree, int, CAG_CMP_DEFAULT);
-CAG_DEC_DEF_CMP_HASH(ihash, int, CAG_CMP_DEFAULT, CAG_INT_HASH, sizeof);
+CAG_DEC_DEF_CMP_TREE(itree, int, CAG_CMP_PRIMITIVE);
+CAG_DEC_DEF_CMP_HASH(ihash, int, CAG_CMP_PRIMITIVE, CAG_INT_HASH, sizeof);
 
 
 CAG_DEC_ARRAY(adj_list, ilist);
@@ -325,6 +325,39 @@ static void test_lat(struct cag_test_series *tests)
 	free_lat(&l);
 }
 
+void test_copy_over_macro(struct cag_test_series *tests)
+{
+	islist list;
+	iarr arr;
+	it_islist it1;
+	it_iarr it2;
+	int i, failures;
+
+	new_iarr(&arr);
+	new_islist(&list);
+
+	for (i = 0; i < 10; ++i)
+		append_iarr(&arr,i);
+
+	i = 0;
+	set_exact_size_islist(&list, 10);
+	CAG_COPY_OVER(iarr, &arr, islist, &list);
+	CAG_TEST(*tests, distance_all_islist(&list) == distance_all_iarr(&arr),
+		 "cag_compound: Copy over results in same size containers.");
+
+	failures = 0;
+	for (it1 = beg_islist(&list), it2 = beg_iarr(&arr);
+	     it1 != end_islist(&list);
+	     it1 = next_islist(it1), it2 = next_iarr(it2))
+		if (it1->value != it2->value)
+			++failures;
+	CAG_TEST(*tests, failures == 0,
+		 "cag_compound: Copied list identical to copied from array.");
+
+	free_islist(&list);
+	free_iarr(&arr);
+}
+
 void test_compound(struct cag_test_series *tests)
 {
 	test_adj_list(tests);
@@ -333,6 +366,7 @@ void test_compound(struct cag_test_series *tests)
 	test_adj_tree(tests);
 	test_adj_hash(tests);
 	test_lat(tests);
+	test_copy_over_macro(tests);
 }
 
 CAG_DEF_ALL_ARRAY(adj_list, ilist, CAG_STRUCT_ALLOC_STYLE,

@@ -307,7 +307,7 @@ CAG_DEC_SET_EXACT_SIZE_ARRAY(function, container, iterator_type) \
 /*! \brief Macro to sort the elements of any array.
 */
 
-#define CAG_SORT_ARRAY_DEFAULT(type, from, to, cmp_func) \
+#define CAG_SORT_ARRAY(type, from, to, cmp_func) \
     CAG_SORT(type *, \
              type, \
              cmp_func, \
@@ -652,7 +652,7 @@ CAG_DEC_ERASE_ARRAY(function, container, iterator_type) \
     CAG_DEC_FREE_ARRAY(free_ ## container, container); \
     CAG_DEC_REORDERABLE(container, type); \
     CAG_DEC_RANDOMACCESS(container, type) \
-     
+
 
 /*! \brief Definitions of array functions. */
 

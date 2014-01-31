@@ -1147,7 +1147,7 @@ void test_stable_sort_macro(struct cag_test_series *tests)
 			beg_ilist, end_ilist,
 			next_ilist, at_ilist,
 			distance_ilist, appendp_ilist,
-			CAG_CMP_DEFAULT, CAG_BYADR);
+			CAG_CMP_PRIMITIVE, CAG_BYADR);
 
 	i = -1;
 	for (it = beg_ilist(&l); it != end_ilist(&l);

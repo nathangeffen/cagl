@@ -1,12 +1,46 @@
-Improving and modifying the C Almost Generic Library
-====================================================
+# Appendix: Modifying, enhancing and improving CAGL {-}
 
 You are encouraged to help improve the C Almost Generic Library (CAGL).
 This document describes some of the technical "under-the-hood" details
 of how the library works.
 
-Coding conventions
-==================
+## CAGL structure {-}
+
+Specific code for each container is placed in its own include (.h) file. So arrays are handled in array.h. Let's say you wanted to implement a container called *stack*. You would create a file called stack.h. Examine the code in array.h to get an idea of what should go in stack.h. Pay special attention to the implementations of CAG_DEC_ARRAY, CAG_DEF_ALL_ARRAY, CAG_DEC_CMP_ARRAY and CAG_DEF_ALL_CMP_ARRAY.
+
+All containers must implement *new*, *begin*, end* and *free* functions.
+
+The common.h file contains generic algorithms implemented as macros. Also, there are several macros beginning CAG_DEC_ and CAG_DEF_ which are called by containers to declare and define their functions respectively.
+
+When implementing a container such as a stack, code specific to the container will go in stack.h, but many of the algorithms, declarations and definitions in common.h should be reusable as is.
+
+The concepts.h file reduces coding and helps CAGL containers be consistent. It helps CAGL approximate generic concepts used in the C++ STL. Containers automatically get a bunch of useful functions declared and defined by by calling the macros defined in concepts.h. Here are brief explanations of them:
+
+CAG_DEC_FORWARD and CAG_DEF_FORWARD
+  ~ These declare and define functions for containers whose iterators support the *next* operation (i.e. almost any useful container). Iterators that implement *next* are *forward* iterators.
+
+CAG_DEC_CMP_FORWARD and CAG_DEF_CMP_FORWARD
+  ~ These declare and define functions for containers that have comparison functions and support forward iterators.
+
+CAG_DEC_BIDIRECTIONAL and CAG_DEF_BIDIRECTIONAL
+  ~ Iterators that implement both *prev* and *next* functions are bidirectional. *Forward* iterators are a subset of bidirectional iterators. These macros implement functions for containers whose iterators are *bidirectional*.
+
+CAG_DEC_CMP_BIDIRECTIONAL and CAG_DEF_CMP_BIDIRECTIONAL
+  ~ These declare and define functions for containers that have comparison functions and support bidirectional iterators.
+
+CAG_DEC_REORDERABLE and CAG_DEF_REORDERABLE
+  ~ Functions for containers that can be reordered are implemented by these macros. For example arrays and lists can be reordered but the order for the elements in a binary tree cannot be changed, so arrays and lists are reorderable and binary trees are not. Hash tables have no ordering so it isn't useful to reorder their elements.
+
+CAG_DEC_CMP_REORDERABLE and CAG_DEF_CMP_REORDERABLE
+  ~ These declare and define functions for containers that have comparison functions and are reorderable.
+
+CAG_DEC_RANDOMACCESS and CAG_DEF_RANDOMACCESS
+  ~ These declare and define the functions of CAG_DEC_BIDIRECTIONAL and CAG_DEF_BIDIRECTIONAL. In addition they declare and define additional functions for containers whose iterators support an *at* function. Containers that implement an *at* operation are *random access* iterators.
+
+CAG_DEC_CMP_RANDOMACCESS and CAG_DEF_CMP_RANDOMACCESS
+  ~ These declare and define functions for containers that have comparison functions and support random access iterators.
+
+## Coding conventions {-}
 
 CAGL is mostly made up of macros. There's a small amount of non-macro
 code in a a few small .c libraries. This makes CAGL quite unusual. It is
@@ -29,11 +63,11 @@ code easier.
 -   Macros that are strictly for internal use should be prefixed
     CAG\_P\_ (the "P" stands for private).
 
-Functions and algorithms that containers usually provide
-========================================================
+## Functions and algorithms that containers usually provide {-}
 
-begin\_[container]
-------------------
+
+#### begin_C {-}
+
 
 -   Returns iterator to first element in container.
 
@@ -41,8 +75,7 @@ begin\_[container]
 
     -   Container variable
 
-end\_[container]
-----------------
+#### end_C {-}
 
 -   Returns iterator to last element in container.
 
@@ -50,8 +83,8 @@ end\_[container]
 
     -   Container variable
 
-put\_[container]
-----------------
+#### put_C
+
 
 Every container should have a put function that takes three parameters,
 a container variable, an iterator and an element variable. The function
@@ -71,8 +104,8 @@ should insert the element variable into the container.
 
     -   Element to insert
 
-Macro function declaration and definition names
-===============================================
+## Macro function declaration and definition names {-}
+
 
 *apply\_func*
 :   User supplied function in an apply macro. Apply macros are used to
@@ -240,5 +273,3 @@ Macro function declaration and definition names
 :   Function or macro to get the value of an iterator. For all CAGL
     containers, this should always be *it-\>next* where *it* is an
     iterator variable.
-
-

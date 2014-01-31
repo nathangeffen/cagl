@@ -58,7 +58,7 @@ static void test_default_sort(struct cag_test_series *tests)
 	int i, inorder = CAG_TRUE;
 
 	for (i = 0; i < size; ++i) arr[i] = size - i;
-	CAG_SORT_ARRAY_DEFAULT(long double, arr, arr+size, -CAG_CMP_DEFAULT);
+	CAG_SORT_ARRAY(long double, arr, arr+size, -CAG_CMP_PRIMITIVE);
 	for (i = 1; i < size; ++i)
 		if (arr[i] != arr[i-1] - 1) {
 			inorder = CAG_FALSE;
@@ -66,7 +66,7 @@ static void test_default_sort(struct cag_test_series *tests)
 		}
 	CAG_TEST(*tests, inorder == CAG_TRUE,
 		 "Macro sort backward array in descending order.");
-	CAG_SORT_ARRAY_DEFAULT(long double, arr, arr+size, CAG_CMP_DEFAULT);
+	CAG_SORT_ARRAY(long double, arr, arr+size, CAG_CMP_PRIMITIVE);
 	inorder = CAG_TRUE;
 	for (i = 1; i < size; ++i)
 		if (arr[i] != arr[i-1] + 1) {
@@ -76,7 +76,7 @@ static void test_default_sort(struct cag_test_series *tests)
 	CAG_TEST(*tests, inorder == CAG_TRUE,
 		 "Macro sort backward array in ascending order.");
 	for (i = 0; i < size; ++i) arr[i] = rand() % size;
-	CAG_SORT_ARRAY_DEFAULT(long double, arr, arr+size, CAG_CMP_DEFAULT);
+	CAG_SORT_ARRAY(long double, arr, arr+size, CAG_CMP_PRIMITIVE);
 	inorder = CAG_TRUE;
 	for (i = 1; i < size; ++i)
 		if (arr[i] < arr[i-1]) {
@@ -845,8 +845,8 @@ static void test_sort(struct cag_test_series *tests)
 
 	new_complex_array(&a);
 	populate_array(&a, 50, 0, -1);
-	CAG_SORT_ARRAY_DEFAULT(struct complex, beg_complex_array(&a),
-			       end_complex_array(&a), cmp_complex);
+	CAG_SORT_ARRAY(struct complex, beg_complex_array(&a),
+		       end_complex_array(&a), cmp_complex);
 	inorder = CAG_TRUE;
 	for (it = beg_complex_array(&a) + 1; it != end_complex_array(&a); ++it)
 		if (it->value.real < (it - 1)->value.real)
@@ -858,8 +858,8 @@ static void test_sort(struct cag_test_series *tests)
 
 	new_complex_array(&a);
 	populate_array(&a, 0, 50, 1);
-	CAG_SORT_ARRAY_DEFAULT(struct complex, beg_complex_array(&a),
-			       end_complex_array(&a), -cmp_complex);
+	CAG_SORT_ARRAY(struct complex, beg_complex_array(&a),
+		       end_complex_array(&a), -cmp_complex);
 	inorder = CAG_TRUE;
 	for (it = beg_complex_array(&a) + 1; it != end_complex_array(&a); ++it)
 		if (it->value.real > (it - 1)->value.real)

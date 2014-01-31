@@ -14,9 +14,9 @@
 set -e
 
 echo Compiling ...
-gcc -g -Wall examples/eg_process_docs.c -o bin/eg_process_docs
+gcc -g -Wall docs/eg_process_docs.c -o bin/eg_process_docs
 echo Generating docs/$1.txt ...
 ./bin/eg_process_docs > docs/$1.txt
 echo Generating docs/$1.html ...
-pandoc -r markdown docs/$1.txt -o docs/$1.html
+pandoc -s -S -c style.css -r markdown docs/$1.txt -N -o docs/$1.html
 echo Success

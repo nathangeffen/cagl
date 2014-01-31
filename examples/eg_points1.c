@@ -9,15 +9,12 @@ int populate_ordered(points *a, int numpoints, double x_start,
 	int i;
 	struct point p;
 
-	p.x = x_start;
-	p.y = x_start * gradient;
-
 	for (i = 0; i < numpoints; ++i) {
+		p.x = x_start + i * x_step;
+		p.y = p.x * gradient;
 		if (append_points(a, p) == 0) {
 			return CAG_FALSE;
 		}
-		p.x += x_step;
-		p.y = p.x * gradient;
 	}
 	return CAG_TRUE;
 }

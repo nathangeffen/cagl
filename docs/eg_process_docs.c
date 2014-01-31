@@ -1,17 +1,17 @@
 /*
-   This program generates a list of the all CAGL functions. It prints the list
-   as a markdown table with links in each entry to the skeleten of a detailed
-   description of each function.
+  This program generates a list of the all CAGL functions. It prints the list
+  as a markdown table with links in each entry to the skeleten of a detailed
+  description of each function.
 
-   This is a big time-saver for generating documentation.
+  This is a big time-saver for generating documentation.
 
-   Note with gcc -pedantic, the following unavoidable warnings are generated:
+  Note with gcc -pedantic, the following unavoidable warnings are generated:
 
-   eg_process_docs.c:74:2: warning: string length ‘5579’ is greater than the
-   length ‘509’ ISO C90 compilers are required to support [-Woverlength-strings]
+  eg_process_docs.c:74:2: warning: string length ‘5579’ is greater than the
+  length ‘509’ ISO C90 compilers are required to support [-Woverlength-strings]
 
-   eg_process_docs.c:89:2: warning: string length ‘3920’ is greater than the
-   length ‘509’ ISO C90 compilers are required to support [-Woverlength-strings]
+  eg_process_docs.c:89:2: warning: string length ‘3920’ is greater than the
+  length ‘509’ ISO C90 compilers are required to support [-Woverlength-strings]
 
 */
 
@@ -47,21 +47,21 @@ int cmp_func_info(const struct func_info *a, const struct func_info *b)
 CAG_DEC_DEF_CMPP_TREE(func_tree, struct func_info, cmp_func_info);
 CAG_DEC_DEF_ARRAY(string, char);
 
-#define CAG_DOC_TO_STR(dec, container, type, str)				\
-    {                                                                         \
-        char l[10000] = CAG_P_STRINGIFY(dec(container, type));                \
-        char *c = l;                                                          \
-        while (*c != '\0') {                                                  \
-            if (strncmp(c, "CAG_P_", 6) == 0)                                 \
-                while (*c != ';' && *c != '\0') c++;                          \
-            while(*c != ';' && *c != '\0') {                                  \
-  	        append_string(str, *c);				\
-                ++c;                                                          \
-            }                                                                 \
-            append_string(str,';');                                                        \
-            ++c;                                                              \
-        }                                                                     \
-    }
+#define CAG_DOC_TO_STR(dec, container, type, str)			\
+	{								\
+		char l[10000] = CAG_P_STRINGIFY(dec(container, type));	\
+		char *c = l;						\
+		while (*c != '\0') {					\
+			if (strncmp(c, "CAG_P_", 6) == 0)		\
+				while (*c != ';' && *c != '\0') c++;	\
+			while(*c != ';' && *c != '\0') {		\
+				append_string(str, *c);			\
+				++c;					\
+			}						\
+			append_string(str,';');				\
+			++c;						\
+		}							\
+	}
 
 
 enum states {
@@ -180,60 +180,99 @@ void put_funcs_into_tree(func_tree *t, string *text)
 	free_string(&text_copy);
 }
 
-void print_funcs(func_tree *t)
+void print_index_by_container_type(func_tree *t)
+{
+	it_func_tree it;
+	int i, j;
+
+	for (i = 0; i < 5; ++i) {
+		printf("# %s\n\n", container_types[i]);
+		for (it = beg_func_tree(t); it != end_func_tree(t);
+		     it = next_func_tree(it)) {
+			if (it->value.containers[i]) {
+				printf("- [%s](#%s-",
+				       it->value.function, it->value.function);
+				for (j = 0; j < 5; ++j) {
+					if (it->value.containers[j])
+						printf("%c",
+						       container_types[j][0]);
+				}
+				printf(")\n");
+			}
+		}
+		printf("\n\n");
+	}
+}
+
+void print_blueprints(func_tree *t)
 {
 	it_func_tree it;
 	int i;
 
-	CAG_FOR_ALL(func_tree, t, it,
-		    {
-			    printf("## %s {#%s-", it->value.function,
-				   it->value.function);
-			    for (i = 0; i < 5; ++i) {
-				    if (it->value.containers[i])
-					    printf("%c", container_types[i][0]);
-			    }
-			    puts("}\n\n");
-			    puts("```C\n");
-			    printf("%s\n", it->value.syntax);
-			    puts("```\n\n");
-			    puts("Containers: ");
-			    for (i = 0; i < 5; ++i) {
-				    if (it->value.containers[i])
-					    printf("%s\t", container_types[i]);
-			    }
-			    puts("\n\n");
-			    puts("### Parameters\n\n");
-			    puts("### Return value\n\n");
-			    puts("### Example\n\n");
-			    puts("### Complexity\n\n");
-			    puts("### Data races\n\n");
-			    puts("### See also\n\n");
-			    puts("------\n\n");
-		    });
+	for (it = beg_func_tree(t); it != end_func_tree(t);
+	     it = next_func_tree(it)) {
+		printf("## %s {#%s-", it->value.function,
+		       it->value.function);
+		for (i = 0; i < 5; ++i) {
+			if (it->value.containers[i])
+				printf("%c", container_types[i][0]);
+		}
+		puts(" - }\n\n");
+		puts("```C");
+		printf("%s\n", it->value.syntax);
+		puts("```\n\n");
+		puts("Containers: ");
+		for (i = 0; i < 5; ++i) {
+			if (it->value.containers[i])
+				printf("%s\t", container_types[i]);
+		}
+		puts("\n\n");
+		puts("#### Parameters {-}\n\n");
+		puts("#### Return value {-}\n\n");
+		puts("#### Example {-}\n\n");
+		puts("#### Complexity {-}\n\n");
+		puts("#### Data races {-}\n\n");
+		puts("#### See also {-}\n\n");
+		puts("------\n\n");
+	}
+}
 
-	printf("# List of functions\n\n");
+void print_full_index(func_tree *t)
+{
+	it_func_tree it;
+	int i, j;
+
+	printf("# List of functions {#function-list -}\n\n");
 	printf("FUNCTION | ARRAY | DLIST | HASH | TREE | SLIST |\n");
 	printf(":--------|:-----:|:-----:|:----:|:----:|:-----:|\n");
-	CAG_FOR_ALL(func_tree, t, it,
-		    {
-			    int j = 0;
-			    char tag[] = "\0\0\0\0\0";
-			    printf("| %-30s |", it->value.function);
-			    for (i = 0; i < 5; ++i)
-				    if (it->value.containers[i])
-					    tag[j++] = container_types[i][0];
-			    for (i = 0; i < 5; ++i) {
-				    if (it->value.containers[i])
-					    printf(" [%c](#%s-%s) |",
-						   container_types[i][0],
-						   it->value.function,
-						   tag);
-				    else
-					    printf("  |");
-			    }
-			    printf("\n");
-		    });
+
+	for (it = beg_func_tree(t); it != end_func_tree(t);
+	     it = next_func_tree(it)) {
+		j = 0;
+		char tag[] = "\0\0\0\0\0";
+		printf("| %-30s |", it->value.function);
+		for (i = 0; i < 5; ++i)
+			if (it->value.containers[i])
+				tag[j++] = container_types[i][0];
+		for (i = 0; i < 5; ++i) {
+			if (it->value.containers[i])
+				printf(" [%c](#%s-%s) |",
+				       container_types[i][0],
+				       it->value.function,
+				       tag);
+			else
+				printf("  |");
+		}
+		printf("\n");
+	}
+
+}
+
+void print_funcs(func_tree *t)
+{
+	print_index_by_container_type(t);
+	print_blueprints(t);
+	print_full_index(t);
 }
 
 

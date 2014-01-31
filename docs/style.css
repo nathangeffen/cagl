@@ -1,12 +1,12 @@
 p {
-    font-size: 11pt;
+    font-size: 12pt;
 }
-h1 {font-size: 14pt; }
-h2 {font-size: 13pt; }
-h3 {font-size: 12pt; }
-h4 {font-size: 11pt;}
-h5 {font-size: 10pt;}
-h6 {font-size: 10pt;}
+h1 {font-size: 16pt; }
+h2 {font-size: 15pt; }
+h3 {font-size: 14pt; }
+h4 {font-size: 13pt;}
+h5 {font-size: 12pt;}
+h6 {font-size: 12pt;}
 
 pre {
     background-color: #F0F0F0;
@@ -15,4 +15,6 @@ pre {
     overflow:auto;
 }
 
-dt { font-weight: bold; }
+dt {
+    font-style:italic;
+}

@@ -47,7 +47,7 @@ static int cmpp_complex(const struct complex *x, const struct complex *y)
 CAG_DEC_CMP_TREE(complex_tree, struct complex);
 CAG_DEC_CMP_TREE(complexp_tree, struct complex);
 CAG_DEC_CMP_TREE(string_tree, char *);
-CAG_DEC_DEF_CMP_TREE(int_tree, int, CAG_CMP_DEFAULT);
+CAG_DEC_DEF_CMP_TREE(int_tree, int, CAG_CMP_PRIMITIVE);
 CAG_DEC_DEF_ARRAY(int_arr, int);
 
 

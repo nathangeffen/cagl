@@ -1,3 +1,4 @@
+
 /*! \file Generic algorithms and common code used throughout CAGL library.
 
     \copyright Copyright 2014 Nathan Geffen. All rights reserved.
@@ -194,11 +195,11 @@
 
 /*! \brief Default comparison function for C primitive types */
 
-#define CAG_CMP_DEFAULT(a, b)  ((a) < (b)  ? -1 : ((a) == (b) ? 0 : 1))
+#define CAG_CMP_PRIMITIVE(a, b)  ((a) < (b)  ? -1 : ((a) == (b) ? 0 : 1))
 
 /*! \brief Default comparison function for pointers to C primitive types */
 
-#define CAG_CMPP_DEFAULT(a, b) CAG_CMP_DEFAULT(*a, *b)
+#define CAG_CMPP_PRIMITIVE(a, b) CAG_CMP_PRIMITIVE(*a, *b)
 
 /*! \brief Generic *new_from* function declaration and definition macro. Similar
     role to C++ copy constructor.
@@ -277,7 +278,7 @@
 
 /*! \brief Generic *copy_over*. Works on forward iterators. */
 
-#define CAG_COPY_OVER(first, last, value, result, input_next, output_next) \
+#define CAG_P_COPY_OVER(first, last, value, result, input_next, output_next) \
     do { \
         while (first != last) { \
             result->value = first->value; \
@@ -286,6 +287,25 @@
         } \
     } while(0)
 
+
+/* \brief User macro to copy over. */
+
+#define CAG_COPY_OVER_IF(container1, c1, container2, c2, cond)	\
+do { \
+    it_ ## container1 it1 = begin_ ## container1(c1); \
+    it_ ## container1 e = end_ ## container1(c1); \
+    it_ ## container2 it2 = begin_ ## container2(c2); \
+    while (it1 != e) { \
+        if (cond) { \
+             it2->value = it1->value; \
+             it2 = next_ ## container2(it2); \
+        } \
+        it1 = next_ ## container1(it1); \
+    } \
+} while(0)
+
+#define CAG_COPY_OVER(container1, c1, container2, c2) \
+    CAG_COPY_OVER_IF(container1, c1, container2, c2, 1)
 
 /*! \brief Generic *copy_over* function declaration and definition. */
 
@@ -297,7 +317,7 @@
                           output_next) \
 CAG_DEC_COPY_OVER(function, iterator_in, iterator_out) \
 { \
-    CAG_COPY_OVER(first, last, value, result, input_next, output_next); \
+    CAG_P_COPY_OVER(first, last, value, result, input_next, output_next); \
     return result; \
 }
 

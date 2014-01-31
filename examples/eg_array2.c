@@ -63,7 +63,7 @@ int main(void)
 	   function can be generated instead.
 	 */
 	CAG_SORT_ARRAY_DEFAULT(int, beg_int_arr(&iarr),
-			       end_int_arr(&iarr), CAG_CMP_DEFAULT);
+			       end_int_arr(&iarr), CAG_CMP_PRIMITIVE);
 
 
 	/* A fourth way to iterate over the elements, also using a macro. In

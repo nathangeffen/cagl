@@ -471,6 +471,7 @@ CAG_DEC_FREE_HASH(function, container) \
     CAG_DEC_END_HASH(end_ ## container, container, it_ ## container); \
     CAG_DEC_NEXT_HASH(next_ ## container, it_ ## container); \
     CAG_DEC_AT_HASH(at_ ## container, it_ ## container); \
+    CAG_DEC_CMP(cmp_ ## container, it_ ## container, it_ ## container); \
     CAG_DEC_DISTANCE(distance_ ## container, it_ ## container); \
     CAG_DEC_REMOVE_HASH(remove_ ## container, container, it_ ## container, \
                         type); \
@@ -515,6 +516,8 @@ CAG_DEF_END_HASH(end_ ## container, container, it_ ## container) \
 CAG_DEF_NEXT_HASH(next_ ## container, it_ ## container) \
 CAG_DEF_AT_HASH(at_ ## container, it_ ## container, next_ ## container) \
 CAG_DEF_DISTANCE(distance_ ## container, it_ ## container, next_ ## container) \
+CAG_DEF_CMP(cmp_ ## container, it_ ## container, it_ ## container, \
+                cmp_func, val_adr) \
 CAG_DEF_REMOVE_HASH(remove_ ## container, container, it_ ## container, \
                     type, next_ ## container, hash_func, length_func, \
                     cmp_func, val_adr, free_func) \
@@ -596,9 +599,9 @@ typedef container CAG_P_CMB(container,  __LINE__)
     CAG_DEF_CMP_ALL_HASH(container, char *, strcmp, CAG_BYVAL, cag_oat_hash, \
                          strlen, CAG_SIMPLE_ALLOC_STYLE, cag_strdup, free)
 
-#define CAG_DEC_DEF_STR_HASH(container, type) \
-    CAG_DEC_STR_HASH(container, type); \
-    CAG_DEF_STR_HASH(container, type)
+#define CAG_DEC_DEF_STR_HASH(container) \
+    CAG_DEC_STR_HASH(container); \
+    CAG_DEF_STR_HASH(container)
 
 
 #endif /* CAG_HASH_H */

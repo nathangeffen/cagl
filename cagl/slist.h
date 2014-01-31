@@ -325,12 +325,15 @@ CAG_DEC_INSERTP_AFTER_SLIST(function, container, iterator_type, type) \
             if (!it) return NULL; \
             slist->header = it; \
             it->next = NULL; \
+            ++i; \
         } \
         while (i < size) { \
             void *p = CAG_MALLOC(sizeof(*it)); \
-            if (!p)return NULL; \
+            if (!p) return NULL; \
             it->next = p; \
             ++i; \
+	    it = it->next; \
+	    it->next = NULL; \
         } \
         return it; \
     }
@@ -348,7 +351,7 @@ CAG_DEC_SET_EXACT_SIZE_SLIST(function, container, iterator_type) \
 { \
     iterator_type it; \
     it = set_min_size(slist, slist->header, size); \
-    if (it) \
+    if (it->next) \
         erase_range(slist, it->next, NULL); \
     return it; \
 }
