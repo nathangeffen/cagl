@@ -3,7 +3,7 @@ CC 		= gcc
 C_INCLUDE_PATH 	:= $(C_INCLUDE_PATH):..
 
 TEST_EXE	= cagtest
-CFLAGS		=  -g3 -Wall -pedantic -Wstrict-prototypes -Wextra
+CFLAGS		=  -g3 -Wall -pedantic -Wstrict-prototypes -Wextra -Werror
 CXXFLAGS	= $(CFLAGS)
 LDFLAGS		= -g3
 
@@ -58,7 +58,7 @@ test-release-run: test-release
 	./cagtest
 
 test-release: $(SOURCES) $(TEST_SOURCES)
-	$(CC) -Wall -flto -O3 -DNDEBUG $^ -o $(TEST_EXE)
+	$(CC) -Wall -pedantic -Werror -flto -O3 -DNDEBUG $^ -o $(TEST_EXE)
 
 test-clean:
 	rm -f $(TEST_OBJS) $(OBJS) $(TEST_EXE)

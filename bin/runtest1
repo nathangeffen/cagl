@@ -1,2 +1,5 @@
+make clean
+make -k
 cd tests
-make 
+make clean
+make -k

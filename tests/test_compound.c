@@ -325,7 +325,7 @@ static void test_lat(struct cag_test_series *tests)
 	free_lat(&l);
 }
 
-void test_copy_over_macro(struct cag_test_series *tests)
+static void test_copy_over_macro(struct cag_test_series *tests)
 {
 	islist list;
 	iarr arr;
@@ -358,6 +358,273 @@ void test_copy_over_macro(struct cag_test_series *tests)
 	free_iarr(&arr);
 }
 
+static void test_rcopy_over_macro(struct cag_test_series *tests)
+{
+	islist list;
+	iarr arr;
+	it_islist it1;
+	rit_iarr rit2;
+	int i, failures;
+
+	new_iarr(&arr);
+	new_islist(&list);
+
+	for (i = 0; i < 10; ++i)
+		append_iarr(&arr,i);
+
+	i = 0;
+	set_exact_size_islist(&list, 10);
+	CAG_RCOPY_OVER(iarr, &arr, islist, &list);
+	CAG_TEST(*tests, distance_all_islist(&list) == distance_all_iarr(&arr),
+		 "cag_compound: Copy over results in same size containers.");
+
+	failures = 0;
+	for (it1 = beg_islist(&list), rit2 = rbeg_iarr(&arr);
+	     it1 != end_islist(&list);
+	     it1 = next_islist(it1), rit2 = rnext_iarr(rit2))
+		if (it1->value != rit2->value)
+			++failures;
+	CAG_TEST(*tests, failures == 0,
+		 "cag_compound: Copied list identical to copied from array.");
+
+	free_islist(&list);
+	free_iarr(&arr);
+}
+
+
+static int even(int x)
+{
+	return x % 2 == 0;
+}
+
+static void test_copy_over_if_macro(struct cag_test_series *tests)
+{
+	islist list;
+	iarr arr;
+	it_islist it1;
+	it_iarr it2;
+	int i, failures;
+
+	new_iarr(&arr);
+	new_islist(&list);
+
+	for (i = 0; i < 10; ++i)
+		append_iarr(&arr,i);
+
+	i = 0;
+	set_exact_size_islist(&list, 5);
+	CAG_COPY_OVER_IF(iarr, &arr, islist, &list, even);
+	CAG_TEST(*tests, distance_all_islist(&list) == 5,
+		 "cag_compound: Copy over results in same size containers.");
+
+	failures = 0;
+	for (it1 = beg_islist(&list), it2 = beg_iarr(&arr);
+	     it1 != end_islist(&list);
+	     it1 = next_islist(it1), it2 = next_iarr(it2)) {
+		if (it1->value != it2->value)
+			++failures;
+		it2 = next_iarr(it2);
+	}
+	CAG_TEST(*tests, failures == 0,
+		 "cag_compound: Copied list identical to copied from array.");
+
+	free_islist(&list);
+	free_iarr(&arr);
+}
+
+static void test_rcopy_over_if_macro(struct cag_test_series *tests)
+{
+	islist list;
+	iarr arr;
+	it_islist it1;
+	rit_iarr rit2;
+	int i, failures;
+
+	new_iarr(&arr);
+	new_islist(&list);
+
+	for (i = 0; i < 10; ++i)
+		append_iarr(&arr,i);
+
+	i = 0;
+	set_exact_size_islist(&list, 5);
+	CAG_RCOPY_OVER_IF(iarr, &arr, islist, &list, even);
+	CAG_TEST(*tests, distance_all_islist(&list) == 5,
+		 "cag_compound: Copy over results in same size containers.");
+
+	failures = 0;
+	for (it1 = beg_islist(&list), rit2 = rbeg_iarr(&arr);
+	     it1 != end_islist(&list);
+	     it1 = next_islist(it1), rit2 = rnext_iarr(rit2)) {
+		rit2 = rnext_iarr(rit2);
+		if (it1->value != rit2->value)
+			++failures;
+	}
+	CAG_TEST(*tests, failures == 0,
+		 "cag_compound: Copied list identical to copied from array.");
+
+	free_islist(&list);
+	free_iarr(&arr);
+}
+
+
+
+static void test_copy_macro(struct cag_test_series *tests)
+{
+	islist list;
+	ilist dlist;
+	iarr arr;
+	it_islist it1;
+	it_ilist it3;
+	it_iarr it2;
+	int i, failures;
+
+	new_iarr(&arr);
+	new_islist(&list);
+	new_ilist(&dlist);
+
+	for (i = 0; i < 10; ++i)
+		append_iarr(&arr,i);
+
+	CAG_COPY(iarr, &arr, islist, &list, i);
+	CAG_TEST(*tests, i == CAG_TRUE &&
+		 distance_all_islist(&list) == distance_all_iarr(&arr),
+		 "cag_compound: Copy results in same size containers.");
+
+	failures = 0;
+	for (it1 = beg_islist(&list), it2 = beg_iarr(&arr);
+	     it1 != end_islist(&list);
+	     it1 = next_islist(it1), it2 = next_iarr(it2)) {
+		if (it1->value != it2->value)
+			++failures;
+	}
+	CAG_TEST(*tests, failures == 0,
+		 "cag_compound: Copied list identical to copied from array.");
+
+	CAG_COPY(iarr, &arr, ilist, &dlist, i);
+	CAG_TEST(*tests, i == CAG_TRUE &&
+		 distance_all_ilist(&dlist) == distance_all_iarr(&arr),
+		 "cag_compound: Copy results in same size containers.");
+
+	failures = 0;
+	for (it3 = beg_ilist(&dlist), it2 = beg_iarr(&arr);
+	     it3 != end_ilist(&dlist);
+	     it3 = next_ilist(it3), it2 = next_iarr(it2)) {
+		if (it3->value != it2->value)
+			++failures;
+	}
+	CAG_TEST(*tests, failures == 0,
+		 "cag_compound: Copied dlist identical to copied from array.");
+
+
+	free_ilist(&dlist);
+	free_islist(&list);
+	free_iarr(&arr);
+}
+
+static void test_rcopy_macro(struct cag_test_series *tests)
+{
+	islist list;
+	iarr arr;
+	it_islist it1;
+	rit_iarr rit2;
+	int i, failures;
+
+	new_iarr(&arr);
+	new_islist(&list);
+
+	for (i = 0; i < 10; ++i)
+		append_iarr(&arr,i);
+
+	CAG_RCOPY(iarr, &arr, islist, &list, i);
+	CAG_TEST(*tests, i == CAG_TRUE &&
+		 distance_all_islist(&list) == distance_all_iarr(&arr),
+		 "cag_compound: Copy results in same size containers.");
+
+	failures = 0;
+	for (it1 = beg_islist(&list), rit2 = rbeg_iarr(&arr);
+	     it1 != end_islist(&list);
+	     it1 = next_islist(it1), rit2 = rnext_iarr(rit2)) {
+		if (it1->value != rit2->value)
+			++failures;
+	}
+	CAG_TEST(*tests, failures == 0,
+		 "cag_compound: Copied list identical to copied from array.");
+
+	free_islist(&list);
+	free_iarr(&arr);
+}
+
+
+static void test_copy_if_macro(struct cag_test_series *tests)
+{
+	islist list;
+	iarr arr;
+	it_islist it1;
+	it_iarr it2;
+	int i, failures;
+
+	new_iarr(&arr);
+	new_islist(&list);
+
+	for (i = 0; i < 10; ++i)
+		append_iarr(&arr,i);
+
+	i = 0;
+	CAG_COPY_IF(iarr, &arr, islist, &list, even, i);
+	CAG_TEST(*tests, distance_all_islist(&list) == 5,
+		 "cag_compound: Copy over results in same size containers.");
+
+	failures = 0;
+	for (it1 = beg_islist(&list), it2 = beg_iarr(&arr);
+	     it1 != end_islist(&list);
+	     it1 = next_islist(it1), it2 = next_iarr(it2)) {
+		if (it1->value != it2->value)
+			++failures;
+		it2 = next_iarr(it2);
+	}
+	CAG_TEST(*tests, failures == 0,
+		 "cag_compound: List equal array ints copied from array.");
+
+	free_islist(&list);
+	free_iarr(&arr);
+}
+
+static void test_rcopy_if_macro(struct cag_test_series *tests)
+{
+	islist list;
+	iarr arr;
+	it_islist it1;
+	rit_iarr rit2;
+	int i, failures;
+
+	new_iarr(&arr);
+	new_islist(&list);
+
+	for (i = 0; i < 10; ++i)
+		append_iarr(&arr,i);
+
+	i = 0;
+	CAG_RCOPY_IF(iarr, &arr, islist, &list, even, i);
+	CAG_TEST(*tests, distance_all_islist(&list) == 5,
+		 "cag_compound: Copy over results in same size containers.");
+
+	failures = 0;
+	for (it1 = beg_islist(&list), rit2 = rbeg_iarr(&arr);
+	     it1 != end_islist(&list);
+	     it1 = next_islist(it1), rit2 = rnext_iarr(rit2)) {
+		rit2 = rnext_iarr(rit2);
+		if (it1->value != rit2->value)
+			++failures;
+	}
+	CAG_TEST(*tests, failures == 0,
+		 "cag_compound: List equal array ints copied from array.");
+
+	free_islist(&list);
+	free_iarr(&arr);
+}
+
+
 void test_compound(struct cag_test_series *tests)
 {
 	test_adj_list(tests);
@@ -366,7 +633,14 @@ void test_compound(struct cag_test_series *tests)
 	test_adj_tree(tests);
 	test_adj_hash(tests);
 	test_lat(tests);
+	test_copy_over_if_macro(tests);
+	test_rcopy_over_if_macro(tests);
 	test_copy_over_macro(tests);
+	test_rcopy_over_macro(tests);
+	test_copy_if_macro(tests);
+	test_copy_macro(tests);
+	test_rcopy_macro(tests);
+	test_rcopy_if_macro(tests);
 }
 
 CAG_DEF_ALL_ARRAY(adj_list, ilist, CAG_STRUCT_ALLOC_STYLE,

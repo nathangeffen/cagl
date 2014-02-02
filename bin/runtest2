@@ -1,0 +1,2 @@
+cd tests
+gcc -g -Wall -pedantic test_compile.c ../cagl/common.c -o test_compile

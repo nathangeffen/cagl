@@ -288,7 +288,7 @@ The parameters of the call to CAG_DEF_ALL_CMP_TREE are as follows:
 
 Now you can insert strings into a *string_tree* container without worrying about allocating or deallocating its memory. CAGL will handle this for you. When the container is freed, all the elements will be freed too.
 
-## Example: Euclidean points
+## Example: Euclidean points {-}
 
 There are numerous examples of how to use the CAGL in the test suite programs. Here is a simple example with Euclidean points.
 
@@ -591,7 +591,7 @@ And here's sample output:
     Shortest distance using iterators is: 6.7
 
 
-## Example: Deck of cards
+## Example: Deck of cards {-}
 
 Let's use CAGL to manage a deck of cards which we'll store in an array. To keep things simple, we'll write all the code in one file this time. We'll also order our cards according to the [high-card by suit](http://en.wikipedia.org/wiki/High_card_by_suit) convention. To compare the order of two cards, first compare their rank. If the ranks are the same, compare their suits alphabetically. So clubs is lowest, followed by diamonds, hearts and spades.
 
@@ -827,7 +827,7 @@ The output might look like this:
     After shuffling the deck
     AD 6D KC AH 4H 4S 10H 9C 5S 2C 3S 7C 7H JC 10C 3D 6C 6H 3H 10D QH QC 8S KD JD 9S 2S 6S 4D 7D AC JS 5D 3C KS QS AS 4C KH 8C 8H 2H 5C 9D 2D 7S 9H 8D JH 5H 10S QD
 
-## Example: Dictionary
+## Example: Dictionary {-}
 
 In this example, we want to create a dictionary for storing words and their meanings. In other words we want a balanced binary tree whose elements are this:
 
@@ -1040,7 +1040,7 @@ int populate_dictionary(dictionary *d)
 }
 ```
 
-## Example: Adjacency list
+## Example: Adjacency list {-}
 
 This example shows how to declare and define a container whose elements are containers. An adjacency list is used to represent graphs in computer science. It is typically implemented as an array of lists. In our example, the list elements are integers. This is simple to do.
 

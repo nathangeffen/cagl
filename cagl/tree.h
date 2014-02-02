@@ -158,23 +158,23 @@
     } while(0)
 
 
-#define CAG_DEC_GET_TREE(function, iterator_type, type) \
-    iterator_type function(const iterator_type root, const type element)
+#define CAG_DEC_GET_TREE(function, container, type)	\
+    it_ ## container function(const container *tree, const type element)
 
-#define CAG_DEF_GET_TREE(function, iterator_type, type, cmp_func, val_adr) \
-    CAG_DEC_GET_TREE(function, iterator_type, type) \
+#define CAG_DEF_GET_TREE(function, container, type, cmp_func, val_adr) \
+    CAG_DEC_GET_TREE(function, container, type) \
     { \
-        CAG_GET_TREE(iterator_type, root, cmp_func, val_adr, element); \
+        CAG_GET_TREE(it_ ## container, tree->root, cmp_func, val_adr, element); \
     }
 
 
-#define CAG_DEC_GETP_TREE(function, iterator_type, type) \
-    iterator_type function(const iterator_type root, const type *element)
+#define CAG_DEC_GETP_TREE(function, container, type) \
+    it_ ## container function(const container *tree, const type *element)
 
-#define CAG_DEF_GETP_TREE(function, iterator_type, type, cmp_func, val_adr) \
-    CAG_DEC_GETP_TREE(function, iterator_type, type) \
+#define CAG_DEF_GETP_TREE(function, container, type, cmp_func, val_adr) \
+    CAG_DEC_GETP_TREE(function, container, type) \
     { \
-        CAG_GET_TREE(iterator_type, root, cmp_func, val_adr, *element); \
+        CAG_GET_TREE(it_ ## container, tree->root, cmp_func, val_adr, *element);\
     }
 
 
@@ -600,7 +600,7 @@ CAG_DEC_ERASE_TREE(function, container, iterator_type, type) \
 #define CAG_DEF_REMOVE_TREE(function, container, iterator_type, type) \
     CAG_DEC_REMOVE_TREE(function, container, iterator_type, type) \
     { \
-        iterator_type n = get_ ## container(tree->root, element); \
+        iterator_type n = get_ ## container(tree, element); \
         if (n) \
             return erase_ ## container(tree, n); \
         else \
@@ -634,17 +634,17 @@ CAG_DEC_ERASE_TREE(function, container, iterator_type, type) \
 #define CAG_DEC_FREE_TREE(function, container) \
     void function(container *tree)
 
-#define CAG_DEC_FREE_NODE(function, container, iterator_type) \
+#define CAG_P_DEC_FREE_NODE(function, container, iterator_type) \
     void function(container *tree, iterator_type it)
 
-#define CAG_DEF_FREE_NODE(function, container, iterator_type, \
+#define CAG_P_DEF_FREE_NODE(function, container, iterator_type, \
                           free_func, val_adr) \
-CAG_DEC_FREE_NODE(function, container, iterator_type) \
+CAG_P_DEC_FREE_NODE(function, container, iterator_type) \
 { \
     if (it->child[0] && it->child[0] != tree->header) \
-        free_node_ ## container(tree, it->child[0]); \
+        free_node_p_ ## container(tree, it->child[0]); \
     if (it->child[1] && it->child[1] != tree->header) \
-        free_node_ ##container(tree, it->child[1]); \
+        free_node_p_ ##container(tree, it->child[1]); \
     free_func(val_adr it->value); \
     CAG_FREE(it); \
 }
@@ -653,7 +653,7 @@ CAG_DEC_FREE_NODE(function, container, iterator_type) \
     CAG_DEC_FREE_TREE(function, container) \
     { \
         if (tree->root) \
-            free_node_ ## container(tree, tree->root); \
+            free_node_p_ ## container(tree, tree->root); \
         CAG_FREE(tree->header); \
     }
 
@@ -872,15 +872,15 @@ CAG_DEC_CHECK_INTEGRITY_TREE(function, container, iterator_type) \
     CAG_DEC_POSTORDER_TREE(postorder_ ## container, it_ ## container); \
     CAG_DEC_LEVELORDER_TREE(levelorder_ ## container, container, \
                             it_ ## container); \
-    CAG_DEC_GET_TREE(get_ ## container, it_ ## container, type); \
-    CAG_DEC_GETP_TREE(getp_ ## container, it_ ## container, type); \
+    CAG_DEC_GET_TREE(get_ ## container, container, type); \
+    CAG_DEC_GETP_TREE(getp_ ## container, container, type); \
     CAG_DEC_ERASE_TREE(erase_ ## container, container, \
                        it_ ## container, type); \
     CAG_DEC_ERASE_RANGE(erase_range_ ## container, container, \
                         it_ ## container); \
     CAG_DEC_REMOVE_TREE(remove_ ## container, container, \
                         it_ ## container, type); \
-    CAG_DEC_FREE_NODE(free_node_## container, container, it_ ## container); \
+    CAG_P_DEC_FREE_NODE(free_node_p_## container, container, it_ ## container); \
     CAG_DEC_FREE_TREE(free_## container, container); \
     CAG_DEC_CHECK_INTEGRITY_TREE(check_integrity_ ## container, container, \
                                  it_ ## container); \
@@ -926,9 +926,9 @@ CAG_DEF_INORDER_TREE(reverseorder_ ## container, rit_ ## container, 1) \
 CAG_DEF_POSTORDER_TREE(postorder_ ## container, it_ ## container) \
 CAG_DEF_LEVELORDER_TREE(levelorder_ ## container, container, \
                         it_ ## container) \
-CAG_DEF_GET_TREE(get_ ## container, it_ ## container, \
+CAG_DEF_GET_TREE(get_ ## container, container, \
                  type, cmp_func, val_adr) \
-CAG_DEF_GETP_TREE(getp_ ## container, it_ ## container, \
+CAG_DEF_GETP_TREE(getp_ ## container, container, \
                   type, cmp_func, val_adr) \
 CAG_DEF_ERASE_TREE(erase_ ## container, container, it_ ## container, \
                    type, cmp_func, val_adr, next_ ## container) \
@@ -936,7 +936,7 @@ CAG_DEF_ERASE_RANGE(erase_range_ ## container, container, \
                     it_ ## container, erase_ ## container, CAG_NO_OP_3) \
 CAG_DEF_REMOVE_TREE(remove_ ## container, container, \
                     it_ ## container, type) \
-CAG_DEF_FREE_NODE(free_node_## container, container, it_ ## container, \
+CAG_P_DEF_FREE_NODE(free_node_p_## container, container, it_ ## container, \
                   free_func, val_adr) \
 CAG_DEF_FREE_TREE(free_ ## container, container) \
 CAG_DEF_CHECK_INTEGRITY_TREE(check_integrity_ ## container, container, \
@@ -986,6 +986,43 @@ CAG_DEF_ALL_CMP_TREE(container, type, cmp_func, val_adr, \
 #define CAG_DEC_DEF_CMPP_TREE(container, type, cmp_func) \
     CAG_DEC_CMPP_TREE(container, type); \
     CAG_DEF_CMPP_TREE(container, type, cmp_func)
+
+
+/*! \brief Declare and define macros for a tree  whose elements are structs
+   composed of two strings.  This is a common use-case, e.g. for a dictionary
+   made up of words (the keys) and definitions.
+*/
+
+
+#define CAG_DEC_STR_STR_TREE(container, type) \
+    CAG_DEC_CMP_TREE(container, type)
+
+#define CAG_DEF_STR_STR_TREE(container, type) \
+    CAG_DEF_ALL_CMP_TREE(container, type, CAG_STRCMP_STRUCT_WITH_STR_KEY, \
+                         CAG_BYVAL, CAG_STRUCT_ALLOC_STYLE, \
+                         cag_alloc_str_str, CAG_FREE_STRUCT_STR_STR)
+
+#define CAG_DEC_DEF_STR_STR_TREE(container, type) \
+    CAG_DEC_STR_STR_TREE(container, type); \
+    CAG_DEF_STR_STR_TREE(container, type)
+
+
+/*! \brief Declare and define macros for a tree whose elements are C
+   strings.  This is a common use-case, e.g. a list of words.
+*/
+
+
+#define CAG_DEC_STR_TREE(container) \
+    CAG_DEC_CMP_TREE(container, char *)
+
+#define CAG_DEF_STR_TREE(container) \
+    CAG_DEF_ALL_CMP_TREE(container, char *, strcmp, CAG_BYVAL, \
+                         CAG_SIMPLE_ALLOC_STYLE, cag_strdup, free)
+
+#define CAG_DEC_DEF_STR_TREE(container) \
+    CAG_DEC_STR_TREE(container); \
+    CAG_DEF_STR_TREE(container)
+
 
 
 #endif /* CAG_TREE_H */

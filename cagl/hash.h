@@ -492,7 +492,7 @@ CAG_DEC_FREE_HASH(function, container) \
 
 /*! \brief Definitions of hash functions. */
 
-#define CAG_DEF_CMP_ALL_HASH(container, type, cmp_func, val_adr, hash_func, \
+#define CAG_DEF_ALL_CMP_HASH(container, type, cmp_func, val_adr, hash_func, \
                              length_func, alloc_style, alloc_func, free_func) \
 CAG_DEF_NEW_HASH_WITH_BUCKETS(new_with_buckets_ ## container, \
                               container) \
@@ -534,19 +534,29 @@ CAG_DEF_FREE_HASH(free_ ## container, container, it_ ## container, \
 CAG_DEF_FORWARD(container, type) \
 typedef container CAG_P_CMB(container,  __LINE__)
 
+/*! \brief Declaration and definition in one macro. Useful for container types
+    that are only used in one module.
+*/
+
+#define CAG_DEC_DEF_ALL_CMP_HASH(container, type, cmp_func, val_adr, hash_func, \
+			 length_func, alloc_style, alloc_func, free_func) \
+    CAG_DEC_CMP_HASH(container, type); \
+    CAG_DEF_ALL_CMP_HASH(container, type, cmp_func, val_adr, hash_func, \
+			 length_func, alloc_style, alloc_func, free_func)
+
 /*! \brief Definition of most common case hash function.
    This is a hash table that does not manage the memory of its elements.
 */
 
 #define CAG_DEF_CMP_HASH(container, type, cmp_func, hash_func, length_func) \
-    CAG_DEF_CMP_ALL_HASH(container, type, cmp_func, CAG_BYVAL, \
+    CAG_DEF_ALL_CMP_HASH(container, type, cmp_func, CAG_BYVAL, \
                          hash_func, length_func, \
                          CAG_NO_ALLOC_STYLE, CAG_ALLOC_DEFAULT, CAG_NO_FREE_FUNC)
 
 /*! \brief Same as CAG_DEF_CMP_HASH but cmp_func takes parameters by address. */
 
 #define CAG_DEF_CMPP_HASH(container, type, cmp_func, hash_func, length_func) \
-    CAG_DEF_CMP_ALL_HASH(container, type, cmp_func, CAG_BYADR, \
+    CAG_DEF_ALL_CMP_HASH(container, type, cmp_func, CAG_BYADR, \
                          hash_func, length_func, \
                          CAG_NO_ALLOC_STYLE, CAG_ALLOC_DEFAULT, CAG_NO_FREE_FUNC)
 
@@ -577,7 +587,7 @@ typedef container CAG_P_CMB(container,  __LINE__)
     CAG_DEC_CMP_HASH(container, type)
 
 #define CAG_DEF_STR_STR_HASH(container, type) \
-    CAG_DEF_CMP_ALL_HASH(container, type, CAG_STRCMP_STRUCT_WITH_STR_KEY, \
+    CAG_DEF_ALL_CMP_HASH(container, type, CAG_STRCMP_STRUCT_WITH_STR_KEY, \
                          CAG_BYVAL, CAG_OAT_HASH_STRUCT_WITH_STR_KEY, \
                          CAG_STRLEN_STRUCT_WITH_STR_KEY, CAG_STRUCT_ALLOC_STYLE, \
                          cag_alloc_str_str, CAG_FREE_STRUCT_STR_STR)
@@ -596,7 +606,7 @@ typedef container CAG_P_CMB(container,  __LINE__)
     CAG_DEC_CMP_HASH(container, char *)
 
 #define CAG_DEF_STR_HASH(container) \
-    CAG_DEF_CMP_ALL_HASH(container, char *, strcmp, CAG_BYVAL, cag_oat_hash, \
+    CAG_DEF_ALL_CMP_HASH(container, char *, strcmp, CAG_BYVAL, cag_oat_hash, \
                          strlen, CAG_SIMPLE_ALLOC_STYLE, cag_strdup, free)
 
 #define CAG_DEC_DEF_STR_HASH(container) \

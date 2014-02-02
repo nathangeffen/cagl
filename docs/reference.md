@@ -790,7 +790,7 @@ TODO
 
 #### Complexity {-}
 
-This is an $\theta(n)$ operation where $n$ is the number of elements in the tree.
+This is a $\theta(n)$ operation where $n$ is the number of elements in the tree.
 
 ##### Data races {-}
 
@@ -1042,6 +1042,7 @@ Copies elements in the semi-open range [first, last) to a container. The contain
 C *copy_C(it_C first, it_C last, C *c);
 ```
 
+Note that only copying between containers of the same type is supported by the copy function blueprints. To copy between different types of containers that store the same element type, use the [copy macros](#copy-macros).
 
 Containers:
 array	dlist	hash	slist	tree
@@ -1072,11 +1073,13 @@ TODO
 
 #### See also {-}
 
+
 - [copy_all_C](#copy_all_C-adhst)
 - [copy_if_C](#copy_if_C-adhst)
 - [copy_if_all_C](#copy_if_all_C-adhst)
 - [copy_many_C](#copy_many_C-adhst)
 - [copy_over_C](#copy_over_C-adhst)
+- [Copy macros](#copy-macros)
 
 ------
 
@@ -1122,6 +1125,7 @@ TODO.
 - [copy_if_all_C](#copy_if_all_C-adhst)
 - [copy_many_C](#copy_many_C-adhst)
 - [copy_over_C](#copy_over_C-adhst)
+- [Copy macros](#copy-macros)
 
 ------
 
@@ -1172,6 +1176,7 @@ Pointer to container copied to if successful else NULL.
 - [copy_if_all_C](#copy_if_all_C-adhst)
 - [copy_many_C](#copy_many_C-adhst)
 - [copy_over_C](#copy_over_C-adhst)
+- [Copy macros](#copy-macros)
 
 ------
 
@@ -1217,17 +1222,18 @@ TODO
 #### See also {-}
 
 - [copy_C](#copy_C-adhst)
+- [copy_all_C](#copy_all_C-adhst)
 - [copy_if_C](#copy_if_C-adhst)
-- [copy_if_all_C](#copy_if_all_C-adhst)
 - [copy_many_C](#copy_many_C-adhst)
 - [copy_over_C](#copy_over_C-adhst)
-
+- [Copy macros](#copy-macros)
 
 ------
 
 
 #### copy_many_C {#copy_many_C-adhst - }
 
+Copy a container to multiple containers.
 
 ```C
 int copy_many_C(C *c, ...);
@@ -1240,12 +1246,18 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+c
+  ~ The container to copy from.
+
+The remaining parameters are one or more containers, c1, c2, ... cn, to copy to. The very last parameter must be NULL.
 
 #### Return value {-}
 
+The number of containers successfully copied to. If this is less than the number of containers expected, an error occurred on the return value + 1th container.
 
 ##### Example {-}
 
+TODO
 
 #### Complexity {-}
 
@@ -1255,12 +1267,19 @@ array	dlist	hash	slist	tree
 
 #### See also {-}
 
+- [copy_C](#copy_C-adhst)
+- [copy_all_C](#copy_all_C-adhst)
+- [copy_if_C](#copy_if_C-adhst)
+- [copy_if_all_C](#copy_if_all_C-adhst)
+- [copy_over_C](#copy_over_C-adhst)
+- [Copy macros](#copy-macros)
 
 ------
 
 
 #### copy_over_C {#copy_over_C-adhst - }
 
+Copies a range over another range. For *copy_over* functions, there must be sufficient space already in the container. This is similar to the behaviour of the of the C++ STL copy.
 
 ```C
 it_C copy_over_C(it_C first, const it_C last, it_C result);
@@ -1273,12 +1292,19 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+first
+  ~ Iterator pointing to The first element to begin copying from.
+last
+  ~ Iterator pointing one past the last element to copy.
+
 
 #### Return value {-}
 
+Returns iterator one past the last copied element in the copied to container.
 
 ##### Example {-}
 
+TODO
 
 #### Complexity {-}
 
@@ -1288,15 +1314,21 @@ array	dlist	hash	slist	tree
 
 #### See also {-}
 
+- [copy_C](#copy_C-adhst)
+- [copy_all_C](#copy_all_C-adhst)
+- [copy_if_C](#copy_if_C-adhst)
+- [copy_if_all_C](#copy_if_all_C-adhst)
+- [Copy macros](#copy-macros)
 
 ------
 
 
 #### distance_C {#distance_C-adhst - }
 
+Calculates the number of elements in a semi-open range, [first, last).
 
 ```C
-size_t distance_C(const it_C from, const it_C to);
+size_t distance_C(const it_C first, const it_C last);
 ```
 
 
@@ -1312,21 +1344,25 @@ array	dlist	hash	slist	tree
 
 ##### Example {-}
 
+TODO
 
 #### Complexity {-}
 
+This is a constant time operation for arrays. It is $\theta(n)$ for all the other containers, where $n$ is the number of elements in the range.
 
 ##### Data races {-}
 
 
 #### See also {-}
 
+- [distance_all_C](#distance_all_C-adhst)
 
 ------
 
 
 #### distance_all_C {#distance_all_C-adhst - }
 
+Calculates the number of elements in a container.
 
 ```C
 size_t distance_all_C(const C *c);
@@ -1348,23 +1384,27 @@ array	dlist	hash	slist	tree
 
 #### Complexity {-}
 
+This is a constant time operation for arrays. It is $\theta(n)$ for all other containers. If you frequently need to determine the size of a non-array container, it might be more efficient to track the size yourself.
 
 ##### Data races {-}
 
 
 #### See also {-}
 
+- [distance_C](#distance_C-adhst)
 
 ------
 
 
 #### end_C {#end_C-adhst - }
 
+Returns an iterator pointing one past the last element in a container. Accessing the element of this iterator is undefined.
 
 ```C
-it_C end_C(const C *array);
+it_C end_C(const C *c);
 ```
 
+Note: For SLISTs this function always returns NULL. For all other containers, the operation *prev_C(end_C(c)* is valid.
 
 Containers:
 array	dlist	hash	slist	tree
@@ -1393,6 +1433,7 @@ array	dlist	hash	slist	tree
 
 #### equal_all_C {#equal_all_C-adst - }
 
+Compares corresponding elements in two containers, stopping if unequal elements are encountered. This is only defined for container types declared with a declaration macro containing *CMP* in it. If there are fewer elements in the container than the first, then behaviour is undefined.
 
 ```C
 int equal_all_C(const C *c1, const C *c2);
@@ -1405,12 +1446,18 @@ array	dlist	slist	tree
 
 ##### Parameters {-}
 
+c1
+  ~ First container to compare. This container must have the same or fewer elements than c2.
+c2
+  ~ Second container to compare. This container must have the same or more elements than c1.
 
 #### Return value {-}
 
+Returns 0 if all calls to *cmp_func* return zero, else returns the first non-zero value of cmp_func.
 
 ##### Example {-}
 
+TODO
 
 #### Complexity {-}
 
@@ -1426,9 +1473,10 @@ array	dlist	slist	tree
 
 #### equal_range_C {#equal_range_C-adst - }
 
+Compares corresponding elements in two ranges, stopping if unequal elements are encountered. This is only defined for container types declared with a declaration macro containing *CMP* in it. If there are fewer elements in the second range than the first, then behaviour is undefined. The first range [first_1, last_1), is semi-open.
 
 ```C
-int equal_range_C(it_C from_1, const it_C to_1, it_C from_2);
+int equal_range_C(it_C first_1, const it_C last_1, it_C first_2);
 ```
 
 
@@ -1438,12 +1486,21 @@ array	dlist	slist	tree
 
 ##### Parameters {-}
 
+first_1
+  ~ Iterator to first element in range.
+last_1
+  ~ Iterator one past last element in range to be compared
+first_2
+  ~ Iterator to first element in second range.
 
 #### Return value {-}
+
+Returns 0 if all calls to *cmp_func* return zero, else returns the first non-zero value of cmp_func.
 
 
 ##### Example {-}
 
+TODO
 
 #### Complexity {-}
 
@@ -1459,9 +1516,10 @@ array	dlist	slist	tree
 
 #### erase_C {#erase_C-adht - }
 
+Erases the element pointed to by an iterator.
 
 ```C
-it_C erase_C(C *array, it_C it);
+it_C erase_C(C *c, it_C it);
 ```
 
 
@@ -1474,9 +1532,11 @@ array	dlist	hash	tree
 
 #### Return value {-}
 
+Iterator pointing to the element that was immediately after the erased element.
 
 ##### Example {-}
 
+TODO
 
 #### Complexity {-}
 
@@ -1492,6 +1552,7 @@ array	dlist	hash	tree
 
 #### erase_after_C {#erase_after_C-s - }
 
+Erases the element after the one pointed to by an iterator.
 
 ```C
 it_C erase_after_C(it_C it);
@@ -1504,12 +1565,16 @@ slist
 
 ##### Parameters {-}
 
+it
+  ~ Iterator pointing to an element. It is the next that will be erased. it->next should not be NULL.
 
 #### Return value {-}
 
+The parameter iterator, *it*, is returned.
 
 ##### Example {-}
 
+TODO
 
 #### Complexity {-}
 
@@ -1519,15 +1584,18 @@ slist
 
 #### See also {-}
 
+- [erase_front_C](#erase_front_C-s)
+- [erase_after_range_C](#erase_after_range_C-s)
 
 ------
 
 
 #### erase_after_range_C {#erase_after_range_C-s - }
 
+Erases all elements in the open range (first, last).
 
 ```C
-it_C erase_after_range_C(it_C from, it_C to);
+it_C erase_after_range_C(it_C first, it_C last);
 ```
 
 
@@ -1540,9 +1608,11 @@ slist
 
 #### Return value {-}
 
+The parameter iterator, *first*, is returned.
 
 ##### Example {-}
 
+TODO
 
 #### Complexity {-}
 
@@ -1552,12 +1622,16 @@ slist
 
 #### See also {-}
 
+- [erase_front_C](#erase_front_C-s)
+- [erase_after_C](#erase_after_C-s)
+
 
 ------
 
 
 #### erase_all_C {#erase_all_C-adhst - }
 
+Erases all the elements in a container.
 
 ```C
 it_C erase_all_C(C *c);
@@ -1576,6 +1650,7 @@ array	dlist	hash	slist	tree
 
 ##### Example {-}
 
+TODO
 
 #### Complexity {-}
 
@@ -1585,12 +1660,16 @@ array	dlist	hash	slist	tree
 
 #### See also {-}
 
+- [erase_front_C](#erase_front_C-s)
+- [erase_after_C](#erase_after_C-s)
+- [erase_after_range_C](#erase_after_range_C-s)
 
 ------
 
 
 #### erase_front_C {#erase_front_C-s - }
 
+Erases the first element in a singly linked list.
 
 ```C
 it_C erase_front_C(C *slist);
@@ -1606,9 +1685,11 @@ slist
 
 #### Return value {-}
 
+Iterator pointing to what was previously the second element in the list, but is now the head.
 
 ##### Example {-}
 
+TODO
 
 #### Complexity {-}
 
@@ -1624,9 +1705,10 @@ slist
 
 #### erase_range_C {#erase_range_C-adhst - }
 
+Erases all the elements in the semi-open range [first, last).
 
 ```C
-it_C erase_range_C(C *array, it_C from, it_C to);
+it_C erase_range_C(C *array, it_C first, it_C last);
 ```
 
 
@@ -1639,6 +1721,7 @@ array	dlist	hash	slist	tree
 
 #### Return value {-}
 
+Returns the parameter iterator, *last*.
 
 ##### Example {-}
 
@@ -1657,11 +1740,11 @@ array	dlist	hash	slist	tree
 
 #### find_C {#find_C-adhst - }
 
+Finds the first occurrence of *element* in the semi-open range [first, last) using a linear search. This is useful for containers which have no ordering function defined (e.g. hash tables, container types that were not declared with a macro containing CMP) or for ordered containers that need to search on a non-primary key.
 
 ```C
-it_C find_C(it_C from, const it_C to, const T element, int (*cmp_func) (const T*, const T*));
+it_C find_C(it_C first, const it_C last, const T element, int (*cmp_func) (const T*, const T*));
 ```
-
 
 Containers:
 array	dlist	hash	slist	tree
@@ -1669,27 +1752,53 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+first
+  ~ Iterator pointing to first element in range to search.
+last
+  ~ Iterator pointing one past the last element in range to search.
+element
+  ~ Element to search for, passed by value.
+cmp_func
+  ~ User function that compares two elements. It returns zero if they are equal, else non-zero.
 
 #### Return value {-}
 
+Iterator pointing to found element. If the element was not found, it returns *last*.
 
 ##### Example {-}
 
 
 #### Complexity {-}
 
+This is an $O(n)$ operation where $n$ is the number of elements in the range.
 
 ##### Data races {-}
 
 
 #### See also {-}
 
+- [find_all_C](#find_all_C-adhst)
+- [findp_C](#findp_C-adhst)
+- [findp_all_C](#findp_all_C-adhst)
+- [rfind_C](#rfind_C-adt)
+- [rfindp_C](#rfindp_C-adt)
+- [search_C](#search_C-adst)
+- [search_all_C](#search_all_C-adst)
+- [searchp_C](#searchp_C-adst)
+- [searchp_all_C](#searchp_all_C-adst)
+- [rsearch_C](#rsearch_C-adt)
+- [rsearchp_C](#rsearchp_C-adt)
+- [binary_search_C](#binary_search_C-a)
+- [binary_search_all_C](#binary_search_all_C-a)
+- [binary_searchp_C](#binary_searchp_C-a)
+- [binary_searchp_all_C](#binary_searchp_all_C-a)
 
 ------
 
 
 #### find_all_C {#find_all_C-adhst - }
 
+Finds the first occurrence of *element* in a container using a linear search. This is useful for containers which have no ordering function defined (e.g. hash tables, container types that were not declared with a macro containing CMP) or for ordered containers that need to search on a non-primary key.
 
 ```C
 it_C find_all_C(const C *c, const T element, int (*cmp_func) (const T*, const T*));
@@ -1702,27 +1811,51 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to search.
+element
+  ~ Element to search for, passed by value.
+cmp_func
+  ~ User function that compares two elements. It returns zero if they are equal, else non-zero.
 
 #### Return value {-}
 
+Iterator pointing to found element. If the element was not found, it returns *end_C(c)*.
 
 ##### Example {-}
 
 
 #### Complexity {-}
 
+This is a $O(n)$ operation where $n$ is the number of elements in the container.
 
 ##### Data races {-}
 
 
 #### See also {-}
 
+- [find_C](#find_C-adhst)
+- [findp_C](#findp_C-adhst)
+- [findp_all_C](#findp_all_C-adhst)
+- [rfind_C](#rfind_C-adt)
+- [rfindp_C](#rfindp_C-adt)
+- [search_C](#search_C-adst)
+- [search_all_C](#search_all_C-adst)
+- [searchp_C](#searchp_C-adst)
+- [searchp_all_C](#searchp_all_C-adst)
+- [rsearch_C](#rsearch_C-adt)
+- [rsearchp_C](#rsearchp_C-adt)
+- [binary_search_C](#binary_search_C-a)
+- [binary_search_all_C](#binary_search_all_C-a)
+- [binary_searchp_C](#binary_searchp_C-a)
+- [binary_searchp_all_C](#binary_searchp_all_C-a)
 
 ------
 
 
 #### findp_C {#findp_C-adhst - }
 
+Finds the first occurrence of *element* in the semi-open range [first, last) using a linear search. This is useful for containers which have no ordering function defined (e.g. hash tables, container types that were not declared with a macro containing CMP) or for ordered containers that need to search on a non-primary key.
 
 ```C
 it_C findp_C(it_C from, const it_C to, const T *element, int (*cmp_func)(const T*, const T*));
@@ -1735,9 +1868,19 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+first
+  ~ Iterator pointing to first element in range to search.
+last
+  ~ Iterator pointing one past the last element in range to search.
+element
+  ~ Element to search for, passed by address.
+cmp_func
+  ~ User function that compares two elements. It returns zero if they are equal, else non-zero.
+
 
 #### Return value {-}
 
+Iterator pointing to found element. If the element was not found, it returns *last*.
 
 ##### Example {-}
 
@@ -1750,12 +1893,28 @@ array	dlist	hash	slist	tree
 
 #### See also {-}
 
+- [find_C](#find_C-adhst)
+- [find_all_C](#find_all_C-adhst)
+- [findp_all_C](#findp_all_C-adhst)
+- [rfind_C](#rfind_C-adt)
+- [rfindp_C](#rfindp_C-adt)
+- [search_C](#search_C-adst)
+- [search_all_C](#search_all_C-adst)
+- [searchp_C](#searchp_C-adst)
+- [searchp_all_C](#searchp_all_C-adst)
+- [rsearch_C](#rsearch_C-adt)
+- [rsearchp_C](#rsearchp_C-adt)
+- [binary_search_C](#binary_search_C-a)
+- [binary_search_all_C](#binary_search_all_C-a)
+- [binary_searchp_C](#binary_searchp_C-a)
+- [binary_searchp_all_C](#binary_searchp_all_C-a)
 
 ------
 
 
 #### findp_all_C {#findp_all_C-adhst - }
 
+Finds the first occurrence of *element* in a container using a linear search. This is useful for containers which have no ordering function defined (e.g. hash tables, container types that were not declared with a macro containing CMP) or for ordered containers that need to search on a non-primary key.
 
 ```C
 it_C findp_all_C(C *c, const T* element, int (*cmp_func) (const T*, const T*));
@@ -1768,9 +1927,17 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to search.
+element
+  ~ Element to search for, passed by address.
+cmp_func
+  ~ User function that compares two elements. It returns zero if they are equal, else non-zero.
+
 
 #### Return value {-}
 
+Iterator pointing to found element. If the element was not found, it returns *end_C(c)*.
 
 ##### Example {-}
 
@@ -1783,17 +1950,33 @@ array	dlist	hash	slist	tree
 
 #### See also {-}
 
+
+- [find_C](#find_C-adhst)
+- [find_all_C](#find_all_C-adhst)
+- [findp_C](#findp_C-adhst)
+- [rfind_C](#rfind_C-adt)
+- [rfindp_C](#rfindp_C-adt)
+- [search_C](#search_C-adst)
+- [search_all_C](#search_all_C-adst)
+- [searchp_C](#searchp_C-adst)
+- [searchp_all_C](#searchp_all_C-adst)
+- [rsearch_C](#rsearch_C-adt)
+- [rsearchp_C](#rsearchp_C-adt)
+- [binary_search_C](#binary_search_C-a)
+- [binary_search_all_C](#binary_search_all_C-a)
+- [binary_searchp_C](#binary_searchp_C-a)
+- [binary_searchp_all_C](#binary_searchp_all_C-a)
 
 ------
 
 
 #### free_C {#free_C-adhst - }
 
+Destroys a container, erases all its elements and returns all memory to the heap. Every container variable should be freed once it is no longer needed. For every container variable a *new_C* function should be applied to it before it is used and *free_C* function should be applied to it once it is no longer used. For every call to a *new_C* function there should be one and only one corresponding call to a *free_C* function.
 
 ```C
-void free_C(C *array);
+void free_C(C *c);
 ```
-
 
 Containers:
 array	dlist	hash	slist	tree
@@ -1801,12 +1984,85 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to free.
 
 #### Return value {-}
 
+None. This is one of the few void CAGL functions.
 
 ##### Example {-}
 
+```C
+/* Demonstrates different uses of *new* and *free* on an array.
+
+   While in many environment it isn't generally necessary to free memory upon
+   exit of a program this demonstration does show how to exit the program
+   without leaving any memory leaks.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "cagl/array.h"
+
+/* Declare and define an array of integers. */
+CAG_DEC_DEF_ARRAY(int_arr, int);
+
+int main(void)
+{
+	int_arr a1, a2, a3, a4, a5;
+	int i;
+
+        /* Simplest use of new. Most users should use this version
+	   most of the time.
+	*/
+	if (!new_int_arr(&a1)) {
+		fprintf(stderr, "Error initialising with simple new.\n");
+		/* No need to free something that wasn't successfully
+		   initialized.
+		 */
+		exit(1);
+	}
+
+        /* Override CAGL default capacity with space for 10 elements. */
+	if (!new_with_capacity_int_arr(&a2, 10)) {
+		fprintf(stderr, "Error initialising with new_with_capacity.\n");
+		free_int_arr(&a1);
+		exit(1);
+	}
+
+        /* Insert 10 elements into a new array */
+	if (!new_with_size_int_arr(&a3, 10)) {
+		fprintf(stderr, "Error initialising with new_with_size.\n");
+		free_int_arr(&a1);
+		free_int_arr(&a2);
+		exit(1);
+	}
+
+	/* Use the new_many, free_many idiom. */
+	i = new_many_int_arr(&a4, &a5, NULL); /* Initialize multiple arrays. */
+	if (i <= 0) {
+		fprintf(stderr, "Only %d successfully initialized\n", i);
+		free_many_int_arr(i, &a4, &a5);
+		exit(1);
+	}
+
+	printf("Capacity of a1 is: %lu\n", a1.capacity);
+	printf("Size of a1 is: %lu\n", size_int_arr(&a1));
+	printf("Capacity of a2 is: %lu\n", a2.capacity);
+	printf("Size of a2 is: %lu\n", size_int_arr(&a2));
+	printf("Capacity of a3 is: %lu\n", a3.capacity);
+	printf("Size of a3 is: %lu\n", size_int_arr(&a3));
+	printf("Capacity of a4 is: %lu\n", a4.capacity);
+	printf("Size of a4 is: %lu\n", size_int_arr(&a4));
+	printf("Capacity of a5 is: %lu\n", a5.capacity);
+	printf("Size of a5 is: %lu\n", size_int_arr(&a5));
+
+        /* Return arrays to heap. */
+	free_many_int_arr(5, &a1, &a2, &a3, &a4, &a5);
+	return 0;
+}
+```
 
 #### Complexity {-}
 
@@ -1816,15 +2072,22 @@ array	dlist	hash	slist	tree
 
 #### See also {-}
 
+- [free_many_C](#free_many_C-adhst)
+- [new_C](#new_C-adhst)
+- [new_from_C](#new_from_C-adhst)
+- [new_many_C](#new_many_C-adhst)
+- [new_with_capacity_C](#new_with_capacity_C-a)
+- [new_with_size_C](#new_with_size_C-a)
 
 ------
 
 
 #### free_many_C {#free_many_C-adhst - }
 
+Destroys many containers, erases all their elements and returns all memory used by them to the heap. This is usually used in conjunction with a [new_many_C](#new_many_C-adhst) function.
 
 ```C
-void free_many_C(int max, C *c, ...);
+void free_many_C(int num_to_free, C *c, ...);
 ```
 
 
@@ -1834,45 +2097,92 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+num_to_free
+  ~ The number of container variables to free. This must be equal to or less than the containers used in the rest of the parameter list. You shouldn't have to manually determine the value of num_to_free. Instead, assign it to the return value when you call [new_many_C](#new_many_C-adhst). This is thethe number of containers that were successfully created. Then by passing the same value to *free_many_C*, you can be sure that only the successfully allocated containers will be freed. (It's a mistake to free containers that aren't successfully allocated.)
+
+c
+  ~ First container to free.
+Remaining parameters (...)
+  ~ All the containers, in the same order, that were passed to *new_many_C*.
+
+Note in contrast to *new_many_C*, there is no need to pass NULL as the last parameter, but no harm results from doing so either.
 
 #### Return value {-}
 
+None.
 
 ##### Example {-}
-
-
-#### Complexity {-}
-
-
-##### Data races {-}
-
-
-#### See also {-}
-
-
-------
-
-
-#### free_node_C {#free_node_C-t - }
-
 
 ```C
-void free_node_C(C *tree, it_C it);
+/* Demonstrates different uses of *new* and *free* on an array.
+
+   While in many environment it isn't generally necessary to free memory upon
+   exit of a program this demonstration does show how to exit the program
+   without leaving any memory leaks.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "cagl/array.h"
+
+/* Declare and define an array of integers. */
+CAG_DEC_DEF_ARRAY(int_arr, int);
+
+int main(void)
+{
+	int_arr a1, a2, a3, a4, a5;
+	int i;
+
+        /* Simplest use of new. Most users should use this version
+	   most of the time.
+	*/
+	if (!new_int_arr(&a1)) {
+		fprintf(stderr, "Error initialising with simple new.\n");
+		/* No need to free something that wasn't successfully
+		   initialized.
+		 */
+		exit(1);
+	}
+
+        /* Override CAGL default capacity with space for 10 elements. */
+	if (!new_with_capacity_int_arr(&a2, 10)) {
+		fprintf(stderr, "Error initialising with new_with_capacity.\n");
+		free_int_arr(&a1);
+		exit(1);
+	}
+
+        /* Insert 10 elements into a new array */
+	if (!new_with_size_int_arr(&a3, 10)) {
+		fprintf(stderr, "Error initialising with new_with_size.\n");
+		free_int_arr(&a1);
+		free_int_arr(&a2);
+		exit(1);
+	}
+
+	/* Use the new_many, free_many idiom. */
+	i = new_many_int_arr(&a4, &a5, NULL); /* Initialize multiple arrays. */
+	if (i <= 0) {
+		fprintf(stderr, "Only %d successfully initialized\n", i);
+		free_many_int_arr(i, &a4, &a5);
+		exit(1);
+	}
+
+	printf("Capacity of a1 is: %lu\n", a1.capacity);
+	printf("Size of a1 is: %lu\n", size_int_arr(&a1));
+	printf("Capacity of a2 is: %lu\n", a2.capacity);
+	printf("Size of a2 is: %lu\n", size_int_arr(&a2));
+	printf("Capacity of a3 is: %lu\n", a3.capacity);
+	printf("Size of a3 is: %lu\n", size_int_arr(&a3));
+	printf("Capacity of a4 is: %lu\n", a4.capacity);
+	printf("Size of a4 is: %lu\n", size_int_arr(&a4));
+	printf("Capacity of a5 is: %lu\n", a5.capacity);
+	printf("Size of a5 is: %lu\n", size_int_arr(&a5));
+
+        /* Return arrays to heap. */
+	free_many_int_arr(5, &a1, &a2, &a3, &a4, &a5);
+	return 0;
+}
 ```
-
-
-Containers:
-tree
-
-
-##### Parameters {-}
-
-
-#### Return value {-}
-
-
-##### Example {-}
-
 
 #### Complexity {-}
 
@@ -1882,15 +2192,22 @@ tree
 
 #### See also {-}
 
+- [free_C](#free_C-adhst)
+- [new_C](#new_C-adhst)
+- [new_from_C](#new_from_C-adhst)
+- [new_many_C](#new_many_C-adhst)
+- [new_with_capacity_C](#new_with_capacity_C-a)
+- [new_with_size_C](#new_with_size_C-a)
 
 ------
 
 
 #### front_C {#front_C-adst - }
 
+Returns pointer to first element in container.
 
 ```C
-T *front_C(const C *array);
+T *front_C(const C *c);
 ```
 
 
@@ -1900,18 +2217,24 @@ array	dlist	slist	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to retrieve the front element for.
 
 #### Return value {-}
 
+Pointer to first element in the container.
 
 ##### Example {-}
 
+TODO
 
 #### Complexity {-}
 
+This is a constant time operation for all containers.
 
 ##### Data races {-}
 
+The address of the first element is retrieved.
 
 #### See also {-}
 
@@ -1921,9 +2244,10 @@ array	dlist	slist	tree
 
 #### get_C {#get_C-ht - }
 
+Retrieves the element from the container with the given key.
 
 ```C
-it_C get_C(const it_C root, const T element);
+it_C get_C(const C *c, const T key);
 ```
 
 
@@ -1933,27 +2257,99 @@ hash	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to retrieve element from.
+key
+  ~ Element to search for, passed by value.
 
 #### Return value {-}
 
+Iterator pointing to element if a match is found, else NULL.
 
 ##### Example {-}
 
+```C
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <cagl/tree.h>
+#include <cagl/hash.h>
+
+CAG_DEC_DEF_STR_TREE(string_tree);
+
+CAG_DEC_DEF_STR_HASH(string_hash);
+
+int main(void)
+{
+	string_tree t;
+	string_hash h;
+	it_string_tree itt;
+	it_string_hash ith;
+
+	if (!new_string_tree(&t)) {
+		fprintf(stderr, "Error allocating tree.\n");
+		exit(1);
+	}
+	if (!new_string_hash(&h)) {
+		fprintf(stderr, "Error allocating hash.\n");
+		exit(1);
+	}
+
+	insert_string_tree(&t, "cat");
+	insert_string_tree(&t, "dog");
+	insert_string_tree(&t, "mouse");
+
+	insert_string_hash(&h, "cat");
+	insert_string_hash(&h, "dog");
+	insert_string_hash(&h, "mouse");
+
+	itt = get_string_tree(&t, "dog");
+	if (!itt)
+		printf("Dog not found.\n");
+	else
+		printf("%s barks woof!\n", itt->value);
+
+	ith = get_string_hash(&h, "cat");
+	if (!ith)
+		printf("Cat not found.\n");
+	else
+		printf("%s say meeow!\n", ith->value);
+
+	free_string_tree(&t);
+	free_string_hash(&h);
+	return 0;
+}
+```
+
+The output is:
+
+```
+dog barks woof!
+cat say meeow!
+```
 
 #### Complexity {-}
 
+For hash tables on average this is a constant time operation. But it can degrade in the worst case to $O(n)$ where $n$ is the number of elements in the table.
+
+For trees this is an $O(\log n)$ operation on average and in the worst case.
 
 ##### Data races {-}
 
+For hash tables it is possible that every element will be read once.
+
+For trees approximately $\log n$ elements will be read where $n$ is the number of elements in the tree.
 
 #### See also {-}
 
+- [getp_C](#getp_C-ht)
 
 ------
 
 
 #### getp_C {#getp_C-ht - }
 
+Retrieves the element from the container with the given key.
 
 ```C
 it_C getp_C(const it_C root, const T *element);
@@ -1963,24 +2359,103 @@ it_C getp_C(const it_C root, const T *element);
 Containers:
 hash	tree
 
-
 ##### Parameters {-}
 
+c
+  ~ Container to retrieve element from.
+key
+  ~ Element to search for, passed by address.
 
 #### Return value {-}
 
+Iterator pointing to element if a match is found, else NULL.
 
 ##### Example {-}
 
+```C
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <cagl/tree.h>
+#include <cagl/hash.h>
+
+struct dictionary {
+	char *word;
+	char *definition;
+};
+
+CAG_DEC_DEF_STR_STR_TREE(tree_dict, struct dictionary);
+
+CAG_DEC_DEF_STR_STR_HASH(hash_dict, struct dictionary);
+
+int main(void)
+{
+	tree_dict t;
+	hash_dict h;
+	it_tree_dict itt;
+	it_hash_dict ith;
+	struct dictionary dict;
+	struct dictionary key;
+
+	if (!new_tree_dict(&t)) {
+		fprintf(stderr, "Error allocating tree.\n");
+		exit(1);
+	}
+	if (!new_hash_dict(&h)) {
+		fprintf(stderr, "Error allocating hash.\n");
+		exit(1);
+	}
+
+	dict.word = "cat";
+	dict.definition = "Meeowing domestic pet";
+	insertp_tree_dict(&t, &dict);
+
+	dict.word = "dog";
+	dict.definition = "Barking domestic pet";
+	insertp_hash_dict(&h, &dict);
+
+	key.word = "cat";
+	itt = getp_tree_dict(&t, &key);
+	if (!itt)
+		printf("Cat not found.\n");
+	else
+		printf("%s - %s\n", itt->value.word, itt->value.definition);
+
+	key.word = "dog";
+	ith = getp_hash_dict(&h, &key);
+	if (!ith)
+		printf("Dog not found.\n");
+	else
+		printf("%s - %s\n", ith->value.word, ith->value.definition);
+
+	free_tree_dict(&t);
+	free_hash_dict(&h);
+	return 0;
+}
+```
+
+The output is:
+
+```
+cat - Meeowing domestic pet
+dog - Barking domestic pet
+```
 
 #### Complexity {-}
 
+For hash tables on average this is a constant time operation. But it can degrade in the worst case to $O(n)$ where $n$ is the number of elements in the table.
+
+For trees this is an $O(\log n)$ operation on average and in the worst case.
 
 ##### Data races {-}
 
+For hash tables it is possible that every element will be read once.
+
+For trees approximately $\log n$ elements will be read where $n$ is the number of elements in the tree.
 
 #### See also {-}
 
+- [get_C](#get_C-ht)
 
 ------
 
@@ -2835,7 +3310,7 @@ On success, the initialized container, else NULL.
 ##### Example {-}
 
 ```C
-/* Demonstrates different uses of *new* on an array.
+/* Demonstrates different uses of *new* and *free* on an array.
 
    While in many environment it isn't generally necessary to free memory upon
    exit of a program this demonstration does show how to exit the program
@@ -2884,7 +3359,7 @@ int main(void)
 	i = new_many_int_arr(&a4, &a5, NULL); /* Initialize multiple arrays. */
 	if (i <= 0) {
 		fprintf(stderr, "Only %d successfully initialized\n", i);
-		free_many_int_arr(i, &a4, &a5, NULL);
+		free_many_int_arr(i, &a4, &a5);
 		exit(1);
 	}
 
@@ -2900,7 +3375,7 @@ int main(void)
 	printf("Size of a5 is: %lu\n", size_int_arr(&a5));
 
         /* Return arrays to heap. */
-	free_many_int_arr(5, &a1, &a2, &a3, &a4, &a5, NULL);
+	free_many_int_arr(5, &a1, &a2, &a3, &a4, &a5);
 	return 0;
 }
 ```
@@ -4151,6 +4626,24 @@ array	dlist	tree
 
 
 #### See also {-}
+
+- [find_C](#find_C-adhst)
+- [find_all_C](#find_all_C-adhst)
+- [findp_C](#findp_C-adhst)
+- [findp_all_C](#findp_all_C-adhst)
+- [rfind_C](#rfind_C-adt)
+- [rfindp_C](#rfindp_C-adt)
+- [search_C](#search_C-adst)
+- [search_all_C](#search_all_C-adst)
+- [searchp_C](#searchp_C-adst)
+- [searchp_all_C](#searchp_all_C-adst)
+- [rsearch_C](#rsearch_C-adt)
+- [rsearchp_C](#rsearchp_C-adt)
+- [binary_search_C](#binary_search_C-a)
+- [binary_search_all_C](#binary_search_all_C-a)
+- [binary_searchp_C](#binary_searchp_C-a)
+- [binary_searchp_all_C](#binary_searchp_all_C-a)
+
 
 
 ------

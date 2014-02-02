@@ -1,4 +1,4 @@
-# Array
+# Arrays
 
 CAGL arrays (ARRAY) are random access containers that grow automatically. Appending to and access elements in arrays is efficient. Inserting elements at arbitrary positions in the array is increasingly less efficient, the closer to the front of the array the insertion takes place (worst case is O(n), where n is the number of elements in the array).
 
@@ -20,7 +20,7 @@ ARRAYs are intended to provide similar functionality to the C++ STL vector.
 - [CAG_DEF_ALL_ARRAY](#cag_def_all_array)
 - [CAG_DEF_ALL_CMP_ARRAY](#cag_def_all_cmp_array)
 
-### ARRAY other useful macros
+### ARRAY other useful macros {-}
 
 - [CAG_SORT_ARRAY](#cag_sort_array)
 

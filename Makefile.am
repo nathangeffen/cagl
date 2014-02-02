@@ -70,4 +70,4 @@ dist_noinst_SCRIPTS = autogen.sh
 
 
 ## Set up tests
-TESTS = bin/runtest1
+TESTS = bin/runtest1 bin/runtest2 bin/runtest3 bin/runtest4 bin/runtest5

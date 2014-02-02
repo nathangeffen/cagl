@@ -345,26 +345,26 @@ static void test_search(struct cag_test_series *tests)
 	populate_tree(&t, 0, 5, 1);
 	populate_tree(&t, 0, 5, 1);
 
-	it = get_complex_tree(t.root, c);
+	it = get_complex_tree(&t, c);
 	CAG_TEST(*tests, it && it->value.real == 3.0
 		 && it->value.imag == -3.0,
 		 "cag_tree: Value found");
-	it = get_complex_tree(t.root, d);
+	it = get_complex_tree(&t, d);
 	CAG_TEST(*tests, !it, "cag_tree: Value not found < all");
-	it = get_complex_tree(t.root, e);
+	it = get_complex_tree(&t, e);
 	CAG_TEST(*tests, !it, "cag_tree: Value not found in between");
-	it = get_complex_tree(t.root, f);
+	it = get_complex_tree(&t, f);
 	CAG_TEST(*tests, !it, "cag_tree: Value not found > all");
 
-	it = getp_complex_tree(t.root, &c);
+	it = getp_complex_tree(&t, &c);
 	CAG_TEST(*tests, it && it->value.real == 3.0
 		 && it->value.imag == -3.0,
 		 "cag_tree: Value found");
-	it = getp_complex_tree(t.root, &d);
+	it = getp_complex_tree(&t, &d);
 	CAG_TEST(*tests, !it, "cag_tree: Value not found < all");
-	it = getp_complex_tree(t.root, &e);
+	it = getp_complex_tree(&t, &e);
 	CAG_TEST(*tests, !it, "cag_tree: Value not found in between");
-	it = getp_complex_tree(t.root, &f);
+	it = getp_complex_tree(&t, &f);
 	CAG_TEST(*tests, !it, "cag_tree: Value not found > all");
 	free_complex_tree(&t);
 }
@@ -416,7 +416,6 @@ static void test_rb_insert_erase(struct cag_test_series *tests)
 	int i;
 	it_int_arr intit;
 	int failure = 0;
-
 
 	new_int_tree(&tree);
 	insert_int_tree(&tree, 10);

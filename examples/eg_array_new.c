@@ -47,7 +47,7 @@ int main(void)
 	i = new_many_int_arr(&a4, &a5, NULL); /* Initialize multiple arrays. */
 	if (i <= 0) {
 		fprintf(stderr, "Only %d successfully initialized\n", i);
-		free_many_int_arr(i, &a4, &a5, NULL);
+		free_many_int_arr(i, &a4, &a5);
 		exit(1);
 	}
 

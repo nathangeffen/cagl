@@ -94,12 +94,13 @@
 */
 
 #define CAG_DEC_SET_MIN_SIZE_DLIST(function, container, iterator_type) \
-    iterator_type function(container *dlist, iterator_type it, size_t size)
+    iterator_type function(container *dlist, size_t size)
 
 #define CAG_DEF_SET_MIN_SIZE_DLIST(function, container, iterator_type) \
     CAG_DEC_SET_MIN_SIZE_DLIST(function, container, iterator_type) \
     { \
         size_t i = 0; \
+        iterator_type it = beg_ ## container(dlist);	 \
         while (it != CAG_END_DLIST(dlist) && i < size) { \
             it = it->next; \
             ++i; \
@@ -113,7 +114,7 @@
             dlist->end_->prev = it; \
             ++i; \
         } \
-        return it->next; \
+        return it; \
     }
 
 /*! \brief Function declaration and definition to set the exact size of the
@@ -128,11 +129,14 @@
 CAG_DEC_SET_EXACT_SIZE_DLIST(function, container, iterator_type) \
 { \
     iterator_type it; \
-    it = set_min_size(dlist, CAG_BEGIN_DLIST(dlist), size); \
+    it = set_min_size(dlist, size); \
     if (it) { \
-        erase_range(dlist, it, CAG_END_DLIST(dlist)); \
-    } else return NULL; \
-    return CAG_END_DLIST(dlist); \
+        if (it->next) \
+            erase_range(dlist, it->next, CAG_END_DLIST(dlist)); \
+    } else { \
+        return NULL; \
+    } \
+    return CAG_END_DLIST(dlist)->prev; \
 }
 
 /*! \brief Algorithm and function declaration and definition to calculate
@@ -648,6 +652,12 @@ typedef container CAG_P_CMB(container,  __LINE__)
 CAG_DEC_DLIST(container, type); \
 CAG_DEF_ALL_DLIST(container, type, alloc_style, alloc_func, \
                   free_func, val_adr)
+
+#define CAG_DEC_DEF_ALL_CMP_DLIST(container, type, cmp_func, val_adr, \
+				  alloc_style, alloc_func, free_func) \
+CAG_DEC_CMP_DLIST(container, type); \
+CAG_DEF_ALL_CMP_DLIST(container, type, cmp_func, val_adr, \
+		      alloc_style, alloc_func, free_func)
 
 
 /*! \brief Declaration of functions for lists that remain sorted and have a

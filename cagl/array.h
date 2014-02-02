@@ -94,20 +94,21 @@
 */
 
 #define CAG_DEC_SET_MIN_SIZE_ARRAY(function, container, iterator_type) \
-    iterator_type function(container *array, iterator_type it, \
-                           const size_t size)
+    iterator_type function(container *array, const size_t size)
 
 #define CAG_DEF_SET_MIN_SIZE_ARRAY(function, container, iterator_type) \
     CAG_DEC_SET_MIN_SIZE_ARRAY(function, container, iterator_type) \
     { \
-        iterator_type it_new; \
-        size_t size_right = array->end - it; \
+        iterator_type it_new, it; \
+        size_t size_right; \
         size_t size_total; \
-        if (size_right > size) return it + size; \
+        it = beg_ ## container(array); \
+        size_right = array->end - it; \
+        if (size_right > size) return it + size - 1; \
         size_total = it - array->objects + size; \
         if (array->capacity >= size_total) { \
             array->end = it + size; \
-            return it + size; \
+            return it + size  - 1; \
         } \
         array->capacity = size_total; \
         it_new = realloc(array->begin, (array->capacity + 1) * \
@@ -116,7 +117,7 @@
             array->begin = it_new; \
             array->objects = array->begin + 1; \
             array->end = array->objects + size_total; \
-            return array->end; \
+            return array->end  - 1; \
         }  else return NULL; \
     }
 
@@ -132,8 +133,8 @@
 CAG_DEC_SET_EXACT_SIZE_ARRAY(function, container, iterator_type) \
 { \
     iterator_type it; \
-    if ( (it = set_min_size(array, CAG_P_BEG_ARRAY(*array), size))) { \
-        if ( it != CAG_P_END_ARRAY(*array)) { \
+    if ( (it = set_min_size(array, size))) { \
+        if ( it + 1 != CAG_P_END_ARRAY(*array)) { \
             erase_range(array, it, CAG_P_END_ARRAY(*array)); \
         } \
     }  else return NULL; \

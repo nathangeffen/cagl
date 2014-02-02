@@ -309,11 +309,12 @@ CAG_DEC_INSERTP_AFTER_SLIST(function, container, iterator_type, type) \
 
 
 #define CAG_DEC_SET_MIN_SIZE_SLIST(function, container, iterator_type) \
-    iterator_type function(container *slist, iterator_type it, size_t size)
+    iterator_type function(container *slist, size_t size)
 
 #define CAG_DEF_SET_MIN_SIZE_SLIST(function, container, iterator_type) \
     CAG_DEC_SET_MIN_SIZE_SLIST(function, container, iterator_type) \
     { \
+        iterator_type it = slist->header; \
         size_t i = 0; \
         if (it) { \
             while (it->next != NULL && i < size) { \
@@ -350,7 +351,7 @@ CAG_DEC_INSERTP_AFTER_SLIST(function, container, iterator_type, type) \
 CAG_DEC_SET_EXACT_SIZE_SLIST(function, container, iterator_type) \
 { \
     iterator_type it; \
-    it = set_min_size(slist, slist->header, size); \
+    it = set_min_size(slist, size); \
     if (it->next) \
         erase_range(slist, it->next, NULL); \
     return it; \
@@ -774,6 +775,24 @@ CAG_DEF_REVERSE_SLIST(reverse_all_ ## container, container) \
 CAG_DEF_FREE_SLIST(free_ ## container, container) \
 CAG_DEF_FORWARD(container, type) \
 typedef container CAG_P_CMB(container ## _cmp_1,  __LINE__)
+
+/*! \brief Define singly linked list in one macro with all parameters.  Useful
+   usually for small programs where the container will only be used in one
+   module.
+*/
+
+#define CAG_DEC_DEF_ALL_SLIST(container, type, alloc_style, alloc_func, \
+                          free_func, val_adr) \
+CAG_DEC_SLIST(container, type); \
+CAG_DEF_ALL_SLIST(container, type, alloc_style, alloc_func, \
+                          free_func, val_adr)
+
+#define CAG_DEC_DEF_ALL_CMP_SLIST(container, type, cmp_func, val_adr, \
+				  alloc_style, alloc_func, free_func) \
+CAG_DEC_CMP_SLIST(container, type); \
+CAG_DEF_ALL_CMP_SLIST(container, type, cmp_func, val_adr, \
+		      alloc_style, alloc_func, free_func)
+
 
 /*! \brief Declare ordered slist functions. */
 

@@ -288,7 +288,7 @@
     } while(0)
 
 
-/* \brief User macro to copy over. */
+/* \brief User macros to copy over. */
 
 #define CAG_COPY_OVER_IF(container1, c1, container2, c2, cond)	\
 do { \
@@ -296,7 +296,7 @@ do { \
     it_ ## container1 e = end_ ## container1(c1); \
     it_ ## container2 it2 = begin_ ## container2(c2); \
     while (it1 != e) { \
-        if (cond) { \
+        if (cond(it1->value)) {	      \
              it2->value = it1->value; \
              it2 = next_ ## container2(it2); \
         } \
@@ -305,7 +305,24 @@ do { \
 } while(0)
 
 #define CAG_COPY_OVER(container1, c1, container2, c2) \
-    CAG_COPY_OVER_IF(container1, c1, container2, c2, 1)
+    CAG_COPY_OVER_IF(container1, c1, container2, c2, CAG_ALWAYS_TRUE_OP_1)
+
+#define CAG_RCOPY_OVER_IF(container1, c1, container2, c2, cond)	\
+do { \
+    rit_ ## container1 rit1 = rbegin_ ## container1(c1); \
+    rit_ ## container1 e = rend_ ## container1(c1); \
+    it_ ## container2 it2 = begin_ ## container2(c2); \
+    while (rit1 != e) { \
+        if (cond(rit1->value)) {	      \
+             it2->value = rit1->value; \
+             it2 = next_ ## container2(it2); \
+        } \
+        rit1 = rnext_ ## container1(rit1); \
+    } \
+} while (0)
+
+#define CAG_RCOPY_OVER(container1, c1, container2, c2) \
+    CAG_RCOPY_OVER_IF(container1, c1, container2, c2, CAG_ALWAYS_TRUE_OP_1)
 
 /*! \brief Generic *copy_over* function declaration and definition. */
 
@@ -406,10 +423,71 @@ CAG_DEC_RANDOM_SHUFFLE(function, iterator_type) \
     }
 
 
+/* \brief Generic COPY_IF macro for users. */
 
-/*! \brief Generic *copy* algorithm. Works on bidirectional iterators. */
+#define CAG_COPY_IF(container1, c1, container2, c2, cond_func, result) \
+do { \
+    it_ ## container1 it1, e; \
+    it_ ## container2 it2;  \
+    result = CAG_TRUE; \
+    it1 = beg_ ## container1(c1); \
+    e = end_ ## container1(c1); \
+    it2 = beg_ ## container2(c2); \
+    while (it1 != e) { \
+        if (cond_func(it1->value)) {			   \
+            it2 = put_ ## container2(c2, it2, it1->value); \
+            if (it2 == NULL) { \
+                result = CAG_FALSE; \
+                break; \
+            } else { \
+                it2 = next_ ## container2(it2); \
+            } \
+        } \
+        it1 = next_ ## container1(it1); \
+    } \
+} while(0)
 
-#define CAG_COPY_IF(first, last, container_var, it, value, next_in, \
+/* \brief Generic COPY macro for users. */
+
+#define CAG_COPY(container1, c1, container2, c2, result) \
+    CAG_COPY_IF(container1, c1, container2, c2, CAG_ALWAYS_TRUE_OP_1, result)
+
+/* \brief Generic reverse COPY_IF macro for users. */
+
+#define CAG_RCOPY_IF(container1, c1, container2, c2, cond_func, result) \
+do { \
+    rit_ ## container1 rit1, e; \
+    it_ ## container2 it2;  \
+    result = CAG_TRUE; \
+    rit1 = rbeg_ ## container1(c1); \
+    e = rend_ ## container1(c1); \
+    it2 = beg_ ## container2(c2); \
+    while (rit1 != e) { \
+        if (cond_func(rit1->value)) {			   \
+            it2 = put_ ## container2(c2, it2, rit1->value); \
+            if (it2 == NULL) { \
+                result = CAG_FALSE; \
+                break; \
+            } else { \
+                it2 = next_ ## container2(it2); \
+            } \
+        } \
+        rit1 = rnext_ ## container1(rit1); \
+    } \
+} while(0)
+
+
+/* \brief Generic reverse COPY macro for users. */
+
+#define CAG_RCOPY(container1, c1, container2, c2, result) \
+    CAG_RCOPY_IF(container1, c1, container2, c2, CAG_ALWAYS_TRUE_OP_1, result)
+
+
+/*! \brief Private generic *copy* macro. Works on bidirectional
+    iterators.
+*/
+
+#define CAG_P_COPY_IF(first, last, container_var, it, value, next_in, \
                     next_out, insert_out, cond_func, val_adr, data) \
 do { \
     void *p = it; \
@@ -425,9 +503,9 @@ do { \
     } \
 } while(0)
 
-#define CAG_COPY(first, last, container_var, it, value, next_in, \
+#define CAG_P_COPY(first, last, container_var, it, value, next_in, \
                  next_out, insert_out) \
-CAG_COPY_IF(first, last, container_var, it, value, next_in, next_out, \
+CAG_P_COPY_IF(first, last, container_var, it, value, next_in, next_out, \
             insert_out, CAG_ALWAYS_TRUE_OP_2, CAG_BYVAL, NULL)
 
 /*! \brief Generic *copy* function declaration and definition. */
@@ -443,7 +521,7 @@ CAG_COPY_IF(first, last, container_var, it, value, next_in, next_out, \
 CAG_DEC_COPY(function, iterator_type, container) \
 { \
     void *it = begin(c); \
-    CAG_COPY(first, last, c, it, CAG_VALUE, next_in, next_out, \
+    CAG_P_COPY(first, last, c, it, CAG_VALUE, next_in, next_out, \
              insert_out); \
     return c; \
 }
@@ -461,7 +539,7 @@ CAG_DEC_COPY(function, iterator_type, container) \
 CAG_DEC_COPY_IF(function, iterator_type, container, type) \
 { \
     void *it = begin(c); \
-    CAG_COPY_IF(first, last, c, it, CAG_VALUE, next_in, next_out, \
+    CAG_P_COPY_IF(first, last, c, it, CAG_VALUE, next_in, next_out, \
                 insert_out, cond_func, CAG_BYADR, data); \
     return c; \
 }

@@ -11,6 +11,12 @@
 
 - Test on embedded systems.
 
+## Ugly code
+
+- The generic stable sort must be rewritten. It's ugly.
+
+- Although the library interface is consistent (or mostly so), there are inconsistencies throughout the innards of the library, reflecting different experiments on how to code the macros. There needs to be some discussion on which style is best and then all non-conforming code must be brought in line with this standard.
+
 ## Installation
 
 - Automated installations needed. Autotools? Not sure. Unnecessarily complicated

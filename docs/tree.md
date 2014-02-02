@@ -44,7 +44,6 @@ Iterators for these container types are bidirectional.
 - [findp_all_C](#findp_all_C-adhst)
 - [free_C](#free_C-adhst)
 - [free_many_C](#free_many_C-adhst)
-- [free_node_C](#free_node_C-t)
 - [front_C](#front_C-adst)
 - [get_C](#get_C-ht)
 - [getp_C](#getp_C-ht)
