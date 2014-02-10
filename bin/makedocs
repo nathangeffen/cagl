@@ -9,4 +9,6 @@ if [ "$SUFFIX" = "" ]
     SUFFIX="html"
 fi
 
-pandoc -s -S -c style.css --toc docs/readme.md docs/userguide.md docs/array.md docs/dlist.md docs/hash.md docs/slist.md docs/tree.md  docs/developer.md  docs/macros.md  docs/reference.md docs/funcmatrix.md --toc-depth=3 -N --columns=80 -o docs/manual.$SUFFIX
+DOCS="docs/top.md docs/readme.md docs/userguide.md docs/array.md docs/dlist.md docs/hash.md docs/slist.md docs/tree.md  docs/developer.md  docs/macros.md  docs/reference.md docs/funcmatrix.md"
+
+pandoc -s -S -c style.css --toc  --toc-depth=3 -N --columns=80 $DOCS -o docs/manual.$SUFFIX

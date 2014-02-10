@@ -1,14 +1,11 @@
-% C Almost Generic Library Manual
-% Version 0.1
-% February 2014
 
-# Introduction
+# Introduction to CAGL
 
 The C Almost Generic Library (CAGL) provides *almost* generic containers and algorithms to manipulate them.
 
 These containers are implemented: arrays, doubly-linked lists, singly linked lists, balanced binary trees (as red-black trees) and hash tables. The library manages the memory of its containers. It can also manage the memory of the elements (values or data) of the containers. All the containers grow automatically.
 
-## Example {-}
+## Example
 
 This code populates an array with random integers and then sums the array.
 
@@ -146,7 +143,7 @@ There's lots to do to improve CAGL. See TODO.md in the docs directory. Email nat
 
 # Understanding CAGL
 
-## Purpose {-}
+## Purpose
 
 CAGL provides C programmers with an easy-to-use, fast library of commonly used containers for holding data. It also provides algorithms, implemented in functions and, to a lesser extent, macros for manipulating the containers and their data.
 
@@ -166,7 +163,7 @@ Also, CAGL implements iterators, although these are not as flexible as the ones 
 
 If you use C, but would like some of the convenience of the C++ STL, CAGL may meet your needs. Of course C doesn't have many C++ features used to develop the STL, so CAGL is much less sophisticated and comprehensive than the STL -- and always will be -- but it has been designed to cover common use cases.
 
-## Pros and cons of CAGL {-}
+## Pros and cons of CAGL
 
 CAGL has the following benefits:
 
@@ -181,11 +178,11 @@ It has these limitations:
 - The CAGL macros generate a bunch of functions, only some of which users may need. But with *gcc* these can be removed from object files passing the *-flto* to the linker.
 - Without reading the documentation (or using the CAG_DOC macro which lists all the functions for a container), users might struggle to know the names of the generated functions.
 
-## How CAGL has been tested {-}
+## How CAGL has been tested
 
 Several hundred test cases have been written and most common use cases have been tested. These are primarily in C files in the *tests* sub-directory. More test cases are being written. But this is new and immature software so expect serious bugs. Please feel welcome to help improve it.
 
-## Why *almost* generic? {-}
+## Why *almost* generic?
 
 The library is called *almost* generic for several reasons, the main one being that the generic functions that are generated for different container types must have different names because C doesn't support function overloading. The library is also *almost* type safe, but not quite. C allows a function with pointer parameters to be called with pointers of a different type. This is usually a programming mistake. However mature C compilers will give warnings when this happens. An important principle of CAGL is that when you use it you should get no compiler warnings (at least as far as your use of CAGL goes).
 
@@ -199,7 +196,7 @@ CAGL works as follows:
 
 - Also, since C doesn't support templates, you can't extend a CAGL container with generic code unless you're prepared to write C macros.
 
-## Why type *safer*? {-}
+## Why type *safer*?
 
 C is not type safe. You can, for example, call a function that expects a parameter that is a pointer of type A with a pointer to any type. However, good compilers will pick this up and warn you. You should not get any compiler warnings when using CAGL containers, else you're likely doing something undefined or dangerous.
 
@@ -209,32 +206,22 @@ The test suite of CAGL is compiled with these options:
 
 If any warnings are generated, the tests are considered to have failed. You should be able to compile your code that uses CAGL with these options too and get no warnings.
 
-## CAGL's complex macros {-}
-
-CAGL is implemented using some complicated and difficult to read macros. In some cases, algorithms that have natural recursive function implementations have been converted to non-recursive macros using goto statements (the horror). Isn't this bad style?
-
-The author of [SGLIB](http://sglib.sourceforge.net/) says it best:
-
-"Everyone knows that the C preprocessor can be used to imitate genericity of other languages and everyone consider[s] this idea dangerous and ugly. I don't."
-
-While part of CAGL's design and implementation is complex, CAGL from a programmer's perspective is easy to use.
-
-## Portability {-}
+# Portability
 
 CAGL has been tested using gcc and clang. It is C89 compatible, which means code that uses it should compile on a C preprocesser and compiler compatible with the 1989 ANSI C specification without warnings.
 
 It needs to be tested with other compilers, including Intel's and Microsoft's C compilers. Please help with this.
 
 
-## Bugs {-}
+# Bugs
 
 CAGL bugs are managed on Github.
 
-## License {-}
+# License
 
-CAGL is free software licensed under GNU LGLPL version 3. See *COPYING*.
+CAGL is free software licensed under the GNU Lesser General Public License version 3. See *COPYING*.
 
-## Contributors {-}
+# Contributors
 
 Contributors will be listed here:
 
