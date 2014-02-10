@@ -81,29 +81,45 @@
         return NULL; \
     }
 
-
-/*! \brief Macros to return the last iterator in the list. A slow $\theta(n)$
-    operation for singly-linked lists.
+/*! \brief Macros to return a pointer to the last iterator in the list.
+    A slow $\theta(n)$ operation for singly-linked lists.
 */
 
 #define CAG_LAST_SLIST(it) \
     do { \
-        void *p = it->next; \
+        void *p = (it) ? it->next : NULL;		\
         while (p != NULL) { \
             it = it->next; \
             p = it->next; \
         } \
     } while (0);
 
-#define CAG_DEC_LAST_SLIST(function, container, iterator_type) \
+#define CAG_DEC_LAST_SLIST(function, container, iterator_type, type) \
     iterator_type function(const container *slist)
 
-#define CAG_DEF_LAST_SLIST(function, container, iterator_type) \
-    CAG_DEC_LAST_SLIST(function, container, iterator_type) \
+#define CAG_DEF_LAST_SLIST(function, container, iterator_type, type) \
+    CAG_DEC_LAST_SLIST(function, container, iterator_type, type) \
     { \
         iterator_type it = slist->header; \
         CAG_LAST_SLIST(it); \
         return it; \
+    }
+
+
+/*! \brief Macros function declaration and definition to return a pointer to the
+    last element in the list.  A slow $\theta(n)$ operation for singly-linked
+    lists.
+*/
+
+#define CAG_DEC_BACK_SLIST(function, container, iterator_type, type) \
+    type *function(const container *slist)
+
+#define CAG_DEF_BACK_SLIST(function, container, iterator_type, type) \
+    CAG_DEC_BACK_SLIST(function, container, iterator_type, type) \
+    { \
+        iterator_type it = slist->header; \
+        CAG_LAST_SLIST(it); \
+        return &it->value; \
     }
 
 /*! \brief Public macro for users of slist iterators to initialize the iterator
@@ -219,7 +235,7 @@ do { \
 } while(0)
 
 #define CAG_DEC_INSERT_AFTER_SLIST(function, container, iterator_type, type) \
-    iterator_type function(container *slist, iterator_type it, type item)
+    iterator_type function(container *slist, iterator_type it, type const item)
 
 #define CAG_DEF_INSERT_AFTER_SLIST(function, container, iterator_type, type, \
                                    alloc_style, alloc_func) \
@@ -230,7 +246,7 @@ CAG_DEC_INSERT_AFTER_SLIST(function, container, iterator_type, type) \
 }
 
 #define CAG_DEC_INSERTP_AFTER_SLIST(function, container, iterator_type, type) \
-    iterator_type function(container *slist, iterator_type it, type *item)
+    iterator_type function(container *slist, iterator_type it, type const *item)
 
 #define CAG_DEF_INSERTP_AFTER_SLIST(function, container, iterator_type, type, \
                                     alloc_style, alloc_func) \
@@ -241,6 +257,27 @@ CAG_DEC_INSERTP_AFTER_SLIST(function, container, iterator_type, type) \
 }
 
 
+/*! \brief Every container must supply a put function which will be called
+    by other functions.
+    By value and by address versions supplied.
+*/
+
+
+#define CAG_PUT_SLIST(container, slist, it, item, insert) \
+    do { \
+        if (it) { \
+            if(insert(slist, it, item)) \
+                return it; \
+            else \
+                return NULL; \
+        } else { \
+            if(insert(slist, it, item)) \
+                return (it_ ## container) &slist->header; \
+            else \
+                return NULL; \
+        } \
+    } while (0)
+
 #define CAG_DEC_PUT_SLIST(function, container, iterator_type, type) \
     iterator_type function(container *slist, iterator_type it, \
                            type const item)
@@ -249,17 +286,20 @@ CAG_DEC_INSERTP_AFTER_SLIST(function, container, iterator_type, type) \
 #define CAG_DEF_PUT_SLIST(function, container, iterator_type, type) \
     CAG_DEC_PUT_SLIST(function, container, iterator_type, type) \
     { \
-        if (it) { \
-            if(insert_after_ ## container(slist, it, item)) \
-                return it; \
-            else \
-                return NULL; \
-        } else { \
-            if(insert_after_ ## container(slist, it, item)) \
-                return (iterator_type) &slist->header; \
-            else \
-                return NULL; \
-        } \
+        CAG_PUT_SLIST(container, slist, it, item, insert_after_ ## container); \
+    }
+
+
+#define CAG_DEC_PUTP_SLIST(function, container, iterator_type, type) \
+    iterator_type function(container *slist, iterator_type it, \
+                           type const *item)
+
+
+#define CAG_DEF_PUTP_SLIST(function, container, iterator_type, type) \
+    CAG_DEC_PUTP_SLIST(function, container, iterator_type, type) \
+    { \
+        CAG_PUT_SLIST(container, slist, it, item, \
+                       insertp_after_ ## container); \
     }
 
 
@@ -528,8 +568,15 @@ CAG_DEC_ERASE_ALL_SLIST(function, container) \
     }
 
 
-/*! \brief Macro and function declaration and definition to sort slist.
-    The implementation is an in-place $O(n \log n)$ merge sort.
+/*! \brief Optimized macro and function declaration and definition to sort
+    slist.  The implementation is an in-place $O(n \log n)$ merge sort.  Note
+    this code makes extensive use of gotos in order to remove recursion, so that
+    the macro can be called standalone by users. It is ugly but it has been
+    coded carefully.
+
+    First a recursive version was implemented. Then using a
+    standard technique for removing recur
+
 */
 
 #define CAG_STABLE_SORT_SLIST(iterator_type, list, cmp_func, val_adr) \
@@ -538,6 +585,7 @@ CAG_DEC_ERASE_ALL_SLIST(function, container) \
         iterator_type stack[65 * 2]; \
         int labels[65]; \
         int sp = 0, i; \
+    /* Base case. */ \
     l1: \
         if (list->next == NULL) { \
             if (sp > 0) { \
@@ -702,7 +750,8 @@ CAG_DEC_SORT_SLIST(function, container, iterator_type) \
     CAG_DEC_NEXT_SLIST(next_ ## container, it_ ## container); \
     CAG_DEC_BEGIN_SLIST(begin_ ## container, container, it_ ## container); \
     CAG_DEC_END_SLIST(end_ ## container, container, it_ ## container); \
-    CAG_DEC_LAST_SLIST(last_ ## container, container, it_ ## container); \
+    CAG_DEC_LAST_SLIST(last_ ## container, container, it_ ## container, type); \
+    CAG_DEC_BACK_SLIST(back_ ## container, container, it_ ## container, type); \
     CAG_DEC_PREPEND_SLIST(prepend_ ## container, container, \
                           it_ ## container, type); \
     CAG_DEC_PREPENDP_SLIST(prependp_ ## container, container, \
@@ -712,6 +761,7 @@ CAG_DEC_SORT_SLIST(function, container, iterator_type) \
     CAG_DEC_INSERTP_AFTER_SLIST(insertp_after_ ## container, container, \
                                 it_ ## container, type); \
     CAG_DEC_PUT_SLIST(put_ ## container, container, it_ ## container, type); \
+    CAG_DEC_PUTP_SLIST(putp_ ## container, container, it_ ## container, type); \
     CAG_DEC_DISTANCE_SLIST(distance_ ## container, it_ ## container); \
     CAG_DEC_FRONT_SLIST(front_ ## container, container, type); \
     CAG_DEC_SET_MIN_SIZE_SLIST(set_min_size_ ## container, container, \
@@ -741,7 +791,8 @@ CAG_DEF_BEGIN_SLIST(begin_ ## container, container, \
                     it_ ## container) \
 CAG_DEF_END_SLIST(end_ ## container, container, \
                   it_ ## container) \
-CAG_DEF_LAST_SLIST(last_ ## container, container, it_ ## container) \
+CAG_DEF_LAST_SLIST(last_ ## container, container, it_ ## container, type) \
+CAG_DEF_BACK_SLIST(back_ ## container, container, it_ ## container, type) \
 CAG_DEF_PREPEND_SLIST(prepend_ ## container, container, it_ ## container, \
                       type, alloc_style, alloc_func) \
 CAG_DEF_PREPENDP_SLIST(prependp_ ## container, container, it_ ## container, \
@@ -753,6 +804,7 @@ CAG_DEF_INSERTP_AFTER_SLIST(insertp_after_ ## container, container, \
                             it_ ## container, type, \
                             alloc_style, alloc_func) \
 CAG_DEF_PUT_SLIST(put_ ## container, container, it_ ## container, type) \
+CAG_DEF_PUTP_SLIST(putp_ ## container, container, it_ ## container, type) \
 CAG_DEF_DISTANCE_SLIST(distance_ ## container, it_ ## container) \
 CAG_DEF_FRONT_SLIST(front_ ## container, container, type) \
 CAG_DEF_SET_MIN_SIZE_SLIST(set_min_size_ ## container, container, \
@@ -870,5 +922,20 @@ typedef container CAG_P_CMB(container ## _cmp_2,  __LINE__)
     CAG_DEC_CMPP_SLIST(container, type); \
     CAG_DEF_CMPP_SLIST(container, type, cmp_func)
 
+/*! \brief Declare and define macros for a slist whose elements are C
+   strings.  This is a common use-case, e.g. a list of words.
+*/
+
+
+#define CAG_DEC_STR_SLIST(container) \
+    CAG_DEC_CMP_SLIST(container, char *)
+
+#define CAG_DEF_STR_SLIST(container) \
+    CAG_DEF_ALL_CMP_SLIST(container, char *, strcmp, CAG_BYVAL, \
+                         CAG_SIMPLE_ALLOC_STYLE, cag_strdup, free)
+
+#define CAG_DEC_DEF_STR_SLIST(container) \
+    CAG_DEC_STR_SLIST(container); \
+    CAG_DEF_STR_SLIST(container)
 
 #endif                          /* CAG_SLIST */

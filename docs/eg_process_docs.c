@@ -161,7 +161,7 @@ void put_funcs_into_tree(func_tree *t, string *text)
 			state = NEXT;
 		} else if (state == NEXT && token[strlen(token)-1] == 'C') {
 			strncpy(f.function, token, 49);
-			it = get_func_tree(t->root, f);
+			it = get_func_tree(t, f);
 			if (it) {
 				it->value.containers[index] = 1;
 			}

@@ -11,11 +11,15 @@
 
 - Test on embedded systems.
 
-## Ugly code
+## Improve code
 
-- The generic stable sort must be rewritten. It's ugly.
+- The generic stable sort must be rewritten. It's ugly. (The stable sort for singly linked lists is ok.)
 
 - Although the library interface is consistent (or mostly so), there are inconsistencies throughout the innards of the library, reflecting different experiments on how to code the macros. There needs to be some discussion on which style is best and then all non-conforming code must be brought in line with this standard.
+
+- Analyse the return values for the function blueprints. Identify which ones need to be changed to improve the interface. Then change them.
+
+- Analyse the
 
 ## Installation
 
@@ -29,22 +33,29 @@
 
 ## Enhancements
 
-- Safe mode (define CAG_SAFER during development to catch bugs and for safer use
-  of the library
+- Improve safety for development by putting in many more assert statements.
 
-- Priority Queues
+- Go through the C++ STL and identify which functions should be implemented in CAGL. Then implement them. But CAGL must not be too comprehensive. The primary aim is for it to be practical and useful, not an ode to the purity of the theory of algorithms.
 
-- Stacks
+- Containers to consider (but possibly reject, because we don't want feature creep):
 
-- Multi-dimensional arrays
+    - Priority Queues
 
-- Graphs
-    - Adjacency lists
-    - Adjacency matrices
+    - Stacks
+
+    - Multi-dimensional arrays
+
+    - Graphs
+
+        - Adjacency lists
+        - Adjacency matrices
+
+- Maybe, a CAGL string/utf8 type declared as an array.
 
 - Declare CAGL functions as static so that they are not global. I've thought
-  about this a lot but have not come up with a satisfactory solution.
+  about possible ways to do this but have not come up with a satisfactory
+  solution.
 
 ## Documentation
 
-- Examples of every function.
+- Examples for every function. Improve the reference section.

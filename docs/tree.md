@@ -18,7 +18,7 @@ Iterators for these container types are bidirectional.
 ### TREE function blueprints {-}
 
 - [at_C](#at_C-adhst)
-- [back_C](#back_C-adt)
+- [back_C](#back_C-adst)
 - [begin_C](#begin_C-adhst)
 - [check_integrity_C](#check_integrity_C-t)
 - [cmp_C](#cmp_C-adst)
@@ -52,6 +52,7 @@ Iterators for these container types are bidirectional.
 - [insert_C](#insert_C-adht)
 - [insertp_C](#insertp_C-adht)
 - [it_C](#it_C-adhst)
+- [last_C](#last_C)
 - [levelorder_C](#levelorder_C-t)
 - [new_C](#new_C-adhst)
 - [new_from_C](#new_from_C-adhst)

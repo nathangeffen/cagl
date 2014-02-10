@@ -747,4 +747,20 @@ typedef container CAG_P_CMB(container ## _cmp,  __LINE__)
     CAG_DEC_CMPP_DLIST(container, type); \
     CAG_DEF_CMPP_DLIST(container, type, cmp_func)
 
+/*! \brief Declare and define macros for a dlist whose elements are C
+   strings.  This is a common use-case, e.g. a list of words.
+*/
+
+
+#define CAG_DEC_STR_DLIST(container) \
+    CAG_DEC_CMP_DLIST(container, char *)
+
+#define CAG_DEF_STR_DLIST(container) \
+    CAG_DEF_ALL_CMP_DLIST(container, char *, strcmp, CAG_BYVAL, \
+                         CAG_SIMPLE_ALLOC_STYLE, cag_strdup, free)
+
+#define CAG_DEC_DEF_STR_DLIST(container) \
+    CAG_DEC_STR_DLIST(container); \
+    CAG_DEF_STR_DLIST(container)
+
 #endif                          /* CAG_DLIST */

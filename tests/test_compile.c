@@ -131,6 +131,18 @@ CAG_DEC_STR_TREE(st);
 CAG_DEF_STR_TREE(st);
 CAG_DEC_DEF_STR_TREE(ddst);
 
+CAG_DEC_STR_ARRAY(sa);
+CAG_DEF_STR_ARRAY(sa);
+CAG_DEC_DEF_STR_ARRAY(ddsa);
+
+CAG_DEC_STR_DLIST(sd);
+CAG_DEF_STR_DLIST(sd);
+CAG_DEC_DEF_STR_DLIST(ddsd);
+
+CAG_DEC_STR_SLIST(ss);
+CAG_DEF_STR_SLIST(ss);
+CAG_DEC_DEF_STR_SLIST(ddss);
+
 struct dictionary {
 	char *w;
 	char *d;
@@ -148,5 +160,5 @@ CAG_DEC_DEF_STR_STR_TREE(dddt, struct dictionary);
 
 int main(void)
 {
-return 0;
+	return 0;
 }

@@ -204,7 +204,9 @@ CAG_DEC_INSERTP_HASH(function, container, iterator_type, type) \
                       alloc_style, alloc_func, free_func, val_adr, *element); \
 }
 
-/*! \brief Function declaration and definition for *put*.
+/*! \brief Function declaration and definition for *put* and *putp*. Every
+    container needs a put function to have a uniform insertion mechanism
+    used by some of the generic functions.
 */
 
 
@@ -219,6 +221,21 @@ CAG_DEC_INSERTP_HASH(function, container, iterator_type, type) \
         assert(it); \
         return insert_ ## container(hash, element); \
     }
+
+
+#define CAG_DEC_PUTP_HASH(function, container, iterator_type, type) \
+    iterator_type function(container *hash, iterator_type it, \
+                           type const *element)
+
+
+#define CAG_DEF_PUTP_HASH(function, container, iterator_type, type) \
+    CAG_DEC_PUTP_HASH(function, container, iterator_type, type) \
+    { \
+        assert(it); \
+        assert(element); \
+        return insertp_ ## container(hash, element); \
+    }
+
 
 /*! \brief Function declaration and definition for *begin* and *end*.
 */
@@ -467,6 +484,8 @@ CAG_DEC_FREE_HASH(function, container) \
                          type); \
     CAG_DEC_PUT_HASH(put_ ## container, container, it_ ## container, \
                      type); \
+    CAG_DEC_PUTP_HASH(putp_ ## container, container, it_ ## container, \
+                      type); \
     CAG_DEC_BEGIN_HASH(begin_ ## container, container, it_ ## container); \
     CAG_DEC_END_HASH(end_ ## container, container, it_ ## container); \
     CAG_DEC_NEXT_HASH(next_ ## container, it_ ## container); \
@@ -510,6 +529,8 @@ CAG_DEF_INSERTP_HASH(insertp_ ## container, container, it_ ## container, \
                      hash_func, length_func, get_ ## container, \
                      alloc_style, alloc_func, free_func, val_adr) \
 CAG_DEF_PUT_HASH(put_ ## container, container, it_ ## container, \
+                 type) \
+CAG_DEF_PUTP_HASH(putp_ ## container, container, it_ ## container, \
                  type) \
 CAG_DEF_BEGIN_HASH(begin_ ## container, container, it_ ## container) \
 CAG_DEF_END_HASH(end_ ## container, container, it_ ## container) \

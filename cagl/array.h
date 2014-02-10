@@ -837,4 +837,20 @@ CAG_DEF_ALL_CMP_ARRAY(container, type, cmp_func, \
                       val_adr, alloc_style, alloc_func, \
                       free_func)
 
+/*! \brief Declare and define macros for an array whose elements are C
+   strings.  This is a common use-case, e.g. a list of words.
+*/
+
+
+#define CAG_DEC_STR_ARRAY(container) \
+    CAG_DEC_CMP_ARRAY(container, char *)
+
+#define CAG_DEF_STR_ARRAY(container) \
+    CAG_DEF_ALL_CMP_ARRAY(container, char *, strcmp, CAG_BYVAL, \
+                         CAG_SIMPLE_ALLOC_STYLE, cag_strdup, free)
+
+#define CAG_DEC_DEF_STR_ARRAY(container) \
+    CAG_DEC_STR_ARRAY(container); \
+    CAG_DEF_STR_ARRAY(container)
+
 #endif /* CAG_ARRAY_H */

@@ -14,6 +14,23 @@ In this reference:
 
 - The words *array*, *dlist*, *hash*, *tree* and *slist* refer to the CAGL container types array, doubly-linked list, hash table, binary tree and singly-linked list respectively.
 
+- A container is comprised of *elements*. These are the data (or values) of a container. An element is a type, specified by the user when the container is defined.
+
+- For simplicity we talk about iterators pointing to an element. Strictly speaking iterators do not point to elements. Instead iterators are pointers to structs which have a variable called *value*. It is *value* that stores the element. However an element can have a pointer to it and some functions return pointers to elements that are not elements. Compare *front_C* with *begin_C*. The former returns a pointer to an element. The latter returns an iterator that we say, arguably a little loosely, points to an element. The type for _*front_C(c)*_ is the same type as _begin_C(c)->value_.
+
+- The word *user* refers to a programmer using CAGL.
+
+- A function blueprint often has several variations for which the differences are subtle. In most cases it won't matter which version you use so long as you get the minor differences in syntax right. But sometimes, one variation will offer a significant optimisation for a particular task at hand or significant convenience. As an example, consider *search_C*, which does a linear search through a range in a container for a specified element, passed by value. It has these variations:
+
+    - search_all_C: Identical to search_C except it searches the entire container, not a sub-range of it. *search_C(beg_C(c), end_C(c), element)* is identical to *search_all_C(c, element)*.
+	- searchp_C: Identical to search_C except that the element is passed by address. For large structs this is more efficient than the pass by value version (search_C). But if the element type is a primitive type, e.g. an int, or a  pointer, e.g. _char *_, then it makes more sense to use search_C.
+	- searchp_all_C: Identical to search_all_C but the element is passed by address.
+
+    Then there are reverse iterator versions of search_C and searchp_C called rsearch_C and rsearchp_C. They can be used to search backward through a range.
+
+	Note there are no rsearch_all_C or rsearchp_all_C function blueprints because the *_all_* blueprints do not take iterator parameters and a reverse version would offer no additional functionality. If you need a reverse iterator returned, simply cast the return value of search_all_C or searchp_all_C to a *rit_C* type, or alternatively call rsearch_all_C(rbeg_C(c), rend_C(c)). However for some function blueprints there are reverse iterator function blueprints for the whole container. For example, *rsort_all_C* sorts an entire container in reverse order.
+
+
 ------
 
 
@@ -285,11 +302,12 @@ For arrays, only local storage is modified.
 ##### See also {-}
 
 - [index_C](#index_C-adhst)
+- [rat_C](#rat_C-adt)
 
 ------
 
 
-#### back_C {#back_C-adt - }
+#### back_C {#back_C-adst - }
 
 Returns pointer to last element of a container.
 
@@ -299,7 +317,7 @@ T *back_C(const C *C);
 
 
 Containers:
-array	dlist	tree
+array dlist slist tree
 
 
 ##### Parameters {-}
@@ -353,7 +371,7 @@ The output is:
 
 #### Complexity {-}
 
-This is a constant time operation.
+For ARRAY, DLIST and TREE, this is a constant time operation. For SLIST, it is $\theta(n)$ where $n$ is the number of elements in the container.
 
 ##### Data races {-}
 
@@ -477,7 +495,7 @@ Returns true if the element is in the semi-open range [first, last) else false.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -529,7 +547,7 @@ Returns true if the element is in the semi-open range [first, last) else false.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -582,7 +600,7 @@ True if the element is in the semi-open range [first, last) else false.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -610,7 +628,7 @@ Binary search an entire container for a key. The container should be sorted in t
 
 
 ```C
-int binary_search_all_C(C *c, T key);
+int binary_search_all_C(C *c, T const key);
 ```
 
 
@@ -633,7 +651,7 @@ True if the element is in the container, else false.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -687,7 +705,7 @@ True if the element is in the semi-open range [first, last) else false.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -713,7 +731,7 @@ The iterator parameters *first* and *last* are modified, but not their elements.
 Binary search an entire container for a key. The container should be sorted in the order specified by the *cmp_func* function passed to the definition macro.
 
 ```C
-int binary_searchp_all_C(C *c, T * key);
+int binary_searchp_all_C(C *c, T * const key);
 ```
 
 
@@ -736,7 +754,7 @@ True if the element is in the container, else false.
 
 ##### Example {-}
 
-TODO.
+TO DO.
 
 #### Complexity {-}
 
@@ -786,7 +804,7 @@ True if the tree is a valid red-black one, else false.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -941,7 +959,7 @@ These rules determine the integer value returned:
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1013,7 +1031,7 @@ These rules determine the integer value returned:
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1063,7 +1081,7 @@ Pointer to container copied to if successful else NULL.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1110,7 +1128,7 @@ Pointer to C2 if the operation succeeds, else NULL.
 
 ##### Example {-}
 
-TODO.
+TO DO.
 
 #### Complexity {-}
 
@@ -1211,7 +1229,7 @@ Pointer to container copied to if successful else NULL.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1257,7 +1275,7 @@ The number of containers successfully copied to. If this is less than the number
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1304,7 +1322,7 @@ Returns iterator one past the last copied element in the copied to container.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1344,7 +1362,7 @@ array	dlist	hash	slist	tree
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1457,7 +1475,7 @@ Returns 0 if all calls to *cmp_func* return zero, else returns the first non-zer
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1500,7 +1518,7 @@ Returns 0 if all calls to *cmp_func* return zero, else returns the first non-zer
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1536,7 +1554,7 @@ Iterator pointing to the element that was immediately after the erased element.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1574,7 +1592,7 @@ The parameter iterator, *it*, is returned.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1612,7 +1630,7 @@ The parameter iterator, *first*, is returned.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1650,7 +1668,7 @@ array	dlist	hash	slist	tree
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -1689,7 +1707,7 @@ Iterator pointing to what was previously the second element in the list, but is 
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -2226,7 +2244,7 @@ Pointer to first element in the container.
 
 ##### Example {-}
 
-TODO
+TO DO.
 
 #### Complexity {-}
 
@@ -2462,11 +2480,11 @@ For trees approximately $\log n$ elements will be read where $n$ is the number o
 
 #### index_C {#index_C-adhst - }
 
+Retrieves an iterator to an element a specified number of positions from the beginning of the container.
 
 ```C
 it_C index_C(C *c, size_t n);
 ```
-
 
 Containers:
 array	dlist	hash	slist	tree
@@ -2474,15 +2492,26 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to get the iterator from.
+n
+  ~ It is the *n*th element that will be retrieved.
+
+It is undefined if *n* is greater than the number of elements in the container.
 
 #### Return value {-}
 
+Iterator pointing to *n*th element in *c*.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
+This is a constant time operation for arrays.
+
+It is an O(n) time operation for all other containers, where *n* is the index of the element to retrieve.
 
 ##### Data races {-}
 
@@ -2495,9 +2524,10 @@ array	dlist	hash	slist	tree
 
 #### inorder_C {#inorder_C-t - }
 
+Traverses a tree in the order defined by the *cmp_func* function with which the tree was defined.
 
 ```C
-void inorder_C(it_C root, void *data, void (*action)(it_C, void *));
+void inorder_C(it_C root, void *data, void (*action_func)(it_C, void *));
 ```
 
 
@@ -2507,9 +2537,16 @@ tree
 
 ##### Parameters {-}
 
+root
+  ~ Iterator pointing to the node in the tree from which to start traversing from. Usually tree->root.
+data
+  ~ User defined data. Set to NULL if not needed, else set to the address of a structure that you intend to modify in *action_func*.
+action
+  ~ User defined function that will be exected on an iterator pointing to each element that is traversed. The second parameter to the function is *data*.
 
 #### Return value {-}
 
+None.
 
 ##### Example {-}
 
@@ -2528,9 +2565,24 @@ tree
 
 #### insert_C {#insert_C-adht - }
 
+Inserts an element into a container.
+
+The syntax differs for different container types.
 
 ```C
+
+/* ARRAY */
 it_C insert_C(C *array, it_C position, T const element);
+
+/* DLIST */
+it_C insert_C(it_C position, T const element);
+
+/* HASH */
+it_C  insert_C(C *hash, T const element);
+
+/* TREE */
+it_C  insert_C(C *tree, T const element);
+
 ```
 
 
@@ -2540,15 +2592,30 @@ array	dlist	hash	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to insert into. Applies to arrays, trees and hash tables only.
+position
+  ~ Place where element must be inserted. The current element at position, and if necessary, all subsequent elements are shifted up. Applies to arrays and doubly-linked lists only.
+element
+  ~ Element to insert, passed by value.
 
 #### Return value {-}
 
+Iterator pointing to newly inserted element upon success. Null upon failure.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
+ARRAY: $O(n - position)$ where $n$ is the number of elements in the array.
+
+DLIST: Constant time. Inserting into lists is very efficient.
+
+TREE: $O(\log n)$ where $n$ is the number of elements in the tree.
+
+HASH: Constant time on average, but can degrade to $O(n)$.
 
 ##### Data races {-}
 
@@ -2561,9 +2628,10 @@ array	dlist	hash	tree
 
 #### insert_after_C {#insert_after_C-s - }
 
+Inserts an element after a specified position in a singly-linked list.
 
 ```C
-it_C insert_after_C(C *slist, it_C it, T item);
+it_C insert_after_C(C *c, it_C position, T item);
 ```
 
 
@@ -2573,12 +2641,21 @@ slist
 
 ##### Parameters {-}
 
+c
+  ~ Container to insert into.
+position
+  ~ Place where element must be inserted after.
+element
+  ~ Element to insert, passed by value.
+
 
 #### Return value {-}
 
+Iterator pointing to newly inserted element upon success. Null upon failure.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -2594,6 +2671,7 @@ slist
 
 #### insert_gt_C {#insert_gt_C-ad - }
 
+Inserts an element at the first position in a container, such that it is bigger than all preceding elements.
 
 ```C
 it_C insert_gt_C(C *c, it_C position, T element);
@@ -2606,12 +2684,18 @@ array	dlist
 
 ##### Parameters {-}
 
+c
+  ~ Container to insert into.
+element
+  ~ Element to insert, passed by value.
 
 #### Return value {-}
 
+Iterator pointing to the newly inserted element upon success. Null upon failure.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -2627,11 +2711,11 @@ array	dlist
 
 #### insert_gteq_C {#insert_gteq_C-ad - }
 
+Inserts an element at the first position in a container, such that it is bigger than or equal to all preceding elements.
 
 ```C
 it_C insert_gteq_C(C *c, it_C position, T element);
 ```
-
 
 Containers:
 array	dlist
@@ -2639,12 +2723,18 @@ array	dlist
 
 ##### Parameters {-}
 
+c
+  ~ Container to insert into.
+element
+  ~ Element to insert, passed by value.
 
 #### Return value {-}
 
+Iterator pointing to the newly inserted element upon success. Null upon failure.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -2660,6 +2750,8 @@ array	dlist
 
 #### insert_lt_C {#insert_lt_C-ad - }
 
+Inserts an element at the first position in a container, such that it is less than all preceding elements.
+
 
 ```C
 it_C insert_lt_C(C *c, it_C position, T element);
@@ -2672,12 +2764,18 @@ array	dlist
 
 ##### Parameters {-}
 
+c
+  ~ Container to insert into.
+element
+  ~ Element to insert, passed by value.
 
 #### Return value {-}
 
+Iterator pointing to the newly inserted element upon success. Null upon failure.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -2693,6 +2791,7 @@ array	dlist
 
 #### insert_lteq_C {#insert_lteq_C-ad - }
 
+Inserts an element at the first position in a container, such that it is less than or equal to all preceding elements.
 
 ```C
 it_C insert_lteq_C(C *c, it_C position, T element);
@@ -2705,12 +2804,18 @@ array	dlist
 
 ##### Parameters {-}
 
+c
+  ~ Container to insert into.
+element
+  ~ Element to insert, passed by value.
 
 #### Return value {-}
 
+Iterator pointing to the newly inserted element upon success. Null upon failure.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -2726,6 +2831,7 @@ array	dlist
 
 #### insertp_C {#insertp_C-adht - }
 
+Identical to [insert_C](#insert_C-adht) except that the *element* parameter is passed by address.
 
 ```C
 it_C insertp_C(C *array, it_C position, T const *element);
@@ -2744,6 +2850,7 @@ array	dlist	hash	tree
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -2759,6 +2866,7 @@ array	dlist	hash	tree
 
 #### insertp_after_C {#insertp_after_C-s - }
 
+Identical to [insert_after_C](#insert_after_C-s) except that the *element* parameter is passed by address.
 
 ```C
 it_C insertp_after_C(C *slist, it_C it, T *item);
@@ -2777,6 +2885,7 @@ slist
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -2792,11 +2901,11 @@ slist
 
 #### insertp_gt_C {#insertp_gt_C-ad - }
 
+Identical to [insert_gt_C](#insert_gt_C-ad) except that the *element* parameter is passed by address.
 
 ```C
 it_C insertp_gt_C(C *c, it_C position, T *element);
 ```
-
 
 Containers:
 array	dlist
@@ -2810,6 +2919,7 @@ array	dlist
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -2825,6 +2935,7 @@ array	dlist
 
 #### insertp_gteq_C {#insertp_gteq_C-ad - }
 
+Identical to [insert_gteq_C](#insert_gteq_C-ad) except that the *element* parameter is passed by address.
 
 ```C
 it_C insertp_gteq_C(C *c, it_C position, T *element);
@@ -2858,6 +2969,7 @@ array	dlist
 
 #### insertp_lt_C {#insertp_lt_C-ad - }
 
+Identical to [insert_lt_C](#insert_lt_C-ad) except that the *element* parameter is passed by address.
 
 ```C
 it_C insertp_lt_C(C *c, it_C position, T *element);
@@ -2876,6 +2988,7 @@ array	dlist
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -2890,6 +3003,8 @@ array	dlist
 
 
 #### insertp_lteq_C {#insertp_lteq_C-ad - }
+
+Identical to [insert_lteq_C](#insert_lteq_C-ad) except that the *element* parameter is passed by address.
 
 
 ```C
@@ -2909,6 +3024,7 @@ array	dlist
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -2924,30 +3040,32 @@ array	dlist
 
 #### it_C {#it_C-adhst - }
 
+Iterator typedef. Every container type has an associated forward iterator typedef called *it_C* where *C* is the container type name.
+
 
 ```C
 typedef iterator_C * it_C;
 ```
 
-
 Containers:
 array	dlist	hash	slist	tree
 
 
-##### Parameters {-}
+Containers that support bidirectional iterators (ARRAY, DLIST and TREE) also have an associated reverse iterator typedef called *rit_C*. You can convert a reverse iterator to a forward iterator and back again simply by casting from one to the other. E.g.
 
+```C
+it_C it;
+rit_C rit;
 
-#### Return value {-}
+...
 
+it = (it_C) rit;
 
-##### Example {-}
+...
 
+rit = (rit_C) it;
 
-#### Complexity {-}
-
-
-##### Data races {-}
-
+```
 
 #### See also {-}
 
@@ -2955,29 +3073,35 @@ array	dlist	hash	slist	tree
 ------
 
 
-#### last_C {#last_C-s - }
+#### last_C {#last_C - }
 
+Get an iterator pointing to the last element in the container.
 
 ```C
-it_C last_C(const C *slist);
+it_C last_C(const C *c);
 ```
 
 
 Containers:
-slist
+array dlist slist tree
 
 
 ##### Parameters {-}
 
+c
+  ~ Container to get last element from.
 
 #### Return value {-}
 
+Iterator pointing to last element.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
+Constant time except SLIST, for which it is $\theta(n)$ where $n$ is the number of elements in the list.
 
 ##### Data races {-}
 
@@ -2990,9 +3114,10 @@ slist
 
 #### levelorder_C {#levelorder_C-t - }
 
+Performs a breadth-first traversal of a binary tree, applying a user-provided function to an iterator to each element.
 
 ```C
-void levelorder_C(C *tree, void *data, void (*action)(it_C, size_t, int, int, void *));
+void levelorder_C(C *tree, void *data, void (*action_func)(it_C, size_t, int, int, void *));
 ```
 
 
@@ -3002,12 +3127,25 @@ tree
 
 ##### Parameters {-}
 
+tree
+  ~ Tree to traverse.
+data
+  ~ Pointer to user provided data field that will be passed to *action_func* each time it is called. Set to NULL if unneeded.
+action_func
+  ~ User provided function that takes four parameters:
+      - An iterator pointing to the element being traversed
+	  - Current level of the tree
+	  - Boolean indicating whether the level has changed since last call to *action_func*
+	  - Boolean indicating whether the parent has changed since the last call to *action_func*
+	  - User provided data, which will be NULL if *data* was set to NULL.
 
 #### Return value {-}
 
+None.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -3023,6 +3161,7 @@ tree
 
 #### lower_bound_C {#lower_bound_C-a - }
 
+Uses a binary search to retrieve an iterator pointing to the smallest element that is bigger than or equal to the key in the semi-open range [first, last). This is only available to containers declared with a CMP macro. The *cmp_func* function provided to the definition macro is used to do the comparisons.
 
 ```C
 it_C lower_bound_C(it_C first, it_C last, T const key);
@@ -3035,15 +3174,24 @@ array
 
 ##### Parameters {-}
 
+first
+  ~ Beginning of range to search.
+last
+  ~ One past the end of the range to search.
+key
+  ~ Element to search for, passed by value.
 
 #### Return value {-}
 
+Iterator pointing to the lower bound element. If all elements are less than *key* then *last* is returned.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
+This is an $O(n)$ operation, where $n$ is the number of elements in the range.
 
 ##### Data races {-}
 
@@ -3056,9 +3204,10 @@ array
 
 #### lower_bound_all_C {#lower_bound_all_C-a - }
 
+Uses a binary search to retrieve an iterator pointing to the smallest element that is bigger than or equal to the key in a container. This is only available to containers declared with a CMP macro. The *cmp_func* function provided to the definition macro is used to do the comparisons.
 
 ```C
-it_C lower_bound_all_C(C *c, T d);
+it_C lower_bound_all_C(C *c, const T key);
 ```
 
 
@@ -3068,15 +3217,22 @@ array
 
 ##### Parameters {-}
 
+c
+  ~ Container to search.
+key
+  ~ Key to search for.
 
 #### Return value {-}
 
+Iterator pointing to the lower bound element. If all elements are less than *key* then *last* is returned.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
+This is an $O(n)$ operation, where $n$ is the number of elements in the range.
 
 ##### Data races {-}
 
@@ -3089,6 +3245,7 @@ array
 
 #### lower_boundp_C {#lower_boundp_C-a - }
 
+Identical to [lower_bound_C](#lower_bound_C-a) except the key is passed by address.
 
 ```C
 it_C lower_boundp_C(it_C first, it_C last, T const *key);
@@ -3107,6 +3264,7 @@ array
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -3122,9 +3280,10 @@ array
 
 #### lower_boundp_all_C {#lower_boundp_all_C-a - }
 
+Identical to [lower_bound_all_C](#lower_bound_all_C-a) except the key is passed by address.
 
 ```C
-it_C lower_boundp_all_C(C *c, T * d);
+it_C lower_boundp_all_C(C *c, T * const d);
 ```
 
 
@@ -3140,6 +3299,7 @@ array
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -3152,75 +3312,11 @@ array
 
 ------
 
-
-#### lower_rbound_C {#lower_rbound_C-a - }
-
-
-```C
-rit_C lower_rbound_C(rit_C first, rit_C last, T const key);
-```
-
-
-Containers:
-array
-
-
-##### Parameters {-}
-
-
-#### Return value {-}
-
-
-##### Example {-}
-
-
-#### Complexity {-}
-
-
-##### Data races {-}
-
-
-#### See also {-}
-
-
-------
-
-
-#### lower_rboundp_C {#lower_rboundp_C-a - }
-
-
-```C
-rit_C lower_rboundp_C(rit_C first, rit_C last, T const *key);
-```
-
-
-Containers:
-array
-
-
-##### Parameters {-}
-
-
-#### Return value {-}
-
-
-##### Example {-}
-
-
-#### Complexity {-}
-
-
-##### Data races {-}
-
-
-#### See also {-}
-
-
-------
 
 
 #### lt_it_C {#lt_it_C-ad - }
 
+Compares two iterators and returns true if and only if the first one is pointing to a lower position in the container than the second one.
 
 ```C
 int lt_it_C(const it_C it1, const it_C it2);
@@ -3239,6 +3335,7 @@ array	dlist
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -3253,6 +3350,8 @@ array	dlist
 
 
 #### lteq_it_C {#lteq_it_C-ad - }
+
+Compares two iterators and returns true if and only if the first one is pointing to a lower or same position in the container as the second one.
 
 
 ```C
@@ -3272,6 +3371,7 @@ array	dlist
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -3398,6 +3498,7 @@ The container parameter, *c*, is modified.
 
 #### new_from_C {#new_from_C-adhst - }
 
+Initializes a container and copies the elements in another container into it. Serves a similar (though much less flexible) purpose to a C++ copy constructor. This is very useful if you have a container whose elements are containers.
 
 ```C
 C *new_from_C(C *to, const C *from);
@@ -3410,15 +3511,22 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+to
+  ~ Container to initialize and copy to.
+from
+  ~ Container to copy from.
 
 #### Return value {-}
 
+Pointer to the container that is initialized upon success else NULL.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
+This is an $\theta(n)$ operation where $n$ is the number of elements in the second container (the one being copied from).
 
 ##### Data races {-}
 
@@ -3431,6 +3539,7 @@ array	dlist	hash	slist	tree
 
 #### new_many_C {#new_many_C-adhst - }
 
+Initialize several containers in one function call. Use in conjunction with [free_many_C](#free_many_C-adhst)
 
 ```C
 int new_many_C(C *c, ...);
@@ -3443,27 +3552,109 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to initialize
+Remaining parameters (...)
+  Zero or more container variables of type C,  followed by NULL. The NULL is essential else results are undefined.
 
 #### Return value {-}
 
+Number of successfully initialized containers.
 
 ##### Example {-}
 
+```C
+/* Demonstrates different uses of *new* and *free* on an array.
+
+   While in many environment it isn't generally necessary to free memory upon
+   exit of a program this demonstration does show how to exit the program
+   without leaving any memory leaks.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "cagl/array.h"
+
+/* Declare and define an array of integers. */
+CAG_DEC_DEF_ARRAY(int_arr, int);
+
+int main(void)
+{
+	int_arr a1, a2, a3, a4, a5;
+	int i;
+
+        /* Simplest use of new. Most users should use this version
+	   most of the time.
+	*/
+	if (!new_int_arr(&a1)) {
+		fprintf(stderr, "Error initialising with simple new.\n");
+		/* No need to free something that wasn't successfully
+		   initialized.
+		 */
+		exit(1);
+	}
+
+        /* Override CAGL default capacity with space for 10 elements. */
+	if (!new_with_capacity_int_arr(&a2, 10)) {
+		fprintf(stderr, "Error initialising with new_with_capacity.\n");
+		free_int_arr(&a1);
+		exit(1);
+	}
+
+        /* Insert 10 elements into a new array */
+	if (!new_with_size_int_arr(&a3, 10)) {
+		fprintf(stderr, "Error initialising with new_with_size.\n");
+		free_int_arr(&a1);
+		free_int_arr(&a2);
+		exit(1);
+	}
+
+	/* Use the new_many, free_many idiom. */
+	i = new_many_int_arr(&a4, &a5, NULL); /* Initialize multiple arrays. */
+	if (i <= 0) {
+		fprintf(stderr, "Only %d successfully initialized\n", i);
+		free_many_int_arr(i, &a4, &a5);
+		exit(1);
+	}
+
+	printf("Capacity of a1 is: %lu\n", a1.capacity);
+	printf("Size of a1 is: %lu\n", size_int_arr(&a1));
+	printf("Capacity of a2 is: %lu\n", a2.capacity);
+	printf("Size of a2 is: %lu\n", size_int_arr(&a2));
+	printf("Capacity of a3 is: %lu\n", a3.capacity);
+	printf("Size of a3 is: %lu\n", size_int_arr(&a3));
+	printf("Capacity of a4 is: %lu\n", a4.capacity);
+	printf("Size of a4 is: %lu\n", size_int_arr(&a4));
+	printf("Capacity of a5 is: %lu\n", a5.capacity);
+	printf("Size of a5 is: %lu\n", size_int_arr(&a5));
+
+        /* Return arrays to heap. */
+	free_many_int_arr(5, &a1, &a2, &a3, &a4, &a5);
+	return 0;
+}
+```
 
 #### Complexity {-}
 
+For each container this is a constant time operation.
 
 ##### Data races {-}
 
+Containers are modified when initialized. No other threads should access a container when it is being initialized.
 
 #### See also {-}
 
+- [new_C](#new_C-adhst)
+- [new_from_C](#new_from_C-adhst)
+- [new_with_capacity_C](#new_with_capacity_C-a)
+- [new_with_size_C](#new_with_size_C-a)
 
 ------
 
 
 #### new_with_buckets_C {#new_with_buckets_C-h - }
 
+Initialize a hash table with a specified number of buckets.
 
 ```C
 C *new_with_buckets_C(C *hash, const size_t buckets);
@@ -3476,12 +3667,19 @@ hash
 
 ##### Parameters {-}
 
+hash
+  ~ Hash table to initialize.
+buckets
+  ~ Number of buckets to use. This must be greater than zero. This does not fix the number of buckets permanently. If the table becomes crowded, more buckets will be added.
+
 
 #### Return value {-}
 
+Pointer to initialized hash table upon success, else NULL.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -3544,6 +3742,7 @@ The parameter *array* is modified.
 
 #### new_with_size_C {#new_with_size_C-a - }
 
+Initializes an array and adds a specified number of uninitialized elements to it.
 
 ```C
 C *new_with_size_C(C *array, const size_t size);
@@ -3556,12 +3755,18 @@ array
 
 ##### Parameters {-}
 
+array
+  ~ Array to initialize.
+size
+  ~ Number of elements to place in the array.
 
 #### Return value {-}
 
+Pointer to initialized array upon success, else NULL.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -3577,6 +3782,7 @@ array
 
 #### next_C {#next_C-adhst - }
 
+Increment an iterator so as to point to the next element in a container.
 
 ```C
 it_C next_C(it_C const it);
@@ -3589,15 +3795,20 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+it
+  Iterator to increment.
 
 #### Return value {-}
 
+Iterator pointing to next element.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
+On average this is a constant time operation in all containers.
 
 ##### Data races {-}
 
@@ -3610,6 +3821,7 @@ array	dlist	hash	slist	tree
 
 #### postorder_C {#postorder_C-t - }
 
+Does a [post-order](http://en.wikipedia.org/wiki/Tree_traversal#Post-order) traversal of a binary tree.
 
 ```C
 void postorder_C(it_C root, void *data, void (*action)(it_C, void *));
@@ -3622,12 +3834,20 @@ tree
 
 ##### Parameters {-}
 
+root
+  ~ Iterator pointing to the node in the tree from which to start traversing from. Usually tree->root.
+data
+  ~ User defined data. Set to NULL if not needed, else set to the address of a structure that you intend to modify in *action_func*.
+action
+  ~ User defined function that will be exected on an iterator pointing to each element that is traversed. The second parameter to the function is *data*.
 
 #### Return value {-}
 
+None.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -3643,6 +3863,7 @@ tree
 
 #### preorder_C {#preorder_C-t - }
 
+Does a [pre-order](http://en.wikipedia.org/wiki/Tree_traversal#Pre-order) traversal of a binary tree.
 
 ```C
 void preorder_C(it_C root, void *data, void (*action)(it_C, void *));
@@ -3655,12 +3876,21 @@ tree
 
 ##### Parameters {-}
 
+root
+  ~ Iterator pointing to the node in the tree from which to start traversing from. Usually tree->root.
+data
+  ~ User defined data. Set to NULL if not needed, else set to the address of a structure that you intend to modify in *action_func*.
+action
+  ~ User defined function that will be exected on an iterator pointing to each element that is traversed. The second parameter to the function is *data*.
+
 
 #### Return value {-}
 
+None.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -3676,9 +3906,10 @@ tree
 
 #### prepend_C {#prepend_C-ads - }
 
+Prepend an element to the beginning of a container.
 
 ```C
-it_C prepend_C(C *array, T const element);
+it_C prepend_C(C *c, T const element);
 ```
 
 
@@ -3688,30 +3919,38 @@ array	dlist	slist
 
 ##### Parameters {-}
 
+c
+  ~ Container to prepend to.
+element
+  ~ Element to prepend, passed by value.
 
 #### Return value {-}
 
+Iterator to new element if successful, else NULL.
 
 ##### Example {-}
 
 
 #### Complexity {-}
 
+Constant time operation for lists, but $\theta(n)$ for arrays, where $n$ is the number of elements in the array.
 
 ##### Data races {-}
 
 
 #### See also {-}
 
+- [prependp_C](#prependp_C-ads)
 
 ------
 
 
 #### prependp_C {#prependp_C-ads - }
 
+Prepend an element to the beginning of a container.
 
 ```C
-it_C prependp_C(C *array, T const *element);
+it_C prependp_C(C *c, T const *element);
 ```
 
 
@@ -3721,9 +3960,14 @@ array	dlist	slist
 
 ##### Parameters {-}
 
+c
+  ~ Container to prepend to.
+element
+  ~ Element to prepend, passed by address.
 
 #### Return value {-}
 
+Iterator to new element if successful, else NULL.
 
 ##### Example {-}
 
@@ -3742,6 +3986,7 @@ array	dlist	slist
 
 #### prev_C {#prev_C-adt - }
 
+Decrement an iterator so as to point to the next element in a container.
 
 ```C
 it_C prev_C(it_C const it);
@@ -3754,9 +3999,12 @@ array	dlist	tree
 
 ##### Parameters {-}
 
+it
+  ~ Iterator to decrement.
 
 #### Return value {-}
 
+Iterator pointing to previous element.
 
 ##### Example {-}
 
@@ -3775,9 +4023,10 @@ array	dlist	tree
 
 #### put_C {#put_C-adhst - }
 
+Inserts an element into a container. The function blueprints *put_C* and *putp_C* provide a uniform interface to all containers for inserting an element. Users are welcome to use these functions, but they're primarily designed for the internal workings of CAGL.
 
 ```C
-it_C put_C(C *array, it_C position, T const element);
+it_C put_C(C *c, it_C position, T const element);
 ```
 
 
@@ -3787,9 +4036,17 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to insert into.
+position
+  ~ Place in container to put the new element.
+element
+  ~ Element to insert, passed by value.
+
 
 #### Return value {-}
 
+Iterator pointing to newly inserted element.
 
 ##### Example {-}
 
@@ -3808,6 +4065,7 @@ array	dlist	hash	slist	tree
 
 #### putp_C {#putp_C-ad - }
 
+Inserts an element into a container. The function blueprints *put_C* and *putp_C* provide a uniform interface to all containers for inserting an element. Users are welcome to use these functions, but they're primarily designed for the internal workings of CAGL.
 
 ```C
 it_C putp_C(C *array, it_C position, T const *element);
@@ -3820,9 +4078,16 @@ array	dlist
 
 ##### Parameters {-}
 
+c
+  ~ Container to insert into.
+position
+  ~ Place in container to put the new element.
+element
+  ~ Element to insert, passed by address.
 
 #### Return value {-}
 
+Iterator pointing to newly inserted element.
 
 ##### Example {-}
 
@@ -3841,9 +4106,10 @@ array	dlist
 
 #### random_shuffle_C {#random_shuffle_C-ad - }
 
+Randomly shuffles the elements in a semi-open range [first, last). This function is defined for reorderable containers that support bidirectional iterators (ARRAY and DLIST).
 
 ```C
-it_C random_shuffle_C(const it_C from, it_C to);
+it_C random_shuffle_C(const it_C first, it_C last);
 ```
 
 
@@ -3853,15 +4119,21 @@ array	dlist
 
 ##### Parameters {-}
 
+first
+  ~ Iterator pointing to beginning of semi-open range.
+last
+  ~ Iterator pointing one past end of semi-open range.
 
 #### Return value {-}
 
+Iterator pointing to first element in range.
 
 ##### Example {-}
 
 
 #### Complexity {-}
 
+This is a $\theta(n)$ operation where $n$ is the number of elements in the range.
 
 ##### Data races {-}
 
@@ -3874,6 +4146,7 @@ array	dlist
 
 #### random_shuffle_all_C {#random_shuffle_all_C-ad - }
 
+Randomly shuffles the elements in a semi-open range [first, last). This function is defined for reorderable containers that support bidirectional iterators (ARRAY and DLIST).
 
 ```C
 it_C random_shuffle_all_C(C *c);
@@ -3907,6 +4180,7 @@ array	dlist
 
 #### rappend_C {#rappend_C-a - }
 
+Reverse iterator version of append. This function blueprint is experimental and might be removed in future versions.
 
 ```C
 rit_C rappend_C(C *array, T const element);
@@ -3940,6 +4214,7 @@ array
 
 #### rat_C {#rat_C-adt - }
 
+Get an iterator at a specified position. Reverse iterator version of [at_C](#at_C-adhst).
 
 ```C
 rit_C rat_C(rit_C it, const size_t n);
@@ -3952,27 +4227,86 @@ array	dlist	tree
 
 ##### Parameters {-}
 
+it
+  ~ Reverse iterator pointing to an element in the container.
+n
+  ~ Number of positions from *it* moving towards the front of the container to retrieve.
 
 #### Return value {-}
 
+Iterator that is *n* elements before *it*.
 
 ##### Example {-}
 
+```C
+/* Example of rat_C function blueprint.
+   Prints out odd numbers in reverse.
+*/
+#include <stdio.h>
+#include <cagl/dlist.h>
+
+CAG_DEC_DEF_DLIST(int_dlist, int);
+
+int main(void)
+{
+	int_dlist l;
+	rit_int_dlist it;
+	int i;
+
+	if(new_int_dlist(&l) == NULL) {
+		fprintf(stderr, "Error creating new list\n");
+		exit(1);
+	}
+	for (i = 0; i < 10; ++i)
+		if (append_int_dlist(&l, i) == NULL) {
+			fprintf(stderr, "Error creating new list\n");
+			exit(1);
+		}
+	it = rbeg_int_dlist(&l);
+	while(it != rend_int_dlist(&l)) {
+		printf("%d\n", it->value);
+		it = rat_int_dlist(it, 2);
+	}
+	free_int_dlist(&l);
+	return 0;
+}
+```
+
+This is the output:
+
+```
+9
+7
+5
+3
+1
+```
 
 #### Complexity {-}
 
+For arrays, this is a random access constant time operation.
+
+For trees and lists this will take O(n) time where *n* is the second parameter.
 
 ##### Data races {-}
 
+This is thread-safe.
+
+For trees, lists and hash tables, the iterator parameter is modified *n* times but never the values to which it points.
+
+For arrays, only local storage is modified.
 
 #### See also {-}
 
+- [at_C](#at_C-adhst)
+- [index_C](#index_C-adhst)
 
 ------
 
 
 #### rback_C {#rback_C-a - }
 
+Retrieves a reverse iterator to the front of a container. This is experimental and might be removed from a future version of CAGL.
 
 ```C
 T *rback_C(const C *array);
@@ -4006,6 +4340,7 @@ array
 
 #### rbegin_C {#rbegin_C-adt - }
 
+Returns a reverse iterator pointing to the last element in a container.
 
 ```C
 rit_C rbegin_C(const C *array);
@@ -4039,6 +4374,7 @@ array	dlist	tree
 
 #### rcmp_C {#rcmp_C-adt - }
 
+Compares an element pointed to by a  reverse iterator with one pointed to by a forward iterator. Seldom that users would need this. Mainly used by other CAGL algorithms.
 
 ```C
 int rcmp_C(const rit_C it1, const it_C it2);
@@ -4072,11 +4408,11 @@ array	dlist	tree
 
 #### rcmp_all_C {#rcmp_all_C-adt - }
 
+Compares two containers in opposite directions. Similar to [cmp_all_C](#cmp_all_C-adst) except that one of the containers is traversed in reverse. Can be used, for example, to check for a palindrome. The two containers may be the same.
 
 ```C
 int rcmp_all_C(const C *c1, const C *c2);
 ```
-
 
 Containers:
 array	dlist	tree
@@ -4105,6 +4441,7 @@ array	dlist	tree
 
 #### rcmp_range_C {#rcmp_range_C-adt - }
 
+Compares two ranges. Similar to [cmp_range_C](#cmp_range_C-adst) except that one of the ranges is traversed in reverse using reverse iterators. Can be used, for example, to check for a palindrome. The two ranges must be of the same container type, but do not have to be from the same container.
 
 ```C
 int rcmp_range_C(rit_C from_1, const rit_C to_1, it_C from_2, const it_C to_2);
@@ -4137,6 +4474,8 @@ array	dlist	tree
 
 
 #### rcopy_C {#rcopy_C-adt - }
+
+Copies a range in reverse to a container. The container is presumed to be empty and memory is allocated for it.
 
 
 ```C
@@ -4171,6 +4510,7 @@ array	dlist	tree
 
 #### rcopy_all_C {#rcopy_all_C-adt - }
 
+Copies a container in reverse into another container. The second container is presumed to be empty.
 
 ```C
 C *rcopy_all_C(const C *c1, C *c2);
@@ -4204,6 +4544,7 @@ array	dlist	tree
 
 #### rdistance_C {#rdistance_C-adt - }
 
+Calculates the distance between two iterators in a container. Reverse iterator version of [distance_C](#rdistance_C-adhst)
 
 ```C
 size_t rdistance_C(const rit_C from, const rit_C to);
@@ -4235,41 +4576,9 @@ array	dlist	tree
 ------
 
 
-#### rdistance_all_C {#rdistance_all_C-t - }
-
-
-```C
-size_t rdistance_all_C(C *c);
-```
-
-
-Containers:
-tree
-
-
-##### Parameters {-}
-
-
-#### Return value {-}
-
-
-##### Example {-}
-
-
-#### Complexity {-}
-
-
-##### Data races {-}
-
-
-#### See also {-}
-
-
-------
-
-
 #### rehash_C {#rehash_C-h - }
 
+Regenerates a hash table. Primarily for internal use, but users can safely call it if they, for example, they are optimising the number of buckets.
 
 ```C
 C *rehash_C(C *hash, size_t buckets);
@@ -4303,9 +4612,10 @@ hash
 
 #### remove_C {#remove_C-ht - }
 
+Removes a given element from a container.
 
 ```C
-it_C remove_C(C *tree, const T element);
+it_C remove_C(C *c, const T element);
 ```
 
 
@@ -4315,9 +4625,14 @@ hash	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to remove element from.
+element
+  ~ Element containing search key, passed by value.
 
 #### Return value {-}
 
+If the element is found, returns the next element in the container, else NULL.
 
 ##### Example {-}
 
@@ -4336,6 +4651,7 @@ hash	tree
 
 #### removep_C {#removep_C-h - }
 
+Removes a given element from a container.
 
 ```C
 it_C removep_C(C *hash, const T *element);
@@ -4348,9 +4664,15 @@ hash
 
 ##### Parameters {-}
 
+c
+  ~ Container to remove element from.
+element
+  ~ Element containing search key, passed by address.
+
 
 #### Return value {-}
 
+If the element is found, returns the next element in the container, else NULL.
 
 ##### Example {-}
 
@@ -4369,9 +4691,10 @@ hash
 
 #### rend_C {#rend_C-adt - }
 
+Reverse iterator version of [end_C](#end_C-adhst). Returns the last element of a container.
 
 ```C
-rit_C rend_C(const C *array);
+rit_C rend_C(const C *c);
 ```
 
 
@@ -4402,6 +4725,7 @@ array	dlist	tree
 
 #### requal_all_C {#requal_all_C-adt - }
 
+Compares two containers in opposite directions. Similar to [equal_all_C](#equal_all_C-adst) except that one of the containers is traversed in reverse. Can be used, for example, to check for a palindrome. The two containers may be the same.
 
 ```C
 int requal_all_C(const C *c1, const C *c2);
@@ -4435,6 +4759,7 @@ array	dlist	tree
 
 #### requal_range_C {#requal_range_C-adt - }
 
+Compares two ranges. Similar to [equal_range_C](#cmp_range_C-adst) except that one of the ranges is traversed in reverse using reverse iterators. Can be used, for example, to check for a palindrome. The two ranges must be of the same container type, but do not have to be from the same container.
 
 ```C
 int requal_range_C(rit_C from_1, const rit_C to_1, it_C from_2);
@@ -4468,6 +4793,7 @@ array	dlist	tree
 
 #### reverse_C {#reverse_C-ad - }
 
+Reverses the elements in the semi-open range [first, last).
 
 ```C
 it_C reverse_C(it_C first, it_C last);
@@ -4480,9 +4806,14 @@ array	dlist
 
 ##### Parameters {-}
 
+first
+  ~ Iterator pointing to first element in range.
+last
+  ~ Iterator pointing one past the last element in the range.
 
 #### Return value {-}
 
+Iterator pointing to first element in the range which was previously the last element in the range.
 
 ##### Example {-}
 
@@ -4501,6 +4832,7 @@ array	dlist
 
 #### reverse_all_C {#reverse_all_C-ads - }
 
+Reverses the elements in a container.
 
 ```C
 it_C reverse_all_C(C *c);
@@ -4513,12 +4845,16 @@ array	dlist	slist
 
 ##### Parameters {-}
 
+c
+  ~ Container to reverse.
 
 #### Return value {-}
 
+Iterator pointing to first element (previously last) of the container.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4534,6 +4870,7 @@ array	dlist	slist
 
 #### reverseorder_C {#reverseorder_C-t - }
 
+Traverses a tree in the reverse order defined by the *cmp_func* function with which the tree was defined. Reverse iterator version of [inorder_C](#inorder_C-t).
 
 ```C
 void reverseorder_C(rit_C root, void *data, void (*action)(rit_C, void *));
@@ -4552,6 +4889,7 @@ tree
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4567,6 +4905,7 @@ tree
 
 #### rfind_C {#rfind_C-adt - }
 
+Reverse iterator version of [find_C](#find_C-adhst).
 
 ```C
 rit_C rfind_C(rit_C from, const rit_C to, const T element, int (*cmp_func) (const T*, const T*));
@@ -4585,6 +4924,7 @@ array	dlist	tree
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4600,6 +4940,7 @@ array	dlist	tree
 
 #### rfindp_C {#rfindp_C-adt - }
 
+Reverse iterator version of [findp_C](#findp_C-adhst).
 
 ```C
 rit_C rfindp_C(rit_C from, const rit_C to, const T *element, int (*cmp_func)(const T*, const T*));
@@ -4618,6 +4959,7 @@ array	dlist	tree
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4651,6 +4993,8 @@ array	dlist	tree
 
 #### rfront_C {#rfront_C-a - }
 
+Reverse iterator version of [front_C](#front_C-adst).
+This is experimental and might be removed from future versions.
 
 ```C
 T *rfront_C(const C *array);
@@ -4669,6 +5013,7 @@ array
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4684,6 +5029,8 @@ array
 
 #### rinsert_C {#rinsert_C-a - }
 
+Reverse iterator version of [insert_C](#insert_C-adht).
+This is experimental and might be removed from future versions.
 
 ```C
 rit_C rinsert_C(C *array, rit_C position, T const element);
@@ -4717,6 +5064,7 @@ array
 
 #### rit_C {#rit_C-adt - }
 
+Reverse iterator typedef. Containers that support bidirectional iterators have an associated reverse iterator typedef called *rit_C* where *C* is the container type name.
 
 ```C
 typedef reverse_iterator_C * rit_C;
@@ -4735,6 +5083,7 @@ array	dlist	tree
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4750,6 +5099,7 @@ array	dlist	tree
 
 #### rlt_it_C {#rlt_it_C-ad - }
 
+Reverse iterator version of [lt_it_C](#lt_it_C-ad).
 
 ```C
 int rlt_it_C(const rit_C it1, const rit_C it2);
@@ -4783,6 +5133,7 @@ array	dlist
 
 #### rlteq_it_C {#rlteq_it_C-ad - }
 
+Reverse iterator version of [lteq_it_C](#lteq_it_C-ad).
 
 ```C
 int rlteq_it_C(const rit_C it1, const rit_C it2);
@@ -4801,6 +5152,7 @@ array	dlist
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4816,6 +5168,7 @@ array	dlist
 
 #### rnext_C {#rnext_C-adt - }
 
+Reverse iterator version of [next_C](#next_C-adhst).
 
 ```C
 rit_C rnext_C(rit_C const it);
@@ -4834,6 +5187,7 @@ array	dlist	tree
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4849,6 +5203,7 @@ array	dlist	tree
 
 #### rprepend_C {#rprepend_C-a - }
 
+Reverse iterator version of [prepend_C](#prepend_C-ads). Appends an element to the back of a container.
 
 ```C
 rit_C rprepend_C(C *array, T const element);
@@ -4867,6 +5222,7 @@ array
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4882,6 +5238,7 @@ array
 
 #### rprependp_C {#rprependp_C-a - }
 
+Reverse iterator version of [prependp_C](#prependp_C-ads). Appends an element to the back of a container.
 
 ```C
 rit_C rprependp_C(C *array, T const *element);
@@ -4900,6 +5257,7 @@ array
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4915,6 +5273,7 @@ array
 
 #### rprev_C {#rprev_C-adt - }
 
+Reverse iterator version of [prev_C](#prev_C-adt).
 
 ```C
 rit_C rprev_C(rit_C const it);
@@ -4933,6 +5292,7 @@ array	dlist	tree
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4948,6 +5308,7 @@ array	dlist	tree
 
 #### rsearch_C {#rsearch_C-adt - }
 
+Reverse iterator version of [search_C](#search_C-adst).
 
 ```C
 rit_C rsearch_C(rit_C first, const rit_C last, T const key);
@@ -4966,6 +5327,7 @@ array	dlist	tree
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -4981,6 +5343,7 @@ array	dlist	tree
 
 #### rsearchp_C {#rsearchp_C-adt - }
 
+Reverse iterator version of [searchp_C](#searchp_C-adst).
 
 ```C
 rit_C rsearchp_C(rit_C first, const rit_C last, T const *key);
@@ -4999,6 +5362,7 @@ array	dlist	tree
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5014,6 +5378,7 @@ array	dlist	tree
 
 #### rsort_C {#rsort_C-ad - }
 
+Reverse iterator version of [sort_C](#sort_C-ad). Sorts a semi-open range [first, last) in reverse order.
 
 ```C
 rit_C rsort_C(rit_C from, rit_C to);
@@ -5032,6 +5397,7 @@ array	dlist
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5046,6 +5412,8 @@ array	dlist
 
 
 #### rsort_all_C {#rsort_all_C-ad - }
+
+Reverse iterator version of [sort_all_C](#sort_all_C-ad). Sorts a container in reverse order.
 
 
 ```C
@@ -5065,6 +5433,7 @@ array	dlist
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5080,6 +5449,7 @@ array	dlist
 
 #### rstable_sort_C {#rstable_sort_C-ad - }
 
+Reverse iterator version of [stable_sort_all_C](#stable_sort_all_C-ads). Sorts a container in reverse order.
 
 ```C
 rit_C rstable_sort_C(rit_C from, rit_C to);
@@ -5098,6 +5468,7 @@ array	dlist
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5113,6 +5484,7 @@ array	dlist
 
 #### rswap_C {#rswap_C-adt - }
 
+Reverse iterator version of [swap_C](#swap_C-adhst).
 
 ```C
 void rswap_C(rit_C a, rit_C b);
@@ -5131,6 +5503,7 @@ array	dlist	tree
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5146,6 +5519,8 @@ array	dlist	tree
 
 #### search_C {#search_C-adst - }
 
+Search for a specified value in a semi-open range [first, last). The search is linear and uses the *cmp_func* function provided by the user when the container type was declared. Only available to container types declared with a *CMP* macro.
+
 
 ```C
 it_C search_C(it_C first, const it_C last, T const key);
@@ -5158,12 +5533,20 @@ array	dlist	slist	tree
 
 ##### Parameters {-}
 
+first
+  ~ Iterator pointing to first element in range.
+last
+  ~ Iterator pointing to one past the last element in range.
+key
+  ~ Element containing key that is being searched for, passed by address.
 
 #### Return value {-}
 
+Iterator pointing to matching element if found, else *end_C(c)*.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5179,9 +5562,11 @@ array	dlist	slist	tree
 
 #### search_all_C {#search_all_C-adst - }
 
+Search for a specified value in a container. The search is linear and uses the *cmp_func* function provided by the user when the container type was declared. Only available to container types declared with a *CMP* macro.
+
 
 ```C
-it_C search_all_C(C *c, T d);
+it_C search_all_C(C *c, T const d);
 ```
 
 
@@ -5191,12 +5576,19 @@ array	dlist	slist	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to search.
+key
+  ~ Element containing key that is being searched for, passed by value.
+
 
 #### Return value {-}
 
+Iterator pointing to matching element if found, else *end_C(c)*.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5212,6 +5604,8 @@ array	dlist	slist	tree
 
 #### searchp_C {#searchp_C-adst - }
 
+Search for a specified value in a semi-open range [first, last). The search is linear and uses the *cmp_func* function provided by the user when the container type was declared. Only available to container types declared with a *CMP* macro.
+
 
 ```C
 it_C searchp_C(it_C first, const it_C last, T const *key);
@@ -5224,12 +5618,21 @@ array	dlist	slist	tree
 
 ##### Parameters {-}
 
+first
+  ~ Iterator pointing to first element in range.
+last
+  ~ Iterator pointing to one past the last element in range.
+key
+  ~ Element containing key that is being searched for, passed by address.
+
 
 #### Return value {-}
 
+Iterator pointing to matching element if found, else *end_C(c)*.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5245,11 +5648,11 @@ array	dlist	slist	tree
 
 #### searchp_all_C {#searchp_all_C-adst - }
 
+Search for a specified value in a container. The search is linear and uses the *cmp_func* function provided by the user when the container type was declared. Only available to container types declared with a *CMP* macro.
 
 ```C
-it_C searchp_all_C(C *c, T * d);
+it_C searchp_all_C(C *c, T * const key);
 ```
-
 
 Containers:
 array	dlist	slist	tree
@@ -5257,12 +5660,19 @@ array	dlist	slist	tree
 
 ##### Parameters {-}
 
+c
+  ~ Container to search.
+key
+  ~ Element containing key that is being searched for, passed by address.
+
 
 #### Return value {-}
 
+Iterator pointing to matching element if found, else *end_C(c)*.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5278,9 +5688,10 @@ array	dlist	slist	tree
 
 #### set_exact_size_C {#set_exact_size_C-ads - }
 
+Allocates an exact number of elements to a container. If the container has fewer elements than requested, more will be allocated. If it has more than the number of requested elements, the excess ones are deleted. If new elements have to be allocated, their values are not initialized. Useful sometimes before using *copy_over_C*.
 
 ```C
-it_C set_exact_size_C(C *array, const size_t size);
+it_C set_exact_size_C(C *c, const size_t size);
 ```
 
 
@@ -5290,12 +5701,18 @@ array	dlist	slist
 
 ##### Parameters {-}
 
+c
+  ~ Container to allocate an exact number of elements to.
+size
+  ~ Number of elements to allocate.
 
 #### Return value {-}
 
+Iterator pointing to last element allocated upon success. NULL upon failure.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5311,11 +5728,11 @@ array	dlist	slist
 
 #### set_min_size_C {#set_min_size_C-ads - }
 
+Allocates a minimum number of elements to a container. If the container already has the minimum number of elements, the function has no effect. If new elements have to be allocated, their values are not initialized. Useful sometimes before using *copy_over_C*.
 
 ```C
-it_C set_min_size_C(C *array, it_C it, const size_t size);
+it_C set_min_size_C(C *c, const size_t size);
 ```
-
 
 Containers:
 array	dlist	slist
@@ -5323,12 +5740,18 @@ array	dlist	slist
 
 ##### Parameters {-}
 
+c
+  ~ Container to allocate a minimum number of elements to.
+size
+  ~ Number of elements to allocate.
 
 #### Return value {-}
 
+Iterator pointing to last element allocated upon success. NULL upon failure.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5344,9 +5767,10 @@ array	dlist	slist
 
 #### size_C {#size_C-a - }
 
+Determines the number of elements in an array. Identical functionally to *distance_all*.
 
 ```C
-C *new_with_size_C(C *array, const size_t size);
+size_t size_C(const C *array);
 ```
 
 
@@ -5356,30 +5780,39 @@ array
 
 ##### Parameters {-}
 
+array
+  ~ Array for which size is needed.
+
 
 #### Return value {-}
 
+Number of elements in the array.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
+Constant size operation.
 
 ##### Data races {-}
 
+Internal array variables are read but no elements are.
 
 #### See also {-}
 
+- [distance_all_C](#distance_all_C-adhst)
 
 ------
 
 
 #### sort_C {#sort_C-ad - }
 
+Sorts a semi-open range, [first, last). The order is defined by the *cmp_func* function provided by the user when declaring the container type. This is only available to containers declared with macros containing *CMP*.
 
 ```C
-it_C stable_sort_C(it_C from, it_C to);
+it_C stable_sort_C(it_C first, it_C last);
 ```
 
 
@@ -5389,15 +5822,27 @@ array	dlist
 
 ##### Parameters {-}
 
+first
+  ~ Iterator pointing to first element in range.
+last
+  ~ Iterator pointing one past last element in range.
 
 #### Return value {-}
 
+Iterator pointing to first element in range.
 
 ##### Example {-}
 
 
 #### Complexity {-}
 
+The algorithm is implemented as an optimised Quicksort. It is $O(n \log n)$ on average, where $n$ is the number of comparisons. With extremely rare data sets it can degrade to O($n^2)$, but in practice such a data set would have to be designed.
+
+The following optimisations have been implemented
+
+- Both random and median of three pivoting are used.
+- With small subsets of data, the algorithm switches to Insertion Sort.
+- No recursion is used. A stack is manually maintained.
 
 ##### Data races {-}
 
@@ -5410,6 +5855,7 @@ array	dlist
 
 #### sort_all_C {#sort_all_C-ad - }
 
+Sorts a container. The order is defined by the *cmp_func* function provided by the user when declaring the container type. This is only available to containers declared with macros containing *CMP*.
 
 ```C
 it_C sort_all_C(C *c);
@@ -5422,15 +5868,26 @@ array	dlist
 
 ##### Parameters {-}
 
+c
+  ~ Container to sort.
 
 #### Return value {-}
 
+Iterator pointing to first element in container.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
+The algorithm is implemented as an optimised Quicksort. It is $O(n \log n)$ on average, where $n$ is the number of comparisons. With extremely rare data sets it can degrade to O($n^2)$, but in practice such a data set would have to be designed.
+
+The following optimisations have been implemented
+
+- Both random and median of three pivoting are used.
+- With small subsets of data, the algorithm switches to Insertion Sort.
+- No recursion is used. A stack is manually maintained.
 
 ##### Data races {-}
 
@@ -5443,9 +5900,11 @@ array	dlist
 
 #### stable_sort_C {#stable_sort_C-ad - }
 
+Sorts a semi-open range [first, last) in the order specified by the user-supplied *cmp_func* function. It is only defined for containers declared with a CMP containing macro. This sort is stable which means it retains two elements in the same original order if they have the same key. For arrays, this is not as fast as *sort_C*, but it is a good way to sort lists even if stability is not a requirement.
+
 
 ```C
-it_C stable_sort_C(it_C from, it_C to);
+it_C stable_sort_C(it_C first, it_C last);
 ```
 
 
@@ -5455,12 +5914,18 @@ array	dlist
 
 ##### Parameters {-}
 
+first
+  ~ Iterator pointing to first element in range.
+last
+  ~ Iterator pointing one past last element in range.
 
 #### Return value {-}
 
+Iterator pointing to the beginning of the list. If a memory allocation error occurs, NULL is returned.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
@@ -5476,6 +5941,7 @@ array	dlist
 
 #### stable_sort_all_C {#stable_sort_all_C-ads - }
 
+Sorts a container in the order specified by the user-supplied *cmp_func* function. It is only defined for containers declared with a CMP containing macro. This sort is stable which means it retains two elements in the same original order if they have the same key. For arrays, this is not as fast as *sort_C*, but it is a good way to sort lists even if stability is not a requirement.
 
 ```C
 it_C stable_sort_all_C(C *c);
@@ -5488,15 +5954,20 @@ array	dlist	slist
 
 ##### Parameters {-}
 
+c
+  ~ Container to sort.
 
 #### Return value {-}
 
+Iterator pointing to the beginning of the list. If a memory allocation error occurs, NULL is returned.
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
+This is an $O(n \log n)$ operation for number of comparisons where $n$ is the number of elements in the container.
 
 ##### Data races {-}
 
@@ -5509,6 +5980,7 @@ array	dlist	slist
 
 #### swap_C {#swap_C-adhst - }
 
+Swaps the positions of two elements in a container.
 
 ```C
 void swap_C(it_C a, it_C b);
@@ -5521,15 +5993,21 @@ array	dlist	hash	slist	tree
 
 ##### Parameters {-}
 
+a
+  ~ Iterator pointing to first element to swap.
+b
+  ~ Iterator pointing to second element to swap.
 
 #### Return value {-}
 
 
 ##### Example {-}
 
+TO DO.
 
 #### Complexity {-}
 
+This is a constant time operation.
 
 ##### Data races {-}
 

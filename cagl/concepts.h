@@ -44,7 +44,7 @@
                      it_ ## container, type); \
     CAG_DEC_FINDP_ALL(findp_all_ ## container, container, \
                       it_ ## container, type) \
-     
+
 
 #define CAG_DEF_FORWARD(container, type) \
     it_ ## container (* const beg_ ## container) \
@@ -84,7 +84,7 @@
     CAG_DEF_FINDP(findp_ ## container, it_ ## container, type, next_ ## container) \
     CAG_DEF_FIND_ALL(find_all_ ## container, container, it_ ## container, type) \
     CAG_DEF_FINDP_ALL(findp_all_ ## container, container, it_ ## container, type) \
-     
+
 #define CAG_DEC_CMP_FORWARD(container, type) \
     CAG_DEC_CMP(cmp_ ## container, \
                 it_ ## container, \
@@ -103,7 +103,7 @@
                                  it_ ## container, type); \
     CAG_DEC_APPLY_DATA_CONTAINER(searchp_all_ ## container, container, \
                                  it_ ## container, type *) \
-     
+
 #define CAG_DEF_CMP_FORWARD(container, type, cmp_func, val_adr) \
     CAG_DEF_CMP(cmp_ ## container, it_ ## container, it_ ## container, \
                 cmp_func, val_adr) \
@@ -140,31 +140,37 @@
     CAG_DEF_APPLY_DATA_CONTAINER(searchp_all_ ## container, container, \
                                  it_ ## container, type*, searchp_ ## container, \
                                  begin_ ## container, end_ ## container) \
-     
+
 #define CAG_DEC_BIDIRECTIONAL(container, type) \
     CAG_DEC_FORWARD(container, type); \
     extern rit_ ## container (* const rbeg_ ## container) (const container *); \
     CAG_DEC_SWAP(rswap_ ## container, rit_ ## container); \
+    CAG_DEC_LAST(last_ ## container, container); \
     CAG_DEC_FIND(rfind_ ## container, rit_ ## container, type); \
     CAG_DEC_FINDP(rfindp_ ## container, rit_ ## container, type); \
     CAG_DEC_COPY(rcopy_ ## container, rit_ ## container, container); \
+    CAG_DEC_INSERTP_AFTER(insertp_after_ ## container, container, \
+                          it_ ## container, type); \
     CAG_DEC_APPLY_IN_OUT(rcopy_all_ ## container, container, container, container) \
-     
+
 #define CAG_DEF_BIDIRECTIONAL(container, type) \
     CAG_DEF_FORWARD(container, type) \
     rit_ ## container (* const rbeg_ ## container) (const container *) = \
             rbegin_ ## container; \
     CAG_DEF_SWAP(rswap_ ## container, rit_ ## container, CAG_VALUE) \
+    CAG_DEF_LAST(last_ ## container, container) \
     CAG_DEF_FIND(rfind_ ## container, rit_ ## container, type, rnext_ ## container) \
     CAG_DEF_FINDP(rfindp_ ## container, rit_ ## container, type, \
                   rnext_ ## container) \
     CAG_DEF_COPY(rcopy_ ## container, rit_ ## container, container, \
                  begin_ ## container, rnext_ ## container, \
                  next_ ## container, put_ ## container) \
+    CAG_DEF_INSERTP_AFTER(insertp_after_ ## container, container, \
+                          it_ ## container, type) \
     CAG_DEF_APPLY_IN_OUT(rcopy_all_ ## container, container, container, \
                          container, rcopy_ ## container, rbegin_ ## container, \
                          rend_ ## container, begin_ ## container) \
-     
+
 #define CAG_DEC_CMP_BIDIRECTIONAL(container, type) \
     CAG_DEC_CMP_FORWARD(container, type); \
     CAG_DEC_CMP(rcmp_ ## container, \
@@ -221,7 +227,7 @@
     CAG_DEC_RANDOM_SHUFFLE(random_shuffle_ ## container, it_ ## container); \
     CAG_DEC_APPLY_CONTAINER(random_shuffle_all_ ## container, container, \
                             it_ ## container) \
-     
+
 #define CAG_DEF_REORDERABLE(container, type) \
     CAG_DEF_REVERSE(reverse_ ## container, it_ ## container, \
                     prev_ ## container, next_ ## container, \
@@ -236,7 +242,7 @@
                             it_ ## container, \
                             random_shuffle_ ## container, begin_ ## container, \
                             end_ ## container) \
-     
+
 #define CAG_DEC_CMP_REORDERABLE(container, type) \
     CAG_DEC_SORT(sort_ ## container, it_ ## container); \
     CAG_DEC_SORT(rsort_ ## container, rit_ ## container); \
@@ -262,7 +268,7 @@
                           it_ ## container, type); \
     CAG_DEC_INSERTP_ORDER(insertp_lteq_ ## container, container, \
                           it_ ## container, type) \
-     
+
 #define CAG_DEF_CMP_REORDERABLE(container, type, cmp_func, val_adr) \
     CAG_DEF_SORT(sort_ ## container, it_ ## container, type, \
                  cmp_func, val_adr, distance_ ## container, \
@@ -301,15 +307,15 @@
                           it_ ## container, type, cmp_func, val_adr, <) \
     CAG_DEF_INSERTP_ORDER(insertp_lteq_ ## container, container, \
                           it_ ## container, type, cmp_func, val_adr, <=) \
-     
+
 
 #define CAG_DEC_RANDOMACCESS(container, type) \
     CAG_DEC_BIDIRECTIONAL(container, type) \
-     
+
 
 #define CAG_DEF_RANDOMACCESS(container, type) \
     CAG_DEF_BIDIRECTIONAL(container, type) \
-     
+
 #define CAG_DEC_CMP_RANDOMACCESS(container, type) \
     CAG_DEC_CMP_BIDIRECTIONAL(container, type); \
     CAG_DEC_LOWER_BOUND(lower_bound_ ## container, it_ ## container, type); \
@@ -329,7 +335,7 @@
                                  int, type); \
     CAG_DEC_APPLY_DATA_CONTAINER(binary_searchp_all_ ## container, container, \
                                  int, type *) \
-     
+
 #define CAG_DEF_CMP_RANDOMACCESS(container, type, cmp_func, val_adr) \
     CAG_DEF_CMP_BIDIRECTIONAL(container, type, cmp_func, val_adr) \
     CAG_DEF_LOWER_BOUND(lower_bound_ ## container, it_ ## container, \

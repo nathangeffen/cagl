@@ -1,2 +1,2 @@
 cd tests
-gcc -g -Wall -pedantic test_compile.c ../cagl/common.c -o test_compile
+gcc -g -Wall -pedantic -Werror test_compile.c ../cagl/common.c -o test_compile

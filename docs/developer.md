@@ -273,3 +273,21 @@ should insert the element variable into the container.
 :   Function or macro to get the value of an iterator. For all CAGL
     containers, this should always be *it-\>next* where *it* is an
     iterator variable.
+
+## Tools to help work with CAGL {-}
+
+Compiling and debugging macro code can be tricky. Here are tools to help.
+
+#### cpp_gcc {-}
+
+In the *bin* directory of the distribution is a script called *cpp_gcc* which compiles a single source file to a file called *tmp.c*. You can use this to find compiler errors.
+
+#### Test scripts
+
+The makefile runs several test scripts. Before checking in code, you should pass all the tests. These include compiling the code with different compilers, doing a release build, running the test suite and running the test suite through Valgrind.
+
+To run the test scripts, run *make check* in the root folder of the CAGL distribution. It can take a couple of minutes.
+
+To run just the test suite, change to the *tests* sub-folder and run make. The Makefile in the *tests* folder is hand-coded and straightforward. Take a look at it to see several useful options available.
+
+The test suite programs are in the *tests* sub-folder.

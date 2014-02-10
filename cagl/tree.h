@@ -337,7 +337,7 @@ CAG_DEC_INSERT_TREE(function, container, iterator_type, type) \
 
 
 #define CAG_DEC_INSERTP_TREE(function, container, iterator_type, type) \
-    iterator_type function(container *tree, const type *element)
+    iterator_type function(container *tree, type const *element)
 
 
 #define CAG_DEF_INSERTP_TREE(function, container, iterator_type, type, \
@@ -348,6 +348,10 @@ CAG_DEC_INSERTP_TREE(function, container, iterator_type, type) \
                     cmp_func, val_adr, alloc_style, alloc_func, *element); \
 }
 
+/*! \brief Function declaration and definition for *put* and *putp*. Every
+    container needs a put function to have a uniform insertion mechanism
+    used by some of the generic functions.
+*/
 
 #define CAG_DEC_PUT_TREE(function, container, iterator_type, type) \
     iterator_type function(container *tree, iterator_type it, \
@@ -359,6 +363,19 @@ CAG_DEC_INSERTP_TREE(function, container, iterator_type, type) \
     { \
         assert(it); \
         return insert_ ## container(tree, element); \
+    }
+
+
+#define CAG_DEC_PUTP_TREE(function, container, iterator_type, type) \
+    iterator_type function(container *tree, iterator_type it, \
+                           type const *element)
+
+
+#define CAG_DEF_PUTP_TREE(function, container, iterator_type, type) \
+    CAG_DEC_PUTP_TREE(function, container, iterator_type, type) \
+    { \
+        assert(it); \
+        return insertp_ ## container(tree, element); \
     }
 
 
@@ -859,13 +876,14 @@ CAG_DEC_CHECK_INTEGRITY_TREE(function, container, iterator_type) \
     CAG_DEC_AT(rat_ ## container, container, rit_ ## container); \
     CAG_DEC_DISTANCE_TREE(distance_ ## container, it_ ## container); \
     CAG_DEC_DISTANCE_TREE(rdistance_ ## container, rit_ ## container); \
-    CAG_DEC_APPLY_CONTAINER(rdistance_all_ ## container, container, size_t); \
     CAG_DEC_INSERT_TREE(insert_ ## container, container, \
                         it_ ## container, type); \
     CAG_DEC_INSERTP_TREE(insertp_ ## container, container, \
                          it_ ## container, type); \
     CAG_DEC_PUT_TREE(put_ ## container, container, \
                      it_ ## container, type); \
+    CAG_DEC_PUTP_TREE(putp_ ## container, container, \
+                      it_ ## container, type); \
     CAG_DEC_PREORDER_TREE(preorder_ ## container, it_ ## container); \
     CAG_DEC_INORDER_TREE(inorder_ ## container, it_ ## container); \
     CAG_DEC_INORDER_TREE(reverseorder_ ## container, rit_ ## container); \
@@ -911,14 +929,13 @@ CAG_DEF_DISTANCE_TREE(distance_ ## container, it_ ## container, \
                       next_ ## container) \
 CAG_DEF_DISTANCE_TREE(rdistance_ ## container, rit_ ## container, \
                       rnext_ ## container) \
-CAG_DEF_APPLY_CONTAINER(rdistance_all_ ## container, container, size_t, \
-                        rdistance_ ## container, rbegin_ ## container, \
-                        rend_ ## container) \
 CAG_DEF_INSERT_TREE(insert_ ## container, container, it_ ## container, \
                     type, cmp_func, val_adr, alloc_style, alloc_func) \
 CAG_DEF_INSERTP_TREE(insertp_ ## container, container, it_ ## container, \
                      type, cmp_func, val_adr, alloc_style, alloc_func) \
 CAG_DEF_PUT_TREE(put_ ## container, container, \
+                 it_ ## container, type) \
+CAG_DEF_PUTP_TREE(putp_ ## container, container, \
                  it_ ## container, type) \
 CAG_DEF_PREORDER_TREE(preorder_ ## container, it_ ## container) \
 CAG_DEF_INORDER_TREE(inorder_ ## container, it_ ## container, 0) \

@@ -279,7 +279,6 @@ static void test_distance(struct cag_test_series *tests)
 static void test_erase(struct cag_test_series *tests)
 {
 	complex_slist l;
-	it_complex_slist it;
 
 	new_complex_slist(&l);
 	erase_front_complex_slist(&l);
@@ -289,16 +288,15 @@ static void test_erase(struct cag_test_series *tests)
 	populate_list(&l, 0, 6, 1);
 	CAG_TEST(*tests, distance_all_complex_slist(&l) == 6,
 		 "cag_slist: distance after erase then populate");
-	it = last_complex_slist(&l);
-	CAG_TEST(*tests, it->value.real == 0.0,
-		 "cag_slist: last after erase then populate");
+	CAG_TEST(*tests, back_complex_slist(&l)->real == 0.0,
+		 "cag_slist: back after erase then populate");
 	erase_after_complex_slist(beg_complex_slist(&l));
 	CAG_TEST(*tests, beg_complex_slist(&l)->next->value.real == 3.0,
 		 "cag_slist: value after single erase after");
 	CAG_TEST(*tests, distance_all_complex_slist(&l) == 5,
 		 "cag_slist: distance after single erase after");
-	erase_after_range_complex_slist(beg_complex_slist(&l), it);
-	CAG_TEST(*tests, distance_all_complex_slist(&l) == 2,
+	erase_after_range_complex_slist(beg_complex_slist(&l), NULL);
+	CAG_TEST(*tests, distance_all_complex_slist(&l) == 1,
 		 "cag_slist: distance after erase after range");
 	erase_after_range_complex_slist(beg_complex_slist(&l), NULL);
 	erase_front_complex_slist(&l);

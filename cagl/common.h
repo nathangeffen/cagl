@@ -338,39 +338,50 @@ CAG_DEC_COPY_OVER(function, iterator_in, iterator_out) \
     return result; \
 }
 
+/*! \brief Macro declaration and definition to insert after an iterator.  This
+    is the natural way of doing it for singly-linked lists, but not for the
+    other containers. This is declared for bidirectional iterator supporting
+    containers in concepts.h.
+*/
 
-/*! \brief Macro and generic *concat* function declaration and definition. */
+#define CAG_DEC_INSERTP_AFTER(function, container, iterator_type, type)	\
+    iterator_type function(container *c, iterator_type position, type * const element)
 
-#define CAG_CONCAT_TO_EMPTY(container_result, c_result, \
-                            container_1, c1, \
-                            container_2, c2) \
+#define CAG_DEF_INSERTP_AFTER(function, container, iterator_type, type) \
+   CAG_DEC_INSERTP_AFTER(function, container, iterator_type, type) \
+   { \
+	   return putp_ ## container(c, next_ ## container(position), (type *) element); \
+   }
+
+/*! \brief Macro for generic *concat*. */
+
+#define CAG_CONCAT_IF(container_from, c1, \
+                   container_to, c2, cond_func, data, result)	\
 do { \
-    it_ ## container_1 from_1 = begin_ ## container_1(c1); \
-    it_ ## container_2 from_2 = begin_ ## container_2(c2); \
-    it_ ## container_1 to_1 = end_ ## container_1(c1); \
-    it_ ## container_2 to_2 = end_ ## container_2(c2); \
-    it_ ## container_result result = begin_ ## container_result(c_result); \
-    void *p; \
-    while(from_1 != to_1) { \
-        p = put_ ## container_result(c_result, result, from_1->element); \
-        if (!p) \
-            break; \
-        else \
-            p = next_ ## container_2(p); \
-        from_1 = next_ ## container_1(from_1); \
-    } \
-    if (p) \
-        while(from_2 != to_2) { \
-            p = put_ ## container_result(c_result, result, from_2->element); \
-            if (!p) \
+    it_ ## container_from cag_p_first = begin_ ## container_from(c1); \
+    it_## container_from cag_p_last = end_ ## container_from(c1); \
+    it_ ## container_to cag_p_it = last_ ## container_to(c2); \
+    result = CAG_TRUE; \
+    while (cag_p_first != cag_p_last) { \
+        if (cond_func(cag_p_first->value, data)) { \
+            if (insertp_after_ ## container_to(c2, \
+                cag_p_it, &cag_p_first->value) == NULL) { \
+                result = CAG_FALSE; \
                 break; \
-            else \
-                p = next_ ## container_2(p); \
-            from_2 = next_ ## container_2(from_2); \
+            } \
+            cag_p_it = next_ ## container_to(cag_p_it); \
         } \
+        cag_p_first = next_ ## container_from(cag_p_first); \
+    } \
 } while(0)
 
-#define CAG_CONCAT(container_result, container_to)
+
+#define CAG_CONCAT(container_from, c1, \
+                   container_to, c2, result) \
+do { \
+    CAG_CONCAT_IF(container_from, c1, container_to, c2, CAG_ALWAYS_TRUE_OP_2, \
+                  NULL, result); \
+} while(0)
 
 /*! \brief Generic *random_shuffle* algorithm. Works on bidirectional iterators.
    Theta(n) on random access iterators. O(n^2) otherwise.
@@ -800,7 +811,7 @@ CAG_DEC_LOWER_BOUNDP(function, iterator_type, type) \
 
 
 /*! \brief Generic *binary_search* algorithm.  Works on sorted bidirectional
-   iterators.  O(log n) for random access iterators. O(n) otherwise.
+    iterators.  O(log n) for random access iterators. O(n) otherwise.
 */
 
 #define CAG_P_BSEARCH(first, last, key, lower_bound, cmp_func, val_adr) \
@@ -1194,8 +1205,11 @@ CAG_DEC_SORT(function, iterator_type) \
 
    Implementation is a mergesort with O(n) extra space. Instead of recursion a
    manually managed stack is used. For single-linked lists a specialised
-   mergesort has been implemented. The same should perhaps be done for
-   double-linked lists.
+   mergesort has been implemented in slist.h. The same should perhaps be done
+   for double-linked lists.
+
+   This code needs to be reworked. It also does not error check in several
+   places.
 */
 
 #define CAG_STABLE_SORT(from, to, container, iterator_type, new_container, \
@@ -1355,9 +1369,28 @@ CAG_DEC_INSERTP_ORDER(function, container, iterator_type, type) \
 }
 
 
-/*!\brief Pass an entire container to a function that operates on a sequence and
-   returns a value. The applying function takes two parameters, the begin and
-   end of the sequence.
+/*! \brief get the last iterator in a container that supports bidirectional
+    iterators. Almost the same as *rbeg* but useful for the CAG_CONCAT
+    macro.
+*/
+
+#define CAG_DEC_LAST(function, container) \
+    it_ ## container function(container *c)
+
+#define CAG_DEF_LAST(function, container) \
+    CAG_DEC_LAST(function, container) \
+    { \
+        void *e = end_ ## container(c); \
+        void *b = beg_ ## container(c); \
+        if (e != b) \
+            return prev_ ## container(e); \
+        else \
+            return b; \
+    }
+
+/*! \brief Pass an entire container to a function that operates on a sequence
+   and returns a value. The applying function takes two parameters, the begin
+   and end of the sequence.
 
    E.g. used to define *distance_all*.
 */
@@ -1412,7 +1445,7 @@ CAG_DEC_APPLY_CONTAINER(function, container, return_type) \
 
 #define CAG_DEC_APPLY_DATA_CONTAINER(function, container, return_type, \
                                      type) \
-return_type function(container *c, type d)
+return_type function(container *c, type const d)
 
 #define CAG_DEF_APPLY_DATA_CONTAINER(function, container, return_type, \
                                      type, apply_func, begin, end) \

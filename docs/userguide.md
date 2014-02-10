@@ -1,12 +1,12 @@
 % C Almost Generic Library Manual
 %
-% January 2014
+% February 2014
 
 # Introduction
 
 The C Almost Generic Library (CAGL) provides *almost* generic containers and algorithms to manipulate them.
 
-These containers are implemented: arrays, doubly-linked lists, singly linked lists, balanced binary trees (as red-black trees) and hash tables. The library manages the memory of its containers. It can also manage the memory of the elements of the containers.
+These containers are implemented: arrays, doubly-linked lists, singly linked lists, balanced binary trees (as red-black trees) and hash tables. The library manages the memory of its containers. It can also manage the memory of the elements (values or data) of the containers. All the containers grow automatically.
 
 Here is an example of how to use it to populate an array with random integers and then sum the array.
 
@@ -28,7 +28,7 @@ CAG_DEC_DEF_ARRAY(int_arr, int);
 
 int main(void)
 {
-	int_arr iarr; /* an array of integers. */
+	int_arr iarr; /* an array of integers that grows automatically. */
 	it_int_arr it; /* an iterator over the array. */
 	int total = 0;
 	size_t i;
@@ -78,6 +78,15 @@ This shell command will likely resolve the problem:
 
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
+To test that the library is working, type this on the command line in the download directory:
+
+    make check
+
+To uninstall CAGL, type this on the command line in the download directory:
+
+    make uninstall
+
+For more information read the INSTALL file in the download directory.
 
 # Purpose
 
@@ -901,13 +910,15 @@ Here's what the fourth parameter onwards mean:
 - *alloc_entry*: is our function for allocating the memory of an entry. It will be called by the code in *CAG_STRUCT_ALLOC_STYLE*.
 - *free_entry*: is our function to return an entry's memory to the heap.
 
-Again, we could have declared and defined the dictionary like this instead with the same results:
+Again, we could have declared and defined the dictionary in two steps like this instead with the same results:
 
 ```C
 CAG_DEC_CMP_TREE(dictionary, struct entry);
 CAG_DEF_ALL_CMP_TREE(dictionary, struct entry, cmp_entry, CAG_BYADR,
                      CAG_STRUCT_ALLOC_STYLE, alloc_entry, free_entry);
 ```
+
+The above method what we'd use if *dictionary* was needed across multiple modules.
 
 However, if we'd declared our dictionary like this:
 
@@ -917,7 +928,7 @@ CAG_DEC_DEF_CMP_TREE(dictionary, struct entry, cmp_entry)
 
 Then we'd have to rewrite our comparison function to accept its parameters by value and we'd have to manage the memory of all our entries.
 
-And if we did it like this:
+And if we did it like this, specifying no allocation or free functions:
 
 ```C
 CAG_DEC_DEF_ALL_CMP_ARRAY(deck, struct card, cmp_cards, CAG_BYADR,
@@ -1039,6 +1050,35 @@ int populate_dictionary(dictionary *d)
 	return CAG_TRUE;
 }
 ```
+
+Because C strings are often needed in containers, and because hash tables and binary trees frequently store dictionaries, CAGL makes it easier by supplying macros that are abbreviations for the declarations and definitions we've used above. Here's a quick description of each of them. They all maintain the memory of their elements, similarly to the way C++ STL containers manage the memory of strings.
+
+CAG_DEC_STR_HASH(string_hash)
+  ~ Declares a hash table called *string_hash* whose elements are _char *_.
+CAG_DEF_STR_HASH(string_hash)
+  ~ Defines a hash table called *string_hash* whose elements are _char *_.
+CAG_DEC_DEF_STR_HASH(string_hash)
+  ~ Combines the above two macros in one.
+- CAG_DEC_STR_TREE(string_tree), CAG_DEF_STR_TREE(string_tree) and CAG_DEC_DEF_STR_TREE(string_tree) which are the tree equivalents of the above hash table declarations and definitions.
+
+There's only one way to define a C string, _char *_. But there are many ways to define a struct that stores dictionaries, so you have to do a bit more work. First make sure you have declared a struct that holds a dictionary. This must be a struct that consists of two _char *_ elements.
+
+For example:
+
+struct dictionary {
+	char *w;
+	char *d;
+};
+
+Then we can do this:
+
+- CAG_DEC_STR_STR_HASH(dict_hash, struct dictionary);
+- CAG_DEF_STR_STR_HASH(dict_hash, struct dictionary);
+- CAG_DEC_DEF_STR_STR_HASH(dict_hash, struct dictionary);
+
+- CAG_DEC_STR_STR_TREE(dict_tree, struct dictionary );
+- CAG_DEF_STR_STR_TREE(dict_tree, struct dictionary);
+- CAG_DEC_DEF_STR_STR_TREE(dict_tree, struct dictionary);
 
 ## Example: Adjacency list {-}
 
@@ -1277,6 +1317,8 @@ CAGL is designed with these principles in mind:
 1. Simplicity: CAGL containers must be easy to use. Functions must be consistently named across container types and also behave consistently.
 
 1. Efficiency: Container functions should be fast and occupy minimal space. Speed is usually more important than space.
+
+1. Practical: CAGL is intended to be useful. It is not intended to be a comprehensive implementation of algorithm theory, not even close. It is not intended to emulate the C++ STL. It is only intended to provide programmers with a set of often-used containers and algorithms.
 
 CAGL containers and their supporting functions are intended to cover common use cases, to reduce the drudgery and repetition of programming, as well as to relieve programmers from the hassle of coding more complicated data structures like hash tables and red-black trees, so that they can focus on their core work.
 

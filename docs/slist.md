@@ -33,7 +33,7 @@ while (it != end_C(list)) {
 }
 ```
 
-### Working with standalone SLIST iterators
+### Working with standalone SLIST iterators {-}
 
 Singly-linked lists are arguably the simplest, most elegant data structure in computer science. CAGL allows you to use just iterators to an SLIST type, which is the simplest way to work with a single-liked list.
 
@@ -142,6 +142,7 @@ Reverse printing again
 ### SLIST function blueprints {-}
 
 - [at_C](#at_C-adhst)
+- [back_C](#back_c-adst)
 - [begin_C](#begin_C-adhst)
 - [cmp_C](#cmp_C-adst)
 - [cmp_all_C](#cmp_all_C-adst)
@@ -173,7 +174,7 @@ Reverse printing again
 - [insert_after_C](#insert_after_C-s)
 - [insertp_after_C](#insertp_after_C-s)
 - [it_C](#it_C-adhst)
-- [last_C](#last_C-s)
+- [last_C](#last_C)
 - [new_C](#new_C-adhst)
 - [new_from_C](#new_from_C-adhst)
 - [new_many_C](#new_many_C-adhst)

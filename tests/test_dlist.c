@@ -34,6 +34,7 @@ static int cmp_complex(const struct complex x, const struct complex y)
 
 CAG_DEC_CMP_DLIST(complex_list, struct complex);
 CAG_DEC_CMP_DLIST(ilist, int);
+CAG_DEC_DEF_STR_DLIST(string_list);
 
 static void populate_list(complex_list *l1,
 			  const int from, const int to, const int step)
@@ -1273,7 +1274,38 @@ static void test_abstract(struct cag_test_series *tests)
 }
 
 
+void populate_strings(string_list *list, int num)
+{
+	int i;
+	char s[10];
 
+	for (i = num - 1; i >= 0; --i) {
+		sprintf(s, "k%d", i);
+		prepend_string_list(list, s);
+	}
+}
+
+void test_string(struct cag_test_series *tests)
+{
+	string_list list;
+	it_string_list it;
+	int i, failures = 0;
+	char c[5];
+
+	new_string_list(&list);
+	populate_strings(&list, 5);
+	CAG_TEST(*tests, distance_all_string_list(&list) == 5,
+		 "cag_list: distance of string list");
+	for (it = beg_string_list(&list), i = 0; it != end_string_list(&list);
+	     it = next_string_list(it), ++i) {
+		sprintf(c, "k%d", i);
+		if (strcmp(c, it->value) != 0)
+			++failures;
+	}
+	CAG_TEST(*tests, failures == 0,
+		 "cag_test: strings still valid after inserts");
+	free_string_list(&list);
+}
 
 void test_dlist(struct cag_test_series *tests)
 {
@@ -1305,6 +1337,7 @@ void test_dlist(struct cag_test_series *tests)
 	test_stable_sort(tests);
 	test_stable_sort_macro(tests);
 	test_abstract(tests);
+	test_string(tests);
 
 	return;
 }

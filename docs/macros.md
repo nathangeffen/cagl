@@ -158,12 +158,38 @@ CAG_DEC_STR_TREE(st);
 CAG_DEF_STR_TREE(st);
 CAG_DEC_DEF_STR_TREE(ddst);
 
+CAG_DEC_STR_ARRAY(sa);
+CAG_DEF_STR_ARRAY(sa);
+CAG_DEC_DEF_STR_ARRAY(ddsa);
+
+CAG_DEC_STR_DLIST(sd);
+CAG_DEF_STR_DLIST(sd);
+CAG_DEC_DEF_STR_DLIST(ddsd);
+
+CAG_DEC_STR_SLIST(ss);
+CAG_DEF_STR_SLIST(ss);
+CAG_DEC_DEF_STR_SLIST(ddss);
+
+struct dictionary {
+	char *w;
+	char *d;
+};
+
+CAG_DEC_STR_STR_HASH(dh, struct dictionary);
+CAG_DEF_STR_STR_HASH(dh, struct dictionary);
+CAG_DEC_DEF_STR_STR_HASH(dddh, struct dictionary);
+
+CAG_DEC_STR_STR_TREE(dt, struct dictionary );
+CAG_DEF_STR_STR_TREE(dt, struct dictionary);
+CAG_DEC_DEF_STR_STR_TREE(dddt, struct dictionary);
+
 
 int main(void)
 {
-return 0;
+	return 0;
 }
 ```
+
 ----
 
 #### CAG_DEC_ARRAY {-}
@@ -253,11 +279,31 @@ CAG_DEC_CMP_ARRAY(container, type)
 
 #### CAG_DEC_CMP_DLIST {-}
 
+Declares a type called *container* which is a CAGL doubly-linked list container with elements of type *type*. In addition to declaring the same prototypes as *CAG_DEC_DLIST* it also declares prototypes that facilitate ordering the container.
+
+```C
+CAG_DEC_CMP_DLIST(container, type)
+```
+
 #### CAG_DEC_CMP_HASH {-}
+
+Declares a type called *container* which is a CAGL hash table container with elements of type *type*.
+
+```C
+CAG_DEC_CMP_HASH(container, type)
+```
 
 #### CAG_DEC_CMP_SLIST {-}
 
+Declares a type called *container* which is a CAGL singly-linked list container with elements of type *type*. In addition to declaring the same prototypes as *CAG_DEC_SLIST* it also declares prototypes that facilitate ordering the container.
+
+CAG_DEC_CMP_SLIST(container, type)
+
 #### CAG_DEC_CMP_TREE {-}
+
+Declares a type called *container* which is a CAGL balanced binary tree container with elements of type *type*.
+
+CAG_DEC_CMP_TREE(container, type)
 
 #### CAG_DEF_CMP_ARRAY {-}
 
@@ -273,14 +319,62 @@ The *cmp_func* function is of the form:
 int cmp_func(type e1, type e2);
 ```
 
-
 #### CAG_DEF_CMP_DLIST {-}
+
+Defines the functions for an orderable CAGL doubly-linked list container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMP_DLIST*.
+
+```C
+CAG_DEF_CMP_DLIST(container, type, cmp_func);
+```
+
+The *cmp_func* function is of the form:
+
+```C
+int cmp_func(type e1, type e2);
+```
 
 #### CAG_DEF_CMP_HASH {-}
 
+Defines the functions for a CAGL hash table container type called *container*, which has elements of type *type*, a comparison function *cmp_func*, a hash function, *hash_func* and a function to calculate the number of bytes in an element, *length_func*. Usually used in conjunction with *CAG_DEC_CMP_HASH*.
+
+```C
+container, type, cmp_func, hash_func, length_func);
+```
+
+The *cmp_func* function is of the form:
+
+```C
+int cmp_func(type e1, type e2);
+```
+
 #### CAG_DEF_CMP_SLIST {-}
 
+Defines the functions for an orderable CAGL singly-linked list container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMP_SLIST*.
+
+```C
+CAG_DEF_CMP_SLIST(container, type, cmp_func);
+```
+
+The *cmp_func* function is of the form:
+
+```C
+int cmp_func(type e1, type e2);
+```
+
+
 #### CAG_DEF_CMP_TREE {-}
+
+Defines the functions for a CAGL balanced binary tree container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMP_TREE*.
+
+```C
+CAG_DEF_CMP_TREE(container, type, cmp_func);
+```
+
+The *cmp_func* function is of the form:
+
+```C
+int cmp_func(type e1, type e2);
+```
 
 #### CAG_DEC_DEF_CMP_ARRAY {-}
 
@@ -290,18 +384,41 @@ This is equivalent to calling *CAG_DEC_CMP_ARRAY* then *CAG_DEF_CMP_ARRAY*.
 CAG_DEC_DEF_CMP_ARRAY(container, type, cmp_func);
 ```
 
-
 #### CAG_DEC_DEF_CMP_DLIST {-}
+
+This is equivalent to calling *CAG_DEC_CMP_DLIST* then *CAG_DEF_CMP_DLIST*.
+
+```C
+CAG_DEC_DEF_CMP_DLIST(container, type, cmp_func);
+```
 
 #### CAG_DEC_DEF_CMP_HASH {-}
 
+This is equivalent to calling *CAG_DEC_CMP_HASH* then *CAG_DEF_CMP_HASH*.
+
+```C
+CAG_DEC_DEF_CMP_HASH(container, type, cmp_func, hash_func, length_func);
+```
+
 #### CAG_DEC_DEF_CMP_SLIST {-}
+
+This is equivalent to calling *CAG_DEC_CMP_SLIST* then *CAG_DEF_CMP_SLIST*.
+
+```C
+CAG_DEC_DEF_CMP_SLIST(container, type, cmp_func);
+```
 
 #### CAG_DEC_DEF_CMP_TREE {-}
 
+This is equivalent to calling *CAG_DEC_CMP_TREE* then *CAG_DEF_CMP_TREE*.
+
+```C
+CAG_DEC_DEF_CMP_TREE(container, type, cmp_func);
+```
+
 #### CAG_DEC_CMPP_ARRAY {-}
 
-This is identical to *CAG_DEC_CMP_ARRAY* but provided for consistent naming with *CAG_DEF_CMP_ARRAY*.
+This is identical to *CAG_DEC_CMP_ARRAY* but provided for consistent naming with *CAG_DEF_CMPP_ARRAY*.
 
 ```C
 CAG_DEC_CMPP_ARRAY(container, type)
@@ -309,11 +426,35 @@ CAG_DEC_CMPP_ARRAY(container, type)
 
 #### CAG_DEC_CMPP_DLIST {-}
 
+This is identical to *CAG_DEC_CMP_DLIST* but provided for consistent naming with *CAG_DEF_CMPP_DLIST*.
+
+```C
+CAG_DEC_CMPP_ARRAY(container, type)
+```
+
 #### CAG_DEC_CMPP_HASH {-}
+
+This is identical to *CAG_DEC_CMP_HASH* but provided for consistent naming with *CAG_DEF_CMPP_HASH*.
+
+```C
+CAG_DEC_CMPP_ARRAY(container, type)
+```
 
 #### CAG_DEC_CMPP_SLIST {-}
 
+This is identical to *CAG_DEC_CMP_SLIST* but provided for consistent naming with *CAG_DEF_CMPP_SLIST*.
+
+```C
+CAG_DEC_CMPP_ARRAY(container, type)
+```
+
 #### CAG_DEC_CMPP_TREE {-}
+
+This is identical to *CAG_DEC_CMP_TREE* but provided for consistent naming with *CAG_DEF_CMPP_TREE*.
+
+```C
+CAG_DEC_CMPP_TREE(container, type)
+```
 
 #### CAG_DEF_CMPP_ARRAY {-}
 
@@ -333,6 +474,20 @@ int cmp_func(type *e1, type *e2);
 
 
 #### CAG_DEF_CMPP_DLIST {-}
+
+Defines the functions for an orderable CAGL doubly-linked list container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMPP_DLIST*.
+
+The only difference between this macro and *CAG_DEF_CMP_DLIST* is that the comparison function takes its arguments by address.
+
+```C
+CAG_DEF_CMPP_DLIST(container, type, cmp_func);
+```
+
+The comparison function, *cmp_func*, is of the form:
+
+```C
+int cmp_func(type *e1, type *e2);
+```
 
 #### CAG_DEF_CMPP_HASH {-}
 
@@ -509,6 +664,113 @@ CAG_DEC_DEF_ALL_CMP_ARRAY(container, type, cmp_func, val_adr, alloc_style,
 
 #### CAG_DEC_DEF_ALL_CMP_TREE {-}
 
+#### CAG_DEC_STR_ARRAY {-}
+
+Convenience macro that declares an array of C strings. Use in conjunction with *CAG_DEF_STR_ARRAY*. The element type is _char *_.
+
+All memory is managed for you. This is similar to the C++ STL std::vector<std::string>.
+
+You can give the container any valid identifier name. In the example syntax below we've chosen *string_array* but this is arbitrary.
+
+```C
+CAG_DEC_STR_ARRAY(string_array);
+```
+
+#### CAG_DEF_STR_ARRAY {-}
+
+Convenience macro that defines an array of C strings. Use in conjunction with *CAG_DEC_STR_ARRAY*. The element type is _char *_.
+
+ALL memory is managed for you. This is similar to the C++ STL std::vector<std::string>.
+
+You can give the container any valid identifier name. In the example syntax below we've chosen *string_array* but this is arbitrary.
+
+```C
+CAG_DEF_STR_ARRAY(string_array);
+```
+
+#### CAG_DEC_DEF_STR_ARRAY {-}
+
+Convenience macro to declare and define an array of C strings. The element type is _char *_.
+
+All memory is managed for you. This is similar to the C++ STL std::vector<std::string>.
+
+You can give the container any valid identifier name. In the example syntax below we've chosen *string_array* but this is arbitrary.
+
+```C
+CAG_DEC_DEF_STR_ARRAY(string_array);
+```
+
+#### CAG_DEC_STR_DLIST {-}
+
+Convenience macro that declares a doubly-linked list of C strings. Use in conjunction with *CAG_DEF_STR_DLIST*. The element type is _char *_.
+
+All memory is managed for you. This is similar to the C++ STL std::list<std::string>.
+
+You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
+
+```C
+CAG_DEC_STR_DLIST(string_list);
+```
+
+#### CAG_DEF_STR_DLIST {-}
+
+Convenience macro that defines a doubly-linked list of C strings. Use in conjunction with *CAG_DEC_STR_DLIST*. The element type is _char *_.
+
+ALL memory is managed for you. This is similar to the C++ STL std::list<std::string>.
+
+You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
+
+```C
+CAG_DEF_STR_DLIST(string_list);
+```
+
+#### CAG_DEC_DEF_STR_DLIST {-}
+
+Convenience macro to declare and define a doubly-linked list of C strings. The element type is _char *_.
+
+All memory is managed for you. This is similar to the C++ STL std::list<std::string>.
+
+You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
+
+```C
+CAG_DEC_DEF_STR_DLIST(string_list);
+```
+
+#### CAG_DEC_STR_SLIST {-}
+
+Convenience macro that declares a singly-linked list of C strings. Use in conjunction with *CAG_DEF_STR_SLIST*. The element type is _char *_.
+
+All memory is managed for you. This is similar to the C++11 STL std::forward_list<std::string>.
+
+You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
+
+```C
+CAG_DEC_STR_SLIST(string_list);
+```
+
+#### CAG_DEF_STR_SLIST {-}
+
+Convenience macro that defines a singly-linked list of C strings. Use in conjunction with *CAG_DEC_STR_SLIST*. The element type is _char *_.
+
+ALL memory is managed for you. This is similar to the C++11 STL std::forward_list<std::string>.
+
+You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
+
+```C
+CAG_DEF_STR_SLIST(string_list);
+```
+
+#### CAG_DEC_DEF_STR_SLIST {-}
+
+Convenience macro to declare and define a singly-linked list of C strings. The element type is _char *_.
+
+All memory is managed for you. This is similar to the C++11 STL std::forward_list<std::string>.
+
+You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
+
+```C
+CAG_DEC_DEF_STR_SLIST(string_list);
+```
 
 #### CAG_DEC_STR_HASH {-}
 
@@ -521,6 +783,7 @@ You can give the container any valid identifier name. In the example syntax belo
 ```C
 CAG_DEC_STR_HASH(string_hash_table);
 ```
+
 
 #### CAG_DEF_STR_HASH {-}
 
@@ -688,7 +951,8 @@ CAG_DEC_DEF_STR_STR_TREE(dict_tree, struct dictionary );
 
 The function blueprints for copying only work for copying between containers of the same type. This is unfortunately quite inflexible. The C++ STL, for example, supports copying between any two containers that store the same element type. To help get around this a number of macros are provided to assist with copying between different types of containers with the same types of elements.
 
-#### CAG_COPY {#cag_copy}
+
+#### CAG_COPY {#cag_copy -}
 
 Copy all the elements from one container to another. The elements of the two containers should be the same type. The container to copy to is assumed to be empty. The macro copies using the *put_C* function which allocates memory for the copied to container.
 
@@ -717,7 +981,7 @@ Copy elements meeting a user specified condition from one container to another. 
 CAG_COPY_IF(container_from, c_from, container_to, c_to, cond_func, result)
 ```
 
-##### Parameters
+##### Parameters {-}
 
 container_from
   ~ Container type of container variable to copy from.
@@ -733,7 +997,7 @@ result
   ~ Integer that will be set to false if the copy fails, else it is set to true.
 
 
-#### CAG_COPY_OVER {#cag-copy-over}
+#### CAG_COPY_OVER {#cag-copy-over -}
 
 Copy elements from one container to another. There should be sufficient space in the copied to container.
 
@@ -741,7 +1005,7 @@ Copy elements from one container to another. There should be sufficient space in
 CAG_COPY_OVER(container_from, c_from, container_to, c_to)
 ```
 
-##### Parameters
+##### Parameters {-}
 
 container_from
   ~ Container type of container variable to copy from.
@@ -752,11 +1016,11 @@ container_to
 c_to
   ~ Container variable to copy to.
 
-#### CAG_COPY_OVER_IF {#cag-copy-over-if}
+#### CAG_COPY_OVER_IF {#cag-copy-over-if -}
 
 Copy elements meeting a specified condition from one container to another. There should be sufficient space in the copied to container.
 
-##### Parameters
+##### Parameters {-}
 
 container_from
   ~ Container type of container variable to copy from.
@@ -769,21 +1033,69 @@ c_to
 cond_func
   ~ User supplied macro expression or function that takes one argument, an element by value, and returns either true or false. If it returns true, the corresponding element from *c_from* will be copied to *c_to*.
 
-#### CAG_RCOPY {#cag_copy}
+#### CAG_RCOPY {#cag_copy -}
 
 Reverse copy from one container to another. Parameters are identical to [CAG_COPY](#cag_copy). The container being copied from should support bidirectional iterators.
 
-#### CAG_RCOPY_IF {#cag-copy-if}
+#### CAG_RCOPY_IF {#cag-copy-if -}
 
 Reverse copy elements meeting a user-specified condition from one container to another. Parameters are identical to [CAG_COPY_IF](#cag_copy_if). The container being copied from should support bidirectional iterators.
 
-#### CAG_RCOPY_OVER {#cag-copy-over}
+#### CAG_RCOPY_OVER {#cag-copy-over -}
 
 Reverse copy elements from one container over the elements in another. Parameters are identical to [CAG_COPY_OVER](#cag_copy_over). The container being copied from should support bidirectional iterators.
 
-#### CAG_RCOPY_OVER_IF {#cag-copy-over-if}
+#### CAG_RCOPY_OVER_IF {#cag-copy-over-if -}
 
 Reverse copy elements meeting a user-specified condition from one container over the elements in another. Parameters are identical to [CAG_COPY_OVER_IF](#cag_copy_over_if). The container being copied from should support bidirectional iterators.
+
+
+#### CAG_CONCAT {#cag-concat-if}
+
+This is the most flexible of the copy macros (except it can't currently be used with hash tables). It concatenates all the elements from one container that meet a user-specified condition to the end of another. If the second container is empty, then this is equivalent to a copy. The *cond_func* takes an extra parameter, *data*, which is any user defined data. This allows the cond_func to track information between calls. Memory allocation is handled by CAGL.
+
+```C
+CAG_CONCAT_IF(container_from, c1, container_to, c2, cond_func, data, result)
+```
+
+##### Parameters {-}
+
+container_from
+  ~ Container type of container variable to copy elements from.
+c_from
+  ~ Container variable to copy elements from.
+container_to
+  ~ Container type of container variable to concatenate elements to.
+c_to
+  ~ Container variable to concatenate to.
+cond_func
+  ~ User supplied macro expression or function that takes two arguments, an element by value and user data (which can be NULL. It returns either true or false. If it returns true, the corresponding element from *c_from* will be copied to *c_to*.
+data
+  ~ User supplied data. Can be NULL if there is no need to track information between calls to *cond_func*.
+result
+  ~ Set to CAG_TRUE if operation is successful, else CAG_FALSE if a memory allocation error occurs.
+
+
+#### CAG_CONCAT {#cag-concat}
+
+Concatenates all the elements from one container to the end of another. Memory allocation is handled by CAGL. Works for arrays, lists and trees.
+
+```C
+CAG_CONCAT(container_from, c_from, container_to, c_to, result)
+```
+
+container_from
+  ~ Container type of container variable to copy elements from.
+c_from
+  ~ Container variable to copy elements from.
+container_to
+  ~ Container type of container variable to concatenate elements to.
+c_to
+  ~ Container variable to concatenate to.
+result
+  ~ Set to CAG_TRUE if operation is successful, else CAG_FALSE if a memory allocation error occurs.
+
+
 
 ## Ordering macros {#ordering-macros -}
 
