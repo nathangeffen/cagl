@@ -5,7 +5,7 @@ FUNCTION | ARRAY | DLIST | HASH | TREE | SLIST |
 | append_C                       | [a](#append_C-ad) | [d](#append_C-ad) |  |  |  |
 | appendp_C                      | [a](#appendp_C-ad) | [d](#appendp_C-ad) |  |  |  |
 | at_C                           | [a](#at_C-adhst) | [d](#at_C-adhst) | [h](#at_C-adhst) | [s](#at_C-adhst) | [t](#at_C-adhst) |
-| back_C                         | [a](#back_C-adt) | [d](#back_C-adt) |  |  | [t](#back_C-adt) |
+| back_C                         | [a](#back_C-adst) | [d](#back_C-adst) |  | [s](#back_C-adst) | [t](#back_C-adst) |
 | begin_C                        | [a](#begin_C-adhst) | [d](#begin_C-adhst) | [h](#begin_C-adhst) | [s](#begin_C-adhst) | [t](#begin_C-adhst) |
 | binary_rsearch_C               | [a](#binary_rsearch_C-a) |  |  |  |  |
 | binary_rsearchp_C              | [a](#binary_rsearchp_C-a) |  |  |  |  |
@@ -59,7 +59,7 @@ FUNCTION | ARRAY | DLIST | HASH | TREE | SLIST |
 | insertp_lt_C                   | [a](#insertp_lt_C-ad) | [d](#insertp_lt_C-ad) |  |  |  |
 | insertp_lteq_C                 | [a](#insertp_lteq_C-ad) | [d](#insertp_lteq_C-ad) |  |  |  |
 | it_C                           | [a](#it_C-adhst) | [d](#it_C-adhst) | [h](#it_C-adhst) | [s](#it_C-adhst) | [t](#it_C-adhst) |
-| last_C                         |  |  |  | [s](#last_C-s) |  |
+| last_C                         |  [a](#last_C) |  [d](#last_C) |  | [s](#last_C) | [t](#last_C) |
 | levelorder_C                   |  |  |  |  | [t](#levelorder_C-t) |
 | lower_bound_C                  | [a](#lower_bound_C-a) |  |  |  |  |
 | lower_bound_all_C              | [a](#lower_bound_all_C-a) |  |  |  |  |

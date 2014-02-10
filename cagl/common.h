@@ -350,7 +350,12 @@ CAG_DEC_COPY_OVER(function, iterator_in, iterator_out) \
 #define CAG_DEF_INSERTP_AFTER(function, container, iterator_type, type) \
    CAG_DEC_INSERTP_AFTER(function, container, iterator_type, type) \
    { \
-	   return putp_ ## container(c, next_ ## container(position), (type *) element); \
+           if (position != end_ ## container(c)) \
+	        return putp_ ## container(c, next_ ## container(position), \
+                                          (type *) element); \
+           else \
+	        return putp_ ## container(c, position, \
+                                          (type *) element); \
    }
 
 /*! \brief Macro for generic *concat*. */
@@ -364,12 +369,11 @@ do { \
     result = CAG_TRUE; \
     while (cag_p_first != cag_p_last) { \
         if (cond_func(cag_p_first->value, data)) { \
-            if (insertp_after_ ## container_to(c2, \
-                cag_p_it, &cag_p_first->value) == NULL) { \
+            if ( (cag_p_it = insertp_after_ ## container_to(c2, \
+                cag_p_it, &cag_p_first->value)) == NULL) { \
                 result = CAG_FALSE; \
                 break; \
             } \
-            cag_p_it = next_ ## container_to(cag_p_it); \
         } \
         cag_p_first = next_ ## container_from(cag_p_first); \
     } \
@@ -1381,11 +1385,10 @@ CAG_DEC_INSERTP_ORDER(function, container, iterator_type, type) \
     CAG_DEC_LAST(function, container) \
     { \
         void *e = end_ ## container(c); \
-        void *b = beg_ ## container(c); \
-        if (e != b) \
+        if (e != beg_ ## container(c)) \
             return prev_ ## container(e); \
         else \
-            return b; \
+            return e; \
     }
 
 /*! \brief Pass an entire container to a function that operates on a sequence

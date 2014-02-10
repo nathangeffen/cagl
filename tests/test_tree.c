@@ -81,6 +81,8 @@ static void test_new(struct cag_test_series *tests)
 
 	CAG_TEST(*tests, new_complex_tree(&ct1),
 		 "cag_tree: new complex tree");
+	CAG_TEST(*tests, beg_complex_tree(&ct1) == end_complex_tree(&ct1),
+		 "cag_tree: begin == end after new for complex tree");
 	free_complex_tree(&ct1);
 
 	CAG_TEST(*tests, new_complexp_tree(&cpt),

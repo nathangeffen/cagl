@@ -61,11 +61,13 @@ static void test_new(struct cag_test_series *tests)
 	complex_list l;
 
 	CAG_TEST(*tests, new_complex_list(&l) != NULL,
-			 "cag_test: list returned from new");
+			 "cag_dlist: list returned from new");
 	CAG_TEST(*tests, l.begin_->next == l.end_,
-		 "cag_test: begin_ next address of end_");
+		 "cag_dlist: begin_ next address of end_");
 	CAG_TEST(*tests, l.end_->prev == l.begin_,
-		 "cag_test: end_ prev equals address of begin_");
+		 "cag_dlist: end_ prev equals address of begin_");
+	CAG_TEST(*tests, beg_complex_list(&l) == end_complex_list(&l),
+		 "cag_dlist: begin == end after new for complex list");
 	free_complex_list(&l);
 }
 
@@ -521,13 +523,13 @@ static void test_copy_over(struct cag_test_series *tests)
 	     it1 != end_complex_list(&l1); it1 = it1->next, it2 = it2->next)
 		CAG_TEST(*tests, it1->value.real == it2->value.real &&
 			 it1->value.imag == it2->value.imag,
-			 "cag_test: element values after copy");
+			 "cag_dlist: element values after copy");
 	CAG_TEST(*tests,
 		 distance_complex_list(beg_complex_list(&l1),
 				       end_complex_list(&l1)) ==
 		 distance_complex_list(beg_complex_list(&l2),
 				       end_complex_list(&l2)),
-		 "cag_test: number elements after copy");
+		 "cag_dlist: number elements after copy");
 	free_complex_list(&l1);
 	free_complex_list(&l2);
 }
@@ -548,26 +550,26 @@ static void test_search(struct cag_test_series *tests)
 	it = search_complex_list(beg_complex_list(&l), end_complex_list(&l), c);
 	CAG_TEST(*tests, it != end_complex_list(&l) && it->value.real == 3.0
 		 && it->value.imag == -3.0,
-		 "cag_test: Value found");
+		 "cag_dlist: Value found");
 	it_all = search_all_complex_list(&l, c);
 	CAG_TEST(*tests, it == it_all,
-		 "cag_test: Search all finds same as search iterator");
+		 "cag_dlist: Search all finds same as search iterator");
 	it = search_complex_list(it->next, end_complex_list(&l), c);
 	CAG_TEST(*tests, it != end_complex_list(&l) && it->value.real == 3.0
 		 && it->value.imag == -3.0,
-		 "cag_test: Value found second time");
+		 "cag_dlist: Value found second time");
 	rit = (rit_complex_list) it;
 	rit = rsearch_complex_list(rit, rend_complex_list(&l), c);
 	CAG_TEST(*tests, rit != rend_complex_list(&l) && rit->value.real == 3.0
 		 && rit->value.imag == -3.0,
-		 "cag_test: Value found reverse");
+		 "cag_dlist: Value found reverse");
 	it = search_complex_list(it->next, end_complex_list(&l), c);
 	CAG_TEST(*tests, it == end_complex_list(&l),
-		 "cag_test: Value not found");
+		 "cag_dlist: Value not found");
 	c.real = 100;
 	rit = rsearch_complex_list(rit->next, rend_complex_list(&l), c);
 	CAG_TEST(*tests, rit == rend_complex_list(&l),
-		 "cag_test: Value not found");
+		 "cag_dlist: Value not found");
 	free_complex_list(&l);
 }
 
@@ -587,26 +589,26 @@ static void test_searchp(struct cag_test_series *tests)
 				end_complex_list(&l), &c);
 	it_all = searchp_all_complex_list(&l, &c);
 	CAG_TEST(*tests, it == it_all,
-		 "cag_test: Searchp all finds same as searchp iterator");
+		 "cag_dlist: Searchp all finds same as searchp iterator");
 	CAG_TEST(*tests, it != end_complex_list(&l) && it->value.real == 3.0
 		 && it->value.imag == -3.0,
-		 "cag_test: Value found");
+		 "cag_dlist: Value found");
 	it = searchp_complex_list(it->next, end_complex_list(&l), &c);
 	CAG_TEST(*tests, it != end_complex_list(&l) && it->value.real == 3.0
 		 && it->value.imag == -3.0,
-		 "cag_test: Value found second time");
+		 "cag_dlist: Value found second time");
 	it = searchp_complex_list(it->next, end_complex_list(&l), &c);
 	CAG_TEST(*tests, it == end_complex_list(&l),
-		 "cag_test: Value not found");
+		 "cag_dlist: Value not found");
 	rit = rbeg_complex_list(&l);
 	rit = rsearchp_complex_list(rit->next, rend_complex_list(&l), &c);
 	CAG_TEST(*tests, rit != rend_complex_list(&l) && rit->value.real == 3.0
 		 && rit->value.imag == -3.0,
-		 "cag_test: reverse value found");
+		 "cag_dlist: reverse value found");
 	c.real = 100.0;
 	rit = rsearchp_complex_list(rit->next, rend_complex_list(&l), &c);
 	CAG_TEST(*tests, rit == rend_complex_list(&l),
-		 "cag_test: value reverse not found");
+		 "cag_dlist: value reverse not found");
 	free_complex_list(&l);
 }
 
@@ -660,39 +662,39 @@ static void test_cmp(struct cag_test_series *tests)
 						end_complex_list(&l1),
 						beg_complex_list(&l2),
 						end_complex_list(&l2)) == 0,
-		 "cag_test: compare empty lists");
+		 "cag_dlist: compare empty lists");
 	populate_list(&l1, 0, 5, 1);
 	populate_list(&l2, 0, 5, 1);
 	CAG_TEST(*tests, cmp_all_complex_list(&l1, &l2) == 0,
-		 "cag_test: compare all equal lists");
+		 "cag_dlist: compare all equal lists");
 	CAG_TEST(*tests, cmp_range_complex_list(beg_complex_list(&l1),
 						end_complex_list(&l1),
 						beg_complex_list(&l2),
 						end_complex_list(&l2)) == 0,
-		 "cag_test: compare equal lists");
+		 "cag_dlist: compare equal lists");
 	c.real = 10;
 	c.imag = -10;
 	append_complex_list(&l1, c);
 	CAG_TEST(*tests, cmp_all_complex_list(&l1, &l2) > 0,
-		 "cag_test: compare all 1st list bigger");
+		 "cag_dlist: compare all 1st list bigger");
 	CAG_TEST(*tests, cmp_range_complex_list(beg_complex_list(&l1),
 						end_complex_list(&l1),
 						beg_complex_list(&l2),
 						end_complex_list(&l2)) > 0,
-		 "cag_test: compare 1st list bigger");
+		 "cag_dlist: compare 1st list bigger");
 	c.real = 20;
 	c.imag = -10;
 	append_complex_list(&l2, c);
 	CAG_TEST(*tests, cmp_all_complex_list(&l1, &l2) < 0,
-		 "cag_test: compare all 2nd list bigger");
+		 "cag_dlist: compare all 2nd list bigger");
 	CAG_TEST(*tests, cmp_range_complex_list(beg_complex_list(&l1),
 						end_complex_list(&l1),
 						beg_complex_list(&l2),
 						end_complex_list(&l2)) < 0,
-		 "cag_test: compare 2nd list bigger");
+		 "cag_dlist: compare 2nd list bigger");
 	rcopy_all_complex_list(&l2, &l3);
 	CAG_TEST(*tests, rcmp_all_complex_list(&l2, &l3) == 0,
-		 "cag_test: compare all list and its reverse");
+		 "cag_dlist: compare all list and its reverse");
 	free_complex_list(&l1);
 	free_complex_list(&l2);
 	free_complex_list(&l3);
@@ -708,7 +710,7 @@ static void test_equal(struct cag_test_series *tests)
 		 equal_range_complex_list(beg_complex_list(&l1),
 					  end_complex_list(&l1),
 					  beg_complex_list(&l2)) == CAG_TRUE,
-		 "cag_test: equal empty lists");
+		 "cag_dlist: equal empty lists");
 	populate_list(&l1, 0, 5, 1);
 	populate_list(&l2, 0, 5, 1);
 	rcopy_all_complex_list(&l2, &l3);
@@ -716,20 +718,20 @@ static void test_equal(struct cag_test_series *tests)
 		 equal_range_complex_list(beg_complex_list(&l1),
 					  end_complex_list(&l1),
 					  beg_complex_list(&l2)) == CAG_TRUE,
-		 "cag_test: equal lists");
+		 "cag_dlist: equal lists");
 	CAG_TEST(*tests, equal_all_complex_list(&l1, &l2) == CAG_TRUE,
-		 "cag_test: equal all lists");
+		 "cag_dlist: equal all lists");
 	at_complex_list(beg_complex_list(&l1), 3)->value.real = 10;
 	at_complex_list(beg_complex_list(&l1), 3)->value.imag = 20;
 	CAG_TEST(*tests,
 		 equal_range_complex_list(beg_complex_list(&l1),
 					  end_complex_list(&l1),
 					  beg_complex_list(&l2)) == CAG_FALSE,
-		 "cag_test: unequal lists");
+		 "cag_dlist: unequal lists");
 	CAG_TEST(*tests, equal_all_complex_list(&l1, &l2) == CAG_FALSE,
-		 "cag_test: unequal all lists");
+		 "cag_dlist: unequal all lists");
 	CAG_TEST(*tests, requal_all_complex_list(&l2, &l3) == CAG_TRUE,
-		 "cag_test: requal all list and its reverse");
+		 "cag_dlist: requal all list and its reverse");
 	free_complex_list(&l1);
 	free_complex_list(&l2);
 	free_complex_list(&l3);
@@ -744,7 +746,7 @@ static void test_copy(struct cag_test_series *tests)
 	populate_list(&l1, 0, 5, 1);
 	copy_all_complex_list(&l1, &l2);
 	CAG_TEST(*tests, cmp_all_complex_list(&l1, &l2) == 0,
-		 "cag_test: assigned lists equals");
+		 "cag_dlist: assigned lists equals");
 	free_complex_list(&l2);
 	new_complex_list(&l2);
 	rcopy_all_complex_list(&l1, &l2);
@@ -761,29 +763,29 @@ static void test_at(struct cag_test_series *tests)
 	populate_list(&l, 0, 10, 1);
 	it = at_complex_list(beg_complex_list(&l), 0);
 	CAG_TEST(*tests, it == beg_complex_list(&l),
-		"cag_test: 0 index");
+		"cag_dlist: 0 index");
 	it = at_complex_list(it, 2);
 	CAG_TEST(*tests, it->value.real == 2.0,
-		 "cag_test: 2 index");
+		 "cag_dlist: 2 index");
 	it = at_complex_list(it, 7);
 	CAG_TEST(*tests, it->value.real == 9.0,
-		 "cag_test: 7 index");
+		 "cag_dlist: 7 index");
 	it = at_complex_list(it, 1);
 	CAG_TEST(*tests, it == end_complex_list(&l),
-		 "cag_test: at end");
+		 "cag_dlist: at end");
 
 	rit = rat_complex_list(rbeg_complex_list(&l), 0);
 	CAG_TEST(*tests, rit == rbeg_complex_list(&l),
-		"cag_test: 0 index reverse");
+		"cag_dlist: 0 index reverse");
 	rit = rat_complex_list(rit, 2);
 	CAG_TEST(*tests, rit->value.real == 7.0,
-		 "cag_test: 2 index reverse");
+		 "cag_dlist: 2 index reverse");
 	rit = rat_complex_list(rit, 7);
 	CAG_TEST(*tests, rit->value.real == 0.0,
-		 "cag_test: 7 index reverse");
+		 "cag_dlist: 7 index reverse");
 	rit = rat_complex_list(rit, 1);
 	CAG_TEST(*tests, rit == rend_complex_list(&l),
-		 "cag_test: rat end");
+		 "cag_dlist: rat end");
 
 	free_complex_list(&l);
 }
@@ -798,11 +800,11 @@ static void test_reverse(struct cag_test_series *tests)
 	populate_list(&l, 0, 10, 1);
 	it = reverse_complex_list(beg_complex_list(&l), end_complex_list(&l));
 	CAG_TEST(*tests, it == beg_complex_list(&l),
-			 "cag_test: reversed list returns iterator = begin");
+			 "cag_dlist: reversed list returns iterator = begin");
 	for (it = beg_complex_list(&l), i = 9; it != end_complex_list(&l);
 	     it = it->next, --i) {
 		CAG_TEST(*tests, it->value.real == i,
-			"cag_test: reversed list");
+			"cag_dlist: reversed list");
 	}
 	free_complex_list(&l);
 	new_complex_list(&l);
@@ -811,13 +813,13 @@ static void test_reverse(struct cag_test_series *tests)
 	for (it = beg_complex_list(&l), i = 8; it != end_complex_list(&l);
 	     it = it->next, --i) {
 		CAG_TEST(*tests, it->value.real == i,
-			"cag_test: reversed list");
+			"cag_dlist: reversed list");
 	}
 	reverse_all_complex_list(&l);
 	for (it = beg_complex_list(&l), i = 0; it != end_complex_list(&l);
 	     it = it->next, ++i) {
 		CAG_TEST(*tests, it->value.real == i,
-			"cag_test: reverse all container list");
+			"cag_dlist: reverse all container list");
 	}
 	free_complex_list(&l);
 }
@@ -832,7 +834,7 @@ static void test_batch(struct cag_test_series *tests)
 	populate_list(&l1, 0, 5, 1);
 	CAG_TEST(*tests, distance_complex_list(beg_complex_list(&l1),
 					       end_complex_list(&l1)) == 5,
-		 "cag_test: lists populated after batch new 1");
+		 "cag_dlist: lists populated after batch new 1");
 error:
 	free_many_complex_list(i, &l1, NULL);
 
@@ -845,7 +847,7 @@ error:
 		 distance_complex_list(beg_complex_list(&l1),
 				       end_complex_list(&l1)) == 5 &&
 		 cmp_all_complex_list(&l1, &l2) == 0,
-		 "cag_test: lists populated after batch new 2");
+		 "cag_dlist: lists populated after batch new 2");
 error_1:
 	free_many_complex_list(i, &l1, &l2, NULL);
 
@@ -859,7 +861,7 @@ error_1:
 				       end_complex_list(&l1)) == 5 &&
 		 cmp_all_complex_list(&l1, &l2) == 0 &&
 		 cmp_all_complex_list(&l2, &l3) == 0,
-		 "cag_test: lists populated after batch new 3");
+		 "cag_dlist: lists populated after batch new 3");
 error_2:
 	free_many_complex_list(i, &l1, &l2, &l3, NULL);
 
@@ -878,7 +880,7 @@ static void test_int_list(struct cag_test_series *tests)
 	     it = it->next, ++i)
 		total += it->value;
 	CAG_TEST(*tests, i == 5 && total == 12,
-		 "cag_test: ilist append");
+		 "cag_dlist: ilist append");
 	free_ilist(&l);
 	new_ilist(&l);
 	total = 0;
@@ -888,7 +890,7 @@ static void test_int_list(struct cag_test_series *tests)
 	     it = it->next, ++i)
 		total += it->value;
 	CAG_TEST(*tests, i == 4 && total == 10,
-		 "cag_test: ilist pappend");
+		 "cag_dlist: ilist pappend");
 	free_ilist(&l);
 }
 
@@ -950,7 +952,7 @@ void test_sort(struct cag_test_series *tests)
 	it = sort_ilist(beg_ilist(&l),
 				end_ilist(&l));
 	CAG_TEST(*tests, beg_ilist(&l) == it,
-			"cag_test: sort returns iterator to beginning of sorted list");
+			"cag_dlist: sort returns iterator to beginning of sorted list");
 	i = -1;
 	for (it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next) {
@@ -963,7 +965,7 @@ void test_sort(struct cag_test_series *tests)
 	CAG_TEST(*tests, inorder == CAG_TRUE &&
 		 distance_ilist(beg_ilist(&l),
 					end_ilist(&l)) == 11,
-		 "cag_test: list in order after sort backward list");
+		 "cag_dlist: list in order after sort backward list");
 	rsort_ilist(rbeg_ilist(&l),
 			    rend_ilist(&l));
 	i = 402;
@@ -977,7 +979,7 @@ void test_sort(struct cag_test_series *tests)
 		i = it->value;
 	}
 	CAG_TEST(*tests, inorder == CAG_TRUE,
-		 "cag_test: list in order after reverse sort backward list");
+		 "cag_dlist: list in order after reverse sort backward list");
 
 	free_ilist(&l);
 
@@ -997,7 +999,7 @@ void test_sort(struct cag_test_series *tests)
 		i = it->value;
 	}
 	CAG_TEST(*tests, inorder == CAG_TRUE,
-		 "cag_test: list in order after sort random list");
+		 "cag_dlist: list in order after sort random list");
 	free_ilist(&l);
 
 	new_ilist(&l);
@@ -1016,7 +1018,7 @@ void test_sort(struct cag_test_series *tests)
 		i = it->value;
 	}
 	CAG_TEST(*tests, inorder == CAG_TRUE,
-		 "cag_test: list in order after reverse sort random list");
+		 "cag_dlist: list in order after reverse sort random list");
 	free_ilist(&l);
 }
 
@@ -1036,7 +1038,7 @@ void test_stable_sort(struct cag_test_series *tests)
 	it = stable_sort_ilist(beg_ilist(&l),
 								   end_ilist(&l));
 	CAG_TEST(*tests, beg_ilist(&l) == it,
-			 "cag_test: stable sort returns iterator to begin of sorted list");
+			 "cag_dlist: stable sort returns iterator to begin of sorted list");
 	i = -1;
 	for (it = beg_ilist(&l); it != end_ilist(&l);
 	     it = it->next)
@@ -1044,7 +1046,7 @@ void test_stable_sort(struct cag_test_series *tests)
 	CAG_TEST(*tests, inorder == CAG_TRUE &&
 		 distance_ilist(beg_ilist(&l),
 					end_ilist(&l)) == 501,
-		 "cag_test: list in order after stable sort backward list");
+		 "cag_dlist: list in order after stable sort backward list");
 	free_ilist(&l);
 	new_ilist(&l);
 	for (i = 0; i < 51; ++i)
@@ -1056,7 +1058,7 @@ void test_stable_sort(struct cag_test_series *tests)
 	     it = it->next)
 		if (it->value <= i) inorder = CAG_FALSE;
 	CAG_TEST(*tests, inorder == CAG_TRUE,
-		 "cag_test: list in order after stable sort backward list");
+		 "cag_dlist: list in order after stable sort backward list");
 	free_ilist(&l);
 
 	new_ilist(&l);
@@ -1069,7 +1071,7 @@ void test_stable_sort(struct cag_test_series *tests)
 	     it = it->next)
 		if (it->value > i) inorder = CAG_FALSE;
 	CAG_TEST(*tests, inorder == CAG_TRUE,
-		 "cag_test: list in order after stable sort backward list");
+		 "cag_dlist: list in order after stable sort backward list");
 	free_ilist(&l);
 	new_ilist(&l);
 	for (i = 0; i < 51; ++i)
@@ -1081,7 +1083,7 @@ void test_stable_sort(struct cag_test_series *tests)
 	     it = it->next)
 		if (it->value >= i) inorder = CAG_FALSE;
 	CAG_TEST(*tests, inorder == CAG_TRUE,
-		 "cag_test: list in order after stable sort backward list");
+		 "cag_dlist: list in order after stable sort backward list");
 	free_ilist(&l);
 	new_complex_list(&cl);
 	c.real = 4.0;
@@ -1155,7 +1157,7 @@ void test_stable_sort_macro(struct cag_test_series *tests)
 	     it = it->next)
 		if (it->value < i) inorder = CAG_FALSE;
 	CAG_TEST(*tests, inorder == CAG_TRUE,
-		 "cag_test: list in order after macro stable sort");
+		 "cag_dlist: list in order after macro stable sort");
 	free_ilist(&l);
 
 	new_complex_list(&cl);
@@ -1303,7 +1305,7 @@ void test_string(struct cag_test_series *tests)
 			++failures;
 	}
 	CAG_TEST(*tests, failures == 0,
-		 "cag_test: strings still valid after inserts");
+		 "cag_dlist: strings still valid after inserts");
 	free_string_list(&list);
 }
 

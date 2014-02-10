@@ -302,7 +302,7 @@ do { \
     iterator->prev = node; \
 } while(0)
 
-#define _CAG_ALLOC_INSERT_DLIST(iterator, node, prev, next, item, \
+#define CAG_P_ALLOC_INSERT_DLIST(iterator, node, prev, next, item, \
                                 alloc_style, alloc_func) \
 do { \
     node = CAG_MALLOC(sizeof *node); \
@@ -320,7 +320,7 @@ do { \
 CAG_DEC_INSERT_DLIST(function, container, iterator_type, type) \
 { \
     iterator_type node; \
-    _CAG_ALLOC_INSERT_DLIST(it, node, prev, next, \
+    CAG_P_ALLOC_INSERT_DLIST(it, node, prev, next, \
                             element, alloc_style, alloc_func); \
     return node; \
 }
@@ -334,7 +334,7 @@ CAG_DEC_INSERT_DLIST(function, container, iterator_type, type) \
 CAG_DEC_INSERTP_DLIST(function, container, iterator_type, type) \
 { \
     iterator_type node; \
-    _CAG_ALLOC_INSERT_DLIST(it, node, prev, next, \
+    CAG_P_ALLOC_INSERT_DLIST(it, node, prev, next, \
                             *element, alloc_style, alloc_func); \
     return node; \
 }
@@ -350,7 +350,7 @@ CAG_DEC_INSERTP_DLIST(function, container, iterator_type, \
     while (it->next != NULL && \
             cmp_func(val_adr (*element), val_adr it->value) comparator 0) \
         it = it->next; \
-    _CAG_ALLOC_INSERT_DLIST(it, node, prev, next, \
+    CAG_P_ALLOC_INSERT_DLIST(it, node, prev, next, \
                             *element, alloc_style, alloc_func); \
     return node; \
 }

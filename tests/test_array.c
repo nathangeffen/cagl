@@ -94,6 +94,8 @@ static void test_new(struct cag_test_series *tests)
 
 	CAG_TEST(*tests, new_with_capacity_complex_array(&a, 0),
 		 "cag_array: new array") ;
+	CAG_TEST(*tests, beg_complex_array(&a) == end_complex_array(&a),
+		 "cag_array: begin == end after new");
 	free_complex_array(&a);
 }
 

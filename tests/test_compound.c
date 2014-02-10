@@ -637,51 +637,66 @@ static void test_concat_macro(struct cag_test_series *tests)
 	new_iarr(&arr);
 	new_islist(&slist);
 	new_ilist(&dlist);
-	for (i = 0; i < 10; ++i) {
-		prepend_iarr(&arr, 19 - i);
-		prepend_islist(&slist, 9 - i);
-		prepend_ilist(&dlist, 9 - i);
-	}
-	d = distance_all_islist(&slist);
 	CAG_CONCAT(iarr, &arr, islist, &slist, i);
-	CAG_TEST(*tests, i == CAG_TRUE && distance_all_iarr(&arr) + d
-		 == distance_all_islist(&slist),
-		"cag_compound: Size of slist after concat macro.");
-	for (i = 0, it = beg_islist(&slist); it != end_islist(&slist);
-	     it = next_islist(it), ++i)
-		if (it->value != i) {
-			++failures;
-			printf("i, it->value %d %d\n", i, it->value);
-		}
-	CAG_TEST(*tests, failures == 0,
-		 "cag_compound: Expected values in slist after concat.");
-	d = distance_all_ilist(&dlist);
+	CAG_TEST(*tests, distance_all_islist(&slist) == 0,
+		 "cag_compound: concat to empty slist");
 	CAG_CONCAT(iarr, &arr, ilist, &dlist, i);
-	CAG_TEST(*tests, i == CAG_TRUE && distance_all_iarr(&arr) + d
-		 == distance_all_ilist(&dlist),
-		"cag_compound: Size of dlist after concat macro.");
-	failures = 0;
-	for (i = 0, it2 = beg_ilist(&dlist); it2 != end_ilist(&dlist);
-	     it2 = next_ilist(it2), ++i)
-		if (it2->value != i)
-			++failures;
-	CAG_TEST(*tests, failures == 0,
-		 "cag_compound: Expected values in dlist after concat.");
+	CAG_TEST(*tests, distance_all_ilist(&dlist) == 0,
+		 "cag_compound: concat to empty dlist");
 	free_iarr(&arr);
 	free_islist(&slist);
 	free_ilist(&dlist);
-}
-
-/*static void test_concat_if_macro(struct cag_test_series *tests)
-{
-	islist slist;
-	ilist dlist;
-	iarr arr;
-	it_islist it;
-	it_ilist it2;
-	int i, failures = 0;
-	size_t d;
-
+	new_iarr(&arr);
+	new_islist(&slist);
+	new_ilist(&dlist);
+	for (i = 0; i < 10; ++i)
+		prepend_iarr(&arr, 19 - i);
+	CAG_CONCAT(iarr, &arr, islist, &slist, i);
+	CAG_TEST(*tests, distance_all_islist(&slist) == 10,
+		 "cag_compound: concat to empty slist");
+	CAG_CONCAT(iarr, &arr, ilist, &dlist, i);
+	CAG_TEST(*tests, distance_all_ilist(&dlist) == 10,
+		 "cag_compound: concat to empty dlist");
+	free_iarr(&arr);
+	free_islist(&slist);
+	free_ilist(&dlist);
+	new_iarr(&arr);
+	new_islist(&slist);
+	new_ilist(&dlist);
+	CAG_CONCAT(islist, &slist, iarr, &arr, i);
+	CAG_TEST(*tests, distance_all_iarr(&arr) == 0,
+		 "cag_compound: concat to empty array from slist");
+	CAG_CONCAT(ilist, &dlist, iarr, &arr, i);
+	CAG_TEST(*tests, distance_all_iarr(&arr) == 0,
+		 "cag_compound: concat to empty array from dlist");
+	free_iarr(&arr);
+	free_islist(&slist);
+	free_ilist(&dlist);
+	new_iarr(&arr);
+	new_islist(&slist);
+	new_ilist(&dlist);
+	for (i = 0; i < 10; ++i) {
+		prepend_islist(&slist, 9 - i);
+		prepend_ilist(&dlist, 9 - i);
+	}
+	CAG_CONCAT(islist, &slist, iarr, &arr, i);
+	CAG_TEST(*tests, distance_all_iarr(&arr) == 10,
+		 "cag_compound: concat to empty array from slist");
+	CAG_CONCAT(ilist, &dlist, iarr, &arr, i);
+	CAG_TEST(*tests, distance_all_iarr(&arr) == 20,
+		 "cag_compound: concat to array from dlist");
+	free_iarr(&arr);
+	free_islist(&slist);
+	free_ilist(&dlist);
+	new_iarr(&arr);
+	new_ilist(&dlist);
+	for (i = 0; i < 10; ++i)
+		prepend_ilist(&dlist, 9 - i);
+	CAG_CONCAT(ilist, &dlist, iarr, &arr, i);
+	CAG_TEST(*tests, distance_all_iarr(&arr) == 10,
+		 "cag_compound: concat to empty array from dlist");
+	free_iarr(&arr);
+	free_ilist(&dlist);
 	new_iarr(&arr);
 	new_islist(&slist);
 	new_ilist(&dlist);
@@ -699,7 +714,6 @@ static void test_concat_macro(struct cag_test_series *tests)
 	     it = next_islist(it), ++i)
 		if (it->value != i) {
 			++failures;
-			printf("i, it->value %d %d\n", i, it->value);
 		}
 	CAG_TEST(*tests, failures == 0,
 		 "cag_compound: Expected values in slist after concat.");
@@ -719,7 +733,67 @@ static void test_concat_macro(struct cag_test_series *tests)
 	free_islist(&slist);
 	free_ilist(&dlist);
 }
-*/
+
+int is_even(int x, void *p)
+{
+	if (x == 10)
+		* (int *) p = (int) 0;
+	* (int *) p =  ! * (int *) p;
+
+	return * (int *) p;
+}
+
+#define EVEN(x, NULL) x % 2 == 0
+
+static void test_concat_if_macro(struct cag_test_series *tests)
+{
+	islist slist;
+	ilist dlist;
+	iarr arr;
+	it_islist it;
+	it_ilist it2;
+	int i, j = 0, failures = 0;
+	size_t d;
+
+	new_iarr(&arr);
+	new_islist(&slist);
+	new_ilist(&dlist);
+	for (i = 0; i < 10; ++i) {
+		prepend_iarr(&arr, 19 - i);
+		if (!even(i)) {
+			prepend_islist(&slist, 9 - i);
+			prepend_ilist(&dlist, 9 - i);
+		}
+	}
+	d = distance_all_islist(&slist);
+	CAG_CONCAT_IF(iarr, &arr, islist, &slist, is_even, &j, i);
+	CAG_TEST(*tests, i == CAG_TRUE && distance_all_iarr(&arr) / 2 + d
+		 == distance_all_islist(&slist),
+		"cag_compound: Size of slist after concat macro.");
+	for (i = 0, it = beg_islist(&slist); it != end_islist(&slist);
+	     it = next_islist(it), i += 2)
+		if (it->value != i) {
+			++failures;
+		}
+	CAG_TEST(*tests, failures == 0,
+		 "cag_compound: Expected values in slist after concat.");
+	d = distance_all_ilist(&dlist);
+	CAG_CONCAT_IF(iarr, &arr, ilist, &dlist, is_even, &j, i);
+	CAG_TEST(*tests, i == CAG_TRUE && distance_all_iarr(&arr) / 2 + d
+		 == distance_all_ilist(&dlist),
+		"cag_compound: Size of dlist after concat macro.");
+	failures = 0;
+	for (i = 0, it2 = beg_ilist(&dlist); it2 != end_ilist(&dlist);
+	     it2 = next_ilist(it2), i += 2)
+		if (it2->value != i)
+			++failures;
+	CAG_TEST(*tests, failures == 0,
+		 "cag_compound: Expected values in dlist after concat.");
+	free_iarr(&arr);
+	free_islist(&slist);
+	free_ilist(&dlist);
+}
+
 void test_compound(struct cag_test_series *tests)
 {
 	test_adj_list(tests);
@@ -737,6 +811,7 @@ void test_compound(struct cag_test_series *tests)
 	test_rcopy_macro(tests);
 	test_rcopy_if_macro(tests);
 	test_concat_macro(tests);
+	test_concat_if_macro(tests);
 }
 
 CAG_DEF_ALL_ARRAY(adj_list, ilist, CAG_STRUCT_ALLOC_STYLE,

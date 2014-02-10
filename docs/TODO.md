@@ -56,6 +56,14 @@
   about possible ways to do this but have not come up with a satisfactory
   solution.
 
+- Perhaps implement a version of CAGL with algorithms, such as *sort_C* that are multithreaded. This will require extensive thought and discussion before proceeding.
+
 ## Documentation
 
 - Examples for every function. Improve the reference section.
+
+- Remove numerous inconsistencies of language and numbering throughout documentation.
+
+- Proofread the documentation closely.
+
+- Simplify documentation for users.

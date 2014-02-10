@@ -81,8 +81,12 @@ static void test_new(struct cag_test_series *tests)
 
 	CAG_TEST(*tests, new_str_hash(&h),
 		 "cag_hash: new str K&R hash");
+	CAG_TEST(*tests, beg_str_hash(&h) == end_str_hash(&h),
+		 "cag_hash: begin == end after new for str");
 	CAG_TEST(*tests, new_string_hash(&o),
 		 "cag_hash: new str oat hash") ;
+	CAG_TEST(*tests, beg_string_hash(&o) == end_string_hash(&o),
+		 "cag_hash: begin == end after new for string");
 	free_string_hash(&o);
 	free_str_hash(&h);
 }

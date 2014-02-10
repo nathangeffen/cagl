@@ -1,68 +1,73 @@
-# C Almost Generic Library
+% C Almost Generic Library Manual
+% Version 0.1
+% February 2014
 
-Last updated: 12 January 2014.
-
-Version: 0.1
+# Introduction
 
 The C Almost Generic Library (CAGL) provides *almost* generic containers and algorithms to manipulate them.
 
-Currently these containers are implemented: arrays, doubly-linked lists, singly linked lists, balanced binary trees -- implemented as red-black trees -- and hash tables.
+These containers are implemented: arrays, doubly-linked lists, singly linked lists, balanced binary trees (as red-black trees) and hash tables. The library manages the memory of its containers. It can also manage the memory of the elements (values or data) of the containers. All the containers grow automatically.
 
-## Example
+## Example {-}
+
+This code populates an array with random integers and then sums the array.
 
 ```C
-    /* Simple array of integers example.
+/* Simple array of integers example.
 
-       This program populates an array with random integers and sums them.
+   This program populates an array with random integers and sums them.
 
-       Possible output:
-       Sum is: 97
-     */
+   Possible output:
+   Sum is: 97
+*/
 
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include "cagl/array.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <cagl/array.h> /* CAGL array code. */
 
-    /* Declare and define an array of integers. */
-    CAG_DEC_DEF_ARRAY(int_arr, int);
+/* Declare and define an array of integers. */
+CAG_DEC_DEF_ARRAY(int_arr, int);
 
-    int main(void)
-    {
-    	int_arr iarr; /* an array of integers. */
-    	it_int_arr it; /* an iterator over the array. */
-    	int total = 0;
-    	size_t i;
+int main(void)
+{
+	int_arr iarr; /* an array of integers that grows automatically. */
+	it_int_arr it; /* an iterator over the array. */
+	int total = 0;
+	size_t i;
 
-    	new_int_arr(&iarr); /* Initiate container */
+	new_int_arr(&iarr); /* Initiate container */
 
-    	/* populate the array with random integers. */
-    	for (i = 0; i < 10; ++i)
-    		append_int_arr(&iarr, rand() % 20);
+    /* populate the array with random integers. */
+	for (i = 0; i < 10; ++i)
+		append_int_arr(&iarr, rand() % 20);
 
-    	/* iterate over the array, summing its elements. */
-    	for (it = beg_int_arr(&iarr); it != end_int_arr(&iarr);
-    	     it = next_int_arr(it))
-    		total += it->value;
-    	printf("Sum is: %d\n", total);
+	/* iterate over the array, summing its elements. */
+    for (it = beg_int_arr(&iarr); it != end_int_arr(&iarr);
+                                  it = next_int_arr(it))
+    	total += it->value;
+    printf("Sum is: %d\n", total);
 
-    	free_int_arr(&iarr); /* Return array to heap. */
-    	return 0;
-    }
+   	free_int_arr(&iarr); /* Return array to heap. */
+   	return 0;
+}
 ```
 
-There are several more examples in the documentation.
+# Installation
 
-## Installation
+The CAGL source code is available on github at <https://github.com/nathangeffen/cagl>.
 
-CAGL's installation is handled by autotools.
+CAGL uses a standard autotools installation. These instructions would work on a **typical** GNU/Linux distribution:
 
-1. Download and unpack the latest version from Github.
+1. Download and unpack the latest version from Github:
+   <https://github.com/nathangeffen/cagl/latest.tar.gz>.
 
-1. Run:
+1. In the root of the unpacked directory run these commands:
 
+```
     ./configure
 	make
 	sudo make install
+```
 
 How you compile CAGL programs might differ slightly across environments, but assuming you have a common, standard GNU/Linux distribution, the most likely scenario is that CAGL will be installed in /usr/local/lib and /usr/local/include and that you have *pkg-config* installed. To compile your program called *myprog.c* in development that uses CAGL, you would typically do this:
 
@@ -72,31 +77,84 @@ You might get this error when you run *myprog*:
 
     ./myprog: error while loading shared libraries: libcagl-0.1.so.1: cannot open shared object file: No such file or directory
 
-This will likely resolve the problem:
+This shell command will likely resolve the problem:
 
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
-## Documentation
+To test that the library is working, type this on the command line in the download directory:
 
-The documentation is a work in progress, but there is already enough written to help get you going. The user guide is written in [Markdown](http://daringfireball.net/projects/markdown/), which is an easy plain text format to read.  See userguide.md in the docs directory. HTML and PDF versions can be generated with [pandoc](http://johnmacfarlane.net/pandoc/). If you install pandoc, then *makedocs* in the *bin* directory is a script that generates an HTML version.
+    make check
 
-## Contribute
+It might take a couple of minutes to run all the tests.
+
+To uninstall CAGL, type this on the command line in the download directory:
+
+    make uninstall
+
+For more information read the INSTALL file in the download directory.
+
+# Compiling CAGL programs
+
+When compiling a program that uses CAGL with *gcc* or *clang* using *-Wall -pedantic* any compiler warnings that arise in connection with CAGL should be considered errors. Conversely, any C compiler compliant with [ISO C 1990](http://en.wikipedia.org/wiki/ANSI_C#C89_and_C90) or later should compile well-written CAGL programs without warnings. For example, in development, you can compile the examples in this user guide using this (on GNU/Linux systems):
+
+    cc -g -Wall -pedantic nameofprog.c -o nameofprog
+
+Sometimes you need to link in code in cag_common.c. In which case this should work:
+
+    cc -g -Wall -pedantic nameofprog.c cag_common.c  -o nameofprog
+
+You can also compile cag_common.c into a shared library or to an object file like this:
+
+	cc -g -Wall -pedantic -c cag_common.c
+
+And then link it with your code like this:
+
+	cc -g -Wall -pedantic nameofprog.c cag_common.o  -o nameofprog
+
+Because CAGL generates many functions, only some of which your program might use, you might want to reduce the size of your executable in production. You can do this using *gcc* using the *-flto* option. For example:
+
+	gcc -Wall -pedantic -O3 -flto nameofprog.c cag_common.o  -o nameofprog
+
+Compiling with the *-flto* option can be slow, so you will likely only use it when compiling release builds.
+
+
+# Documentation
+
+The CAGL manual is available at <http://www.cagl.nathangeffen.webfactional.com>.
+
+If you wish to generate the documentation from sources, you need to have *pandoc* installed. CAGL documentation is written in Markdown.
+
+To generate the manual as a single HTML page on a GNU/Linux system go the directory to which CAGL was unpacked. Type:
+
+```
+./bin/makedocs
+```
+
+A file called *manual.html* will be created in the docs directory.
+
+To generate a PDF file, type:
+
+```
+./bin/makedocs pdf
+```
+
+A file called *manual.pdf* will be created in the *docs* directory.
+
+# Contributing to CAGL
 
 There's lots to do to improve CAGL. See TODO.md in the docs directory. Email nathangeffen at gmail.com if you want to contribute.
 
-## Reason for CAGL
+# Understanding CAGL
 
-If you use C, but would like something analogously convenient to the C++ STL, this may meet your needs. Of course C doesn't have many C++ features used to develop the STL, so CAGL is much less sophisticated and comprehensive than the STL -- and always will be -- but it has been designed to cover common use cases.
+## Purpose {-}
 
-## If you need something like the STL, why not just use C++?
+CAGL provides C programmers with an easy-to-use, fast library of commonly used containers for holding data. It also provides algorithms, implemented in functions and, to a lesser extent, macros for manipulating the containers and their data.
 
-For many reasons. Perhaps the main one is that C remains ubiquitous, especially on GNU/Linux systems and embedded software.
+Despite its age, C remains one of the most popular programming languages. It is fast and simple. Well-written C code is easy for most programmers to understand. It is widely used in embedded devices and vies with Java for top spot on the Tiobe Programming Index.
 
-Many people find C simple and elegant and prefer using it. However, they would prefer to avoid the error-prone drudgery of continuously re-implementing containers and commonly used algorithms.
+However, C comes with no standard libraries to handle the drudgery of the most needed data structures, or containers, such as arrays, trees, hash tables and lists. C++ provides the STL, but requires programmers to use an extremely complex language.
 
-## How does CAGL differ from other C generic libraries?
-
-There are some excellent C generic libraries such as [glib](https://developer.gnome.org/glib/) and [SGLIB](http://sglib.sourceforge.net/).
+There are some excellent C generic libraries for managing containers such as [glib](https://developer.gnome.org/glib/) and [SGLIB](http://sglib.sourceforge.net/).
 
 CAGL is inspired by *glib* and *SGLIB* but differs from both of them.
 
@@ -106,17 +164,9 @@ SGLIB also uses macros except that CAGL, in contrast to SGLIB's expressed philos
 
 Also, CAGL implements iterators, although these are not as flexible as the ones in the C++ STL.
 
-## Testing
+If you use C, but would like some of the convenience of the C++ STL, CAGL may meet your needs. Of course C doesn't have many C++ features used to develop the STL, so CAGL is much less sophisticated and comprehensive than the STL -- and always will be -- but it has been designed to cover common use cases.
 
-Several hundred test cases have been written and most common use cases have been tested. More test cases are being written. But this is new and immature software so expect serious bugs. Please feel welcome to help improve it.
-
-## Portability
-
-CAGL has been tested using gcc and clang. It is C89 compatible, which means code that uses it should compile on a C preprocesser and compiler compatible with the 1989 ANSI C specification without warnings.
-
-It needs to be tested with other compilers, including Intel's and Microsoft's C compilers. Please help with this.
-
-## Pros and cons of CAGL
+## Pros and cons of CAGL {-}
 
 CAGL has the following benefits:
 
@@ -131,7 +181,13 @@ It has these limitations:
 - The CAGL macros generate a bunch of functions, only some of which users may need. But with *gcc* these can be removed from object files passing the *-flto* to the linker.
 - Without reading the documentation (or using the CAG_DOC macro which lists all the functions for a container), users might struggle to know the names of the generated functions.
 
-## Why *almost* generic?
+## How CAGL has been tested {-}
+
+Several hundred test cases have been written and most common use cases have been tested. These are primarily in C files in the *tests* sub-directory. More test cases are being written. But this is new and immature software so expect serious bugs. Please feel welcome to help improve it.
+
+## Why *almost* generic? {-}
+
+The library is called *almost* generic for several reasons, the main one being that the generic functions that are generated for different container types must have different names because C doesn't support function overloading. The library is also *almost* type safe, but not quite. C allows a function with pointer parameters to be called with pointers of a different type. This is usually a programming mistake. However mature C compilers will give warnings when this happens. An important principle of CAGL is that when you use it you should get no compiler warnings (at least as far as your use of CAGL goes).
 
 CAGL works as follows:
 
@@ -143,7 +199,7 @@ CAGL works as follows:
 
 - Also, since C doesn't support templates, you can't extend a CAGL container with generic code unless you're prepared to write C macros.
 
-## Why type *safer*?
+## Why type *safer*? {-}
 
 C is not type safe. You can, for example, call a function that expects a parameter that is a pointer of type A with a pointer to any type. However, good compilers will pick this up and warn you. You should not get any compiler warnings when using CAGL containers, else you're likely doing something undefined or dangerous.
 
@@ -153,19 +209,32 @@ The test suite of CAGL is compiled with these options:
 
 If any warnings are generated, the tests are considered to have failed. You should be able to compile your code that uses CAGL with these options too and get no warnings.
 
-## CAGL is implemented using complicated and difficult to read macros. Isn't this bad style?
+## CAGL's complex macros {-}
+
+CAGL is implemented using some complicated and difficult to read macros. In some cases, algorithms that have natural recursive function implementations have been converted to non-recursive macros using goto statements (the horror). Isn't this bad style?
 
 The author of [SGLIB](http://sglib.sourceforge.net/) says it best:
 
 "Everyone knows that the C preprocessor can be used to imitate genericity of other languages and everyone consider[s] this idea dangerous and ugly. I don't."
 
-The CAGL macros are necessarily complex, even necessarily ugly. But that's something the developers of CAGL have to worry about not the users of the library. CAGL is easy to use.
+While part of CAGL's design and implementation is complex, CAGL from a programmer's perspective is easy to use.
 
-## License
+## Portability {-}
+
+CAGL has been tested using gcc and clang. It is C89 compatible, which means code that uses it should compile on a C preprocesser and compiler compatible with the 1989 ANSI C specification without warnings.
+
+It needs to be tested with other compilers, including Intel's and Microsoft's C compilers. Please help with this.
+
+
+## Bugs {-}
+
+CAGL bugs are managed on Github.
+
+## License {-}
 
 CAGL is free software licensed under GNU LGLPL version 3. See *COPYING*.
 
-## Contributors
+## Contributors {-}
 
 Contributors will be listed here:
 

@@ -136,6 +136,8 @@ static void test_new(struct cag_test_series *tests)
 
 	CAG_TEST(*tests, new_complex_slist(&l) != NULL,
 		 "cag_slist: list returned from new");
+	CAG_TEST(*tests, beg_complex_slist(&l) == end_complex_slist(&l),
+		 "cag_slist: begin == end after new for complex slist");
 	CAG_TEST(*tests, l.header == NULL,
 		 "cag_slist: header is NULL");
 	free_complex_slist(&l);
