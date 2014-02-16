@@ -22,7 +22,7 @@ They each also have corresponding macros prefixed CAG_DEF_ALL_ and CAG_DEC_DEF_A
 
 Some convenience macros have also been defined for frequently needed data types such as hash tables and trees whose elements are C strings or dictionaries (a struct composed of two C strings, the first string being the key).
 
-The following code gives an example of how to invoke every macro.
+The following code gives an example of how to invoke every declaration and definition macro. One of the CAGL tests is to check that this code compiles properly.
 
 ```C
 #include <cagl/array.h>
@@ -197,7 +197,7 @@ int main(void)
 Declares an array container type called *container* with elements of type *type*. Also declares associated structs, typedefs and function prototypes.
 
 ```C
-CAG_DEC_ARRAY(container, type)
+CAG_DEC_ARRAY(container, type);
 ```
 
 ----
@@ -207,7 +207,7 @@ CAG_DEC_ARRAY(container, type)
 Declares a doubly-linked list container type called *container* with elements of type *type*. Also declares associated structs, typedefs and function prototypes.
 
 ```C
-CAG_DEC_DLIST(container, type)
+CAG_DEC_DLIST(container, type);
 ```
 
 #### CAG_DEC_SLIST {-}
@@ -215,12 +215,12 @@ CAG_DEC_DLIST(container, type)
 Declares a singly-linked list container type called *container* with elements of type *type*. Also declares associated structs, typedefs and function prototypes.
 
 ```C
-CAG_DEC_SLIST(container, type)
+CAG_DEC_SLIST(container, type);
 ```
 
 #### CAG_DEF_ARRAY {-}
 
-Defines the functions for a CAGL array container type called *container*, which has elements of type *type*. Usually used in conjunction with *CAG_DEC_ARRAY*.
+Defines the functions for a CAGL array container type called *container*, which has elements of type *type*. Usually used in conjunction with *CAG_DEC_ARRAY*. This calls CAG_DEF_ALL_ARRAY with default parameters. Although the container's memory is managed, no memory management of the container's elements is done. This is ideally used for a container of C primitive types.
 
 ```C
 CAG_DEF_ARRAY(container, type);
@@ -228,7 +228,7 @@ CAG_DEF_ARRAY(container, type);
 
 #### CAG_DEF_DLIST {-}
 
-Defines the functions for a CAGL doubly-linked list container type called *container*, which has elements of type *type*. Usually used in conjunction with *CAG_DEC_DLIST*.
+Defines the functions for a CAGL doubly-linked list container type called *container*, which has elements of type *type*. Usually used in conjunction with *CAG_DEC_DLIST*. This calls CAG_DEF_ALL_DLIST with default parameters. Although the container's memory is managed, no memory management of the container's elements is done. This is ideally used for a container of C primitive types.
 
 ```C
 CAG_DEF_DLIST(container, type);
@@ -237,7 +237,7 @@ CAG_DEF_DLIST(container, type);
 
 #### CAG_DEF_SLIST {-}
 
-Defines the functions for a CAGL singly-linked list container type called *container*, which has elements of type *type*. Usually used in conjunction with *CAG_DEC_SLIST*.
+Defines the functions for a CAGL singly-linked list container type called *container*, which has elements of type *type*. Usually used in conjunction with *CAG_DEC_SLIST*. This calls CAG_DEF_ALL_SLIST with default parameters. Although the container's memory is managed, no memory management of the container's elements is done. This is ideally used for a container of C primitive types.
 
 ```C
 CAG_DEF_SLIST(container, type);
@@ -309,6 +309,8 @@ CAG_DEC_CMP_TREE(container, type)
 
 Defines the functions for an orderable CAGL array container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMP_ARRAY*.
 
+This macro calls CAG_DEF_ALL_CMP_ARRAY with default parameters. Although the container's memory is managed, no memory management of the container's elements is done. This is ideally used for a container of C primitive types.
+
 ```C
 CAG_DEF_CMP_ARRAY(container, type, cmp_func);
 ```
@@ -322,6 +324,8 @@ int cmp_func(type e1, type e2);
 #### CAG_DEF_CMP_DLIST {-}
 
 Defines the functions for an orderable CAGL doubly-linked list container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMP_DLIST*.
+
+This macro calls CAG_DEF_ALL_CMP_DLIST with default parameters. Although the container's memory is managed, no memory management of the container's elements is done. This is ideally used for a container of C primitive types.
 
 ```C
 CAG_DEF_CMP_DLIST(container, type, cmp_func);
@@ -337,8 +341,10 @@ int cmp_func(type e1, type e2);
 
 Defines the functions for a CAGL hash table container type called *container*, which has elements of type *type*, a comparison function *cmp_func*, a hash function, *hash_func* and a function to calculate the number of bytes in an element, *length_func*. Usually used in conjunction with *CAG_DEC_CMP_HASH*.
 
+This macro calls CAG_DEF_ALL_CMP_HASH with default parameters. Although the container's memory is managed, no memory management of the container's elements is done. This is ideally used for a container of C primitive types.
+
 ```C
-container, type, cmp_func, hash_func, length_func);
+CAG_DEF_CMP_HASH(container, type, cmp_func, hash_func, length_func);
 ```
 
 The *cmp_func* function is of the form:
@@ -350,6 +356,8 @@ int cmp_func(type e1, type e2);
 #### CAG_DEF_CMP_SLIST {-}
 
 Defines the functions for an orderable CAGL singly-linked list container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMP_SLIST*.
+
+This macro calls CAG_DEF_ALL_CMP_SLIST with default parameters. Although the container's memory is managed, no memory management of the container's elements is done. This is ideally used for a container of C primitive types.
 
 ```C
 CAG_DEF_CMP_SLIST(container, type, cmp_func);
@@ -365,6 +373,8 @@ int cmp_func(type e1, type e2);
 #### CAG_DEF_CMP_TREE {-}
 
 Defines the functions for a CAGL balanced binary tree container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMP_TREE*.
+
+This macro calls CAG_DEF_ALL_TREE with default parameters. Although the container's memory is managed, no memory management of the container's elements is done. This is ideally used for a container of C primitive types.
 
 ```C
 CAG_DEF_CMP_TREE(container, type, cmp_func);
@@ -491,9 +501,54 @@ int cmp_func(type *e1, type *e2);
 
 #### CAG_DEF_CMPP_HASH {-}
 
+Defines the functions for a CAGL hash table container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMPP_HASH*.
+
+The only difference between this macro and *CAG_DEF_CMP_HASH* is that the comparison function takes its arguments by address.
+
+```C
+CAG_DEF_CMPP_HASH(container, type, cmp_func, hash_func, length_func);
+```
+
+
+The comparison function, *cmp_func*, is of the form:
+
+```C
+int cmp_func(type *e1, type *e2);
+```
+
 #### CAG_DEF_CMPP_SLIST {-}
 
+Defines the functions for a CAGL singly-linked list container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMPP_SLIST*.
+
+The only difference between this macro and *CAG_DEF_CMP_SLIST* is that the comparison function takes its arguments by address.
+
+```C
+CAG_DEF_CMPP_SLIST(container, type, cmp_func);
+```
+
+The comparison function, *cmp_func*, is of the form:
+
+```C
+int cmp_func(type *e1, type *e2);
+```
+
+
 #### CAG_DEF_CMPP_TREE {-}
+
+Defines the functions for a CAGL balanced binary tree container type called *container*, which has elements of type *type* and a comparison function *cmp_func*. Usually used in conjunction with *CAG_DEC_CMPP_TREE*.
+
+The only difference between this macro and *CAG_DEF_CMP_TREE* is that the comparison function takes its arguments by address.
+
+```C
+CAG_DEF_CMPP_TREE(container, type, cmp_func);
+```
+
+The comparison function, *cmp_func*, is of the form:
+
+```C
+int cmp_func(type *e1, type *e2);
+```
+
 
 #### CAG_DEC_DEF_CMPP_ARRAY {-}
 
@@ -506,11 +561,39 @@ CAG_DEC_DEF_CMPP_ARRAY(container, type, cmp_func);
 
 #### CAG_DEC_DEF_CMPP_DLIST {-}
 
+This is equivalent to calling *CAG_DEC_CMPP_DLIST* then *CAG_DEF_CMPP_DLIST*.
+
+```C
+CAG_DEC_DEF_CMPP_DLIST(container, type, cmp_func);
+```
+
+
 #### CAG_DEC_DEF_CMPP_HASH {-}
+
+This is equivalent to calling *CAG_DEC_CMPP_HASH* then *CAG_DEF_CMPP_HASH*.
+
+```C
+CAG_DEC_DEF_CMPP_HASH(container, type, cmp_func, hash_func, length_func);
+```
+
 
 #### CAG_DEC_DEF_CMPP_SLIST {-}
 
+This is equivalent to calling *CAG_DEC_CMPP_SLIST* then *CAG_DEF_CMPP_SLIST*.
+
+```C
+CAG_DEC_DEF_CMPP_SLIST(container, type, cmp_func);
+```
+
+
 #### CAG_DEC_DEF_CMPP_TREE {-}
+
+This is equivalent to calling *CAG_DEC_CMPP_TREE* then *CAG_DEF_CMPP_TREE*.
+
+```C
+CAG_DEC_DEF_CMPP_SLIST(container, type, cmp_func);
+```
+
 
 #### CAG_DEF_ALL_ARRAY {-}
 
@@ -518,7 +601,7 @@ CAG_DEC_DEF_CMPP_ARRAY(container, type, cmp_func);
 Defines the functions for a CAGL array container type. Usually used in conjunction with *CAG_DEC_ARRAY*.
 
 ```C
-CAG_DEF_ALL(container, type, alloc_style, alloc_func, free_func, val_adr)
+CAG_DEF_ALL_ARRAY(container, type, alloc_style, alloc_func, free_func, val_adr);
 ```
 
 ##### Parameters {-}
@@ -562,7 +645,97 @@ val_adr
 
 #### CAG_DEF_ALL_DLIST {-}
 
+Defines the functions for a CAGL doubly-linked list container type. Usually used in conjunction with *CAG_DEC_DLIST*.
+
+```C
+CAG_DEF_ALL_DLIST(container, type, alloc_style, alloc_func, free_func, val_adr);
+```
+
+##### Parameters {-}
+
+container
+  ~ Name of the container type
+type
+  ~ Type of the container's elements.
+
+alloc_style
+  ~ Allocation style for managing the creation of elements in the container. See [Allocation Style Macros](#allocation-style).
+
+alloc_func
+  ~ Function that allocates memory and, optionally, initializes the element.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_ALLOC_FUNC*.
+
+	For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to *malloc* or *CAG_ALLOC* (which is by default equal to *malloc*).
+
+	For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *new_from_[container]* function.
+
+free_func
+  ~ Function to destroy an element and return its memory to the heap.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_FREE_FUNC*.
+
+	For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to free or CAG_FREE (which is by default equal to free).
+
+	For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *free_[container]* function.
+
+val_adr
+  ~ Indicates whether the allocation function, *alloc_func* and *free_func*, takes their parameters by address or by value. Both functions have to either take all their parameters by address or by value.
+
+	For an *alloc_func* of *CAG_NO_ALLOC_FUNC* it makes no difference what this is set to because it isn't used.
+
+    For an *alloc_func* of *malloc* or *CAG_ALLOC* this should usually be set to *CAG_BYVAL*. This might seem counter-intuitive because *malloc* and *free* take void parameters by address. But if the element of the container is a pointer, you want to pass it as is to *malloc* and *free*; you don't want to pass it by the address of the pointer.
+
+	If the element is a container and  *alloc_func* is a *new_from_[container]* function, then this should be set CAG_BYADR.
+
+	If *alloc_func* and *free_func* are custom written then it is up to the programmer, but *alloc_func* and *free_func* both have to use the same parameter passing method. Also if the container has a *cmp_func*, it too must have the same parameter passing method.
+
 #### CAG_DEF_ALL_SLIST {-}
+
+Defines the functions for a CAGL singly-linked list container type. Usually used in conjunction with *CAG_DEC_SLIST*.
+
+```C
+CAG_DEF_ALL_SLIST(container, type, alloc_style, alloc_func, free_func, val_adr);
+```
+
+##### Parameters {-}
+
+container
+  ~ Name of the container type
+type
+  ~ Type of the container's elements.
+
+alloc_style
+  ~ Allocation style for managing the creation of elements in the container. See [Allocation Style Macros](#allocation-style).
+
+alloc_func
+  ~ Function that allocates memory and, optionally, initializes the element.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_ALLOC_FUNC*.
+
+	For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to *malloc* or *CAG_ALLOC* (which is by default equal to *malloc*).
+
+	For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *new_from_[container]* function.
+
+free_func
+  ~ Function to destroy an element and return its memory to the heap.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_FREE_FUNC*.
+
+	For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to free or CAG_FREE (which is by default equal to free).
+
+	For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *free_[container]* function.
+
+val_adr
+  ~ Indicates whether the allocation function, *alloc_func* and *free_func*, takes their parameters by address or by value. Both functions have to either take all their parameters by address or by value.
+
+	For an *alloc_func* of *CAG_NO_ALLOC_FUNC* it makes no difference what this is set to because it isn't used.
+
+    For an *alloc_func* of *malloc* or *CAG_ALLOC* this should usually be set to *CAG_BYVAL*. This might seem counter-intuitive because *malloc* and *free* take void parameters by address. But if the element of the container is a pointer, you want to pass it as is to *malloc* and *free*; you don't want to pass it by the address of the pointer.
+
+	If the element is a container and  *alloc_func* is a *new_from_[container]* function, then this should be set CAG_BYADR.
+
+	If *alloc_func* and *free_func* are custom written then it is up to the programmer, but *alloc_func* and *free_func* both have to use the same parameter passing method. Also if the container has a *cmp_func*, it too must have the same parameter passing method.
 
 #### CAG_DEC_DEF_ALL_ARRAY {-}
 
@@ -574,7 +747,22 @@ CAG_DEC_DEF_ALL_ARRAY(container, type, alloc_style, alloc_func, free_func, val_a
 
 #### CAG_DEC_DEF_ALL_DLIST {-}
 
+This is equivalent to calling CAG_DEC_DLIST then CAG_DEF_ALL_DLIST.
+
+```C
+CAG_DEC_DEF_ALL_DLIST(container, type, alloc_style, alloc_func, free_func, val_adr);
+```
+
+
 #### CAG_DEC_DEF_ALL_SLIST {-}
+
+This is equivalent to calling CAG_DEC_SLIST then CAG_DEF_ALL_SLIST.
+
+```C
+CAG_DEC_DEF_ALL_SLIST(container, type, alloc_style, alloc_func, free_func, val_adr);
+```
+
+
 
 #### CAG_DEF_ALL_CMP_ARRAY {-}
 
@@ -640,11 +828,261 @@ free_func
 
 #### CAG_DEF_ALL_CMP_DLIST {-}
 
+Defines the functions for an orderable CAGL doubly-linked list container type. Usually used in conjunction with [CAG_DEC_CMP_DLIST].
+
+```C
+CAG_DEF_ALL_CMP_DLIST(container, type, cmp_func, val_adr, alloc_style, alloc_func, free_func);
+```
+
+#### Parameters {-}
+
+container
+  ~ Name of the container type
+
+type
+  ~ Type of the container's elements.
+
+cmp_func
+  ~ Comparison function for ordering the container. It is of one of these forms:
+
+    ```C
+    int cmp_func(type e1, type e2);
+    ```
+
+    ```C
+    int cmp_func(type *e1, type *e2);
+    ```
+
+    If the first form is used then val_adr should be set to CAG_BYVAL. For the second form it should be set to CAG_BYADR.
+
+val_adr
+  ~ Indicates whether the comparison function, *cmp_func*, allocation function, *alloc_func* and *free_func*, take their parameters by address or by value. All three functions have to either take all their parameters by address or by value.
+
+    For an *alloc_func* of *CAG_NO_ALLOC_FUNC* it makes no difference what this is set to because it isn't used.
+
+    For an *alloc_func* of *malloc* or *CAG_ALLOC* this should usually be set to *CAG_BYVAL*. This might seem counter-intuitive because *malloc* and *free* take void parameters by address. But if the element of the container is a pointer, you want to pass it as is to *malloc* and *free*; you don't want to pass it by the address of the pointer.
+
+    If the element is a container and  *alloc_func* is a *new_from_[container]* function, then this should be set CAG_BYADR.
+
+	If *alloc_func* and *free_func* are custom written then it is up to the programmer, but *alloc_func* and *free_func* both have to use the same parameter passing method. Also if the container has a *cmp_func*, it too must have the same parameter passing method.
+
+alloc_style
+  ~ Allocation style for managing the creation of elements in the container. See [Allocation Style Macros].
+
+alloc_func
+  ~ Function that allocates memory and, optionally, initializes the element.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_ALLOC_FUNC*.
+
+    For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to *malloc* or *CAG_ALLOC* (which is by default equal to *malloc*).
+
+    For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *new_from_[container]* function.
+
+free_func
+  ~ Function to destroy an element and return its memory to the heap.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_FREE_FUNC*.
+
+    For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to free or CAG_FREE (which is by default equal to free).
+
+    For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *free_[container]* function.
+
+
 #### CAG_DEF_ALL_CMP_HASH {-}
+
+Defines the functions for a CAGL hash table container type. Usually used in conjunction with [CAG_DEC_CMP_HASH].
+
+```C
+CAG_DEF_ALL_CMP_HASH(container, type, cmp_func, val_adr, hash_func, length_func, alloc_style, alloc_func, free_func);
+```
+
+#### Parameters {-}
+
+container
+  ~ Name of the container type
+
+type
+  ~ Type of the container's elements.
+
+cmp_func
+  ~ Comparison function for ordering the container. It is of one of these forms:
+
+    ```C
+    int cmp_func(type e1, type e2);
+    ```
+
+    ```C
+    int cmp_func(type *e1, type *e2);
+    ```
+
+    If the first form is used then val_adr should be set to CAG_BYVAL. For the second form it should be set to CAG_BYADR.
+
+val_adr
+  ~ Indicates whether the comparison function, *cmp_func*, allocation function, *alloc_func* and *free_func*, take their parameters by address or by value. All three functions have to either take all their parameters by address or by value.
+
+    For an *alloc_func* of *CAG_NO_ALLOC_FUNC* it makes no difference what this is set to because it isn't used.
+
+    For an *alloc_func* of *malloc* or *CAG_ALLOC* this should usually be set to *CAG_BYVAL*. This might seem counter-intuitive because *malloc* and *free* take void parameters by address. But if the element of the container is a pointer, you want to pass it as is to *malloc* and *free*; you don't want to pass it by the address of the pointer.
+
+    If the element is a container and  *alloc_func* is a *new_from_[container]* function, then this should be set CAG_BYADR.
+
+	If *alloc_func* and *free_func* are custom written then it is up to the programmer, but *alloc_func* and *free_func* both have to use the same parameter passing method. Also if the container has a *cmp_func*, it too must have the same parameter passing method.
+
+hash_func
+  ~ User provided hash function. You can also use the CAGL provided hash functions, cag_string_hash and cag_int_hash, which are hash functions for C strings (char *) and _int_s respectively. The hash function is of the form:
+
+```C
+    size_t hash_func (const void *key, const size_t len);
+```
+
+length_func
+  ~ User provided function used to calculate the second parameter passed to *hash_func*. It calculates the length of the first parameter passed to hash_func. For C strings, *strlen* should do the trick. For C primitive types and many structs, *sizeof* will be sufficient.
+
+alloc_style
+  ~ Allocation style for managing the creation of elements in the container. See [Allocation Style Macros].
+
+alloc_func
+  ~ Function that allocates memory and, optionally, initializes the element.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_ALLOC_FUNC*.
+
+    For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to *malloc* or *CAG_ALLOC* (which is by default equal to *malloc*).
+
+    For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *new_from_[container]* function.
+
+free_func
+  ~ Function to destroy an element and return its memory to the heap.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_FREE_FUNC*.
+
+    For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to free or CAG_FREE (which is by default equal to free).
+
+    For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *free_[container]* function.
+
 
 #### CAG_DEF_ALL_CMP_SLIST {-}
 
+Defines the functions for an orderable CAGL singly-linked list container type. Usually used in conjunction with [CAG_DEC_CMP_SLIST].
+
+```C
+CAG_DEF_ALL_CMP_SLIST(container, type, cmp_func, val_adr, alloc_style, alloc_func, free_func);
+```
+
+#### Parameters {-}
+
+container
+  ~ Name of the container type
+
+type
+  ~ Type of the container's elements.
+
+cmp_func
+  ~ Comparison function for ordering the container. It is of one of these forms:
+
+    ```C
+    int cmp_func(type e1, type e2);
+    ```
+
+    ```C
+    int cmp_func(type *e1, type *e2);
+    ```
+
+    If the first form is used then val_adr should be set to CAG_BYVAL. For the second form it should be set to CAG_BYADR.
+
+val_adr
+  ~ Indicates whether the comparison function, *cmp_func*, allocation function, *alloc_func* and *free_func*, take their parameters by address or by value. All three functions have to either take all their parameters by address or by value.
+
+    For an *alloc_func* of *CAG_NO_ALLOC_FUNC* it makes no difference what this is set to because it isn't used.
+
+    For an *alloc_func* of *malloc* or *CAG_ALLOC* this should usually be set to *CAG_BYVAL*. This might seem counter-intuitive because *malloc* and *free* take void parameters by address. But if the element of the container is a pointer, you want to pass it as is to *malloc* and *free*; you don't want to pass it by the address of the pointer.
+
+    If the element is a container and  *alloc_func* is a *new_from_[container]* function, then this should be set CAG_BYADR.
+
+	If *alloc_func* and *free_func* are custom written then it is up to the programmer, but *alloc_func* and *free_func* both have to use the same parameter passing method. Also if the container has a *cmp_func*, it too must have the same parameter passing method.
+
+alloc_style
+  ~ Allocation style for managing the creation of elements in the container. See [Allocation Style Macros].
+
+alloc_func
+  ~ Function that allocates memory and, optionally, initializes the element.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_ALLOC_FUNC*.
+
+    For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to *malloc* or *CAG_ALLOC* (which is by default equal to *malloc*).
+
+    For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *new_from_[container]* function.
+
+free_func
+  ~ Function to destroy an element and return its memory to the heap.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_FREE_FUNC*.
+
+    For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to free or CAG_FREE (which is by default equal to free).
+
+    For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *free_[container]* function.
+
+
 #### CAG_DEF_ALL_CMP_TREE {-}
+
+Defines the functions for a CAGL balanced binary tree container type. Usually used in conjunction with [CAG_DEC_CMP_TREE].
+
+```C
+CAG_DEF_ALL_CMP_TREE(container, type, cmp_func, val_adr, alloc_style, alloc_func, free_func);
+```
+
+#### Parameters {-}
+
+container
+  ~ Name of the container type
+
+type
+  ~ Type of the container's elements.
+
+cmp_func
+  ~ Comparison function for ordering the container. It is of one of these forms:
+
+    ```C
+    int cmp_func(type e1, type e2);
+    ```
+
+    ```C
+    int cmp_func(type *e1, type *e2);
+    ```
+
+    If the first form is used then val_adr should be set to CAG_BYVAL. For the second form it should be set to CAG_BYADR.
+
+val_adr
+  ~ Indicates whether the comparison function, *cmp_func*, allocation function, *alloc_func* and *free_func*, take their parameters by address or by value. All three functions have to either take all their parameters by address or by value.
+
+    For an *alloc_func* of *CAG_NO_ALLOC_FUNC* it makes no difference what this is set to because it isn't used.
+
+    For an *alloc_func* of *malloc* or *CAG_ALLOC* this should usually be set to *CAG_BYVAL*. This might seem counter-intuitive because *malloc* and *free* take void parameters by address. But if the element of the container is a pointer, you want to pass it as is to *malloc* and *free*; you don't want to pass it by the address of the pointer.
+
+    If the element is a container and  *alloc_func* is a *new_from_[container]* function, then this should be set CAG_BYADR.
+
+	If *alloc_func* and *free_func* are custom written then it is up to the programmer, but *alloc_func* and *free_func* both have to use the same parameter passing method. Also if the container has a *cmp_func*, it too must have the same parameter passing method.
+
+alloc_style
+  ~ Allocation style for managing the creation of elements in the container. See [Allocation Style Macros].
+
+alloc_func
+  ~ Function that allocates memory and, optionally, initializes the element.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_ALLOC_FUNC*.
+
+    For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to *malloc* or *CAG_ALLOC* (which is by default equal to *malloc*).
+
+    For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *new_from_[container]* function.
+
+free_func
+  ~ Function to destroy an element and return its memory to the heap.
+
+    For an *alloc_style* of *CAG_NO_ALLOC_STYLE* set this to *CAG_NO_FREE_FUNC*.
+
+    For an *alloc_style* of *CAG_SIMPLE_ALLOC_STYLE*, this should typically be set to free or CAG_FREE (which is by default equal to free).
+
+    For an *alloc_style* of *CAG_STRUCT_ALLOC_STYLE*, this is usually a custom written function or, in the case where the element is a CAGL container, a *free_[container]* function.
+
 
 #### CAG_DEC_DEF_ALL_CMP_ARRAY {-}
 
@@ -658,11 +1096,42 @@ CAG_DEC_DEF_ALL_CMP_ARRAY(container, type, cmp_func, val_adr, alloc_style,
 
 #### CAG_DEC_DEF_ALL_CMP_DLIST {-}
 
+This is equivalent to calling CAG_DEC_CMP_DLIST then CAG_DEF_ALL_CMP_DLIST.
+
+```C
+CAG_DEC_DEF_ALL_CMP_DLIST(container, type, cmp_func, val_adr, alloc_style,
+                          alloc_func, free_func);
+```
+
+
 #### CAG_DEC_DEF_ALL_CMP_HASH {-}
+
+This is equivalent to calling CAG_DEC_CMP_HASH then CAG_DEF_ALL_CMP_HASH.
+
+```C
+CAG_DEC_DEF_ALL_CMP_HASH(container, type, cmp_func, val_adr,
+                          hash_func, length_func, alloc_style,
+                          alloc_func, free_func);
+```
+
 
 #### CAG_DEC_DEF_ALL_CMP_SLIST {-}
 
+This is equivalent to calling CAG_DEC_CMP_SLIST then CAG_DEF_ALL_CMP_SLIST.
+
+```C
+CAG_DEC_DEF_ALL_CMP_SLIST(container, type, cmp_func, val_adr, alloc_style,
+                          alloc_func, free_func);
+```
+
 #### CAG_DEC_DEF_ALL_CMP_TREE {-}
+
+This is equivalent to calling CAG_DEC_CMP_TREE then CAG_DEF_ALL_CMP_TREE.
+
+```C
+CAG_DEC_DEF_ALL_CMP_TREE(container, type, cmp_func, val_adr, alloc_style,
+                          alloc_func, free_func);
+```
 
 #### CAG_DEC_STR_ARRAY {-}
 
@@ -1054,6 +1523,8 @@ Reverse copy elements meeting a user-specified condition from one container over
 
 This is the most flexible of the copy macros (except it can't currently be used with hash tables). It concatenates all the elements from one container that meet a user-specified condition to the end of another. If the second container is empty, then this is equivalent to a copy. The *cond_func* takes an extra parameter, *data*, which is any user defined data. This allows the cond_func to track information between calls. Memory allocation is handled by CAGL.
 
+If you copy to a balanced binary tree, the elements will be inserted in the correct place as defined by the tree's user provided *cmp_func* function.
+
 ```C
 CAG_CONCAT_IF(container_from, c1, container_to, c2, cond_func, data, result)
 ```
@@ -1099,18 +1570,30 @@ result
 
 ## Ordering macros {#ordering-macros -}
 
-#### CAG_CMP_PRIMITIVE {#cag_cmp_primitive}
+#### CAG_CMP_PRIMITIVE {#cag_cmp_primitive -}
 
 Macro that can be used as a comparison function by any container whose elements are C primitives.
 
-#### CAG_CMPP_PRIMITIVE {#cag_cmpp_primitive}
+This is its definition:
 
-Macro that can be used as a comparison function by any container whose elements are pointers to C primitives.
+```C
+#define CAG_CMP_PRIMITIVE(a, b)  ((a) < (b)  ? -1 : ((a) == (b) ? 0 : 1))
+```
+
+#### CAG_CMPP_PRIMITIVE {#cag_cmpp_primitive -}
+
+Macro that can be used as a comparison function by any container whose elements are pointers to C primitives. Note though that this will not do proper string comparison. For string comparison, use the standard library *strcmp* function.
+
+This is it's definition:
+
+```C
+#define CAG_CMPP_PRIMITIVE(a, b) CAG_CMP_PRIMITIVE(*a, *b)
+```
 
 
 #### CAG_SORT_ARRAY {#cag_sort_array -}
 
-Macro that can be used to sort and CAGL array container type with a *cmp_func* defined or any C array. Sorts the semi-open range [first, last).
+Macro that can be used to sort any CAGL array container type with a *cmp_func* defined or any C array. Sorts the semi-open range [first, last). This is a very fast, optimized sort.
 
 ```C
 CAG_SORT_ARRAY(type, first, last, cmp_func)
@@ -1195,7 +1678,7 @@ The implementation is a highly optimised Quicksort that changes to Insertion Sor
 
 Containers need to know how to allocate memory for their elements. A parameter called *alloc_style* is used by the container definitions to determine this. Several predefined *allocation style* macros are provided.
 
-**ADVANCED:** Users can write their own allocation style macros but it is rare that this should be necessary. In the case that you do wish to write an allocation style macro, see how these are used in the containers (the code in cagl/hash.h is useful to examine). All allocation style macros must take these four parameters.
+**ADVANCED:** Users can write their own allocation style macros but it is rare that this should be necessary. In the case that you do wish to write an allocation style macro, see how these are used in the containers (the code in cagl/common.h and cagl/hash.h is useful to examine). All allocation style macros must take these four parameters.
 
 to
   ~ Element being created.

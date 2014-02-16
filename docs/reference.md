@@ -307,7 +307,7 @@ For arrays, only local storage is modified.
 ------
 
 
-#### back_C {#back_C-adst - }
+#### back_C {#back_C - }
 
 Returns pointer to last element of a container.
 
@@ -4063,7 +4063,7 @@ Iterator pointing to newly inserted element.
 ------
 
 
-#### putp_C {#putp_C-ad - }
+#### putp_C {#putp_C -}
 
 Inserts an element into a container. The function blueprints *put_C* and *putp_C* provide a uniform interface to all containers for inserting an element. Users are welcome to use these functions, but they're primarily designed for the internal workings of CAGL.
 
@@ -4073,7 +4073,7 @@ it_C putp_C(C *array, it_C position, T const *element);
 
 
 Containers:
-array	dlist
+array	dlist	hash	tree	slist
 
 
 ##### Parameters {-}
@@ -4649,17 +4649,17 @@ If the element is found, returns the next element in the container, else NULL.
 ------
 
 
-#### removep_C {#removep_C-h - }
+#### removep_C {#removep_C - }
 
 Removes a given element from a container.
 
 ```C
-it_C removep_C(C *hash, const T *element);
+it_C removep_C(C *c, const T *element);
 ```
 
 
 Containers:
-hash
+hash tree
 
 
 ##### Parameters {-}
@@ -5449,7 +5449,7 @@ TO DO.
 
 #### rstable_sort_C {#rstable_sort_C-ad - }
 
-Reverse iterator version of [stable_sort_all_C](#stable_sort_all_C-ads). Sorts a container in reverse order.
+Reverse iterator version of [stable_sort_C](#stable_sort_C-ads). Sorts a container in reverse order.
 
 ```C
 rit_C rstable_sort_C(rit_C from, rit_C to);

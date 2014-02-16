@@ -6,15 +6,15 @@ of how the library works.
 
 ## CAGL structure {-}
 
-Specific code for each container is placed in its own include (.h) file. So arrays are handled in array.h. Let's say you wanted to implement a container called *stack*. You would create a file called stack.h. Examine the code in array.h to get an idea of what should go in stack.h. Pay special attention to the implementations of CAG_DEC_ARRAY, CAG_DEF_ALL_ARRAY, CAG_DEC_CMP_ARRAY and CAG_DEF_ALL_CMP_ARRAY.
+Specific code for each container is placed in its own header (.h) file. So arrays are handled in array.h. Let's say you wanted to implement a container called *stack*. You would create a file called stack.h. Examine the code in array.h to get an idea of what should go in stack.h. Pay special attention to the implementations of CAG_DEC_ARRAY, CAG_DEF_ALL_ARRAY, CAG_DEC_CMP_ARRAY and CAG_DEF_ALL_CMP_ARRAY.
 
-All containers must implement *new*, *begin*, end* and *free* functions.
+All containers must implement macros to generate *new_C*, *begin_C*, *end_C* and *free_C* functions.
 
-The common.h file contains generic algorithms implemented as macros. Also, there are several macros beginning CAG_DEC_ and CAG_DEF_ which are called by containers to declare and define their functions respectively.
+The common.h file implements several algorithms as macros. These are generic in that they are used across containers.
 
 When implementing a container such as a stack, code specific to the container will go in stack.h, but many of the algorithms, declarations and definitions in common.h should be reusable as is.
 
-The concepts.h file reduces coding and helps CAGL containers be consistent. It helps CAGL approximate generic concepts used in the C++ STL. Containers automatically get a bunch of useful functions declared and defined by by calling the macros defined in concepts.h. Here are brief explanations of them:
+The concepts.h file reduces coding and helps CAGL containers be consistent. It helps CAGL approximate generic concepts used in the C++ STL. Containers automatically get a bunch of useful functions declared and defined by calling the macros defined in concepts.h. Here are brief explanations of them:
 
 CAG_DEC_FORWARD and CAG_DEF_FORWARD
   ~ These declare and define functions for containers whose iterators support the *next* operation (i.e. almost any useful container). Iterators that implement *next* are *forward* iterators.
@@ -40,72 +40,14 @@ CAG_DEC_RANDOMACCESS and CAG_DEF_RANDOMACCESS
 CAG_DEC_CMP_RANDOMACCESS and CAG_DEF_CMP_RANDOMACCESS
   ~ These declare and define functions for containers that have comparison functions and support random access iterators.
 
-## Coding conventions {-}
-
-CAGL is mostly made up of macros. There's a small amount of non-macro
-code in a a few small .c libraries. This makes CAGL quite unusual. It is
-hard to read complex C macros and CAGL is almost entirely composed of
-them. So it's important to stick to conventions that makes reading the
-code easier.
-
--   Use Kernighan & Ritchie coding conventions in the .h files.
-
--   After editing a .h file (say file.h), run: *slash79 file.h*.
-
--   Use the Linux Kernel coding conventions in the .c files.
-
--   Place the end-of-line slash \**\** in column 79.
-
--   All macros in CAGL start CAG\_.
-
--   All C functions (there aren't many of them) start cag\_.
-
--   Macros that are strictly for internal use should be prefixed
-    CAG\_P\_ (the "P" stands for private).
-
 ## Functions and algorithms that containers usually provide {-}
 
-
-#### begin_C {-}
-
-
--   Returns iterator to first element in container.
-
--   Parameters:
-
-    -   Container variable
-
-#### end_C {-}
-
--   Returns iterator to last element in container.
-
--   Parameters:
-
-    -   Container variable
-
-#### put_C
+Almost any useful container will support the functions of *CAG_DEC_FORWARD* and *CAG_DEF_FORWARD*. These macros need the container to provide the following functions: [new_C](#new_C-adhst), [new_from_C](#new_from_C-adhst), [free_C](#free_C-adhst), [begin_C](#begin_C-adhst), [end_C](#end_C-adhst), [distance_C](#distance_C-adhst), [distance_all_C](#distance_all_C-adhst), [next_C](#next_C-adhst), [put_C](#put_C-adhst) and [putp_C](#putp_C).
 
 
-Every container should have a put function that takes three parameters,
-a container variable, an iterator and an element variable. The function
-should insert the element variable into the container.
-*put\_[container]* is used by generic algorithms like
-*copy\_[container]*.
+## Macro parameters {-}
 
--   Returns iterator to the position in the container, such that if the
-    iterator is moved forward one position, the next call to put with a
-    second element would insert it immediately after the first one.
-
--   Parameters:
-
-    -   Container variable to insert into
-
-    -   Iterator to element insert after or before.
-
-    -   Element to insert
-
-## Macro function declaration and definition names {-}
-
+The parameters used by the CAGL macros are described here.
 
 *apply\_func*
 :   User supplied function in an apply macro. Apply macros are used to
@@ -274,6 +216,29 @@ should insert the element variable into the container.
     containers, this should always be *it-\>next* where *it* is an
     iterator variable.
 
+## Coding conventions {-}
+
+CAGL is mostly made up of macros. There's a small amount of non-macro
+code in a a few small .c libraries. This makes CAGL quite unusual. It is
+hard to read complex C macros and CAGL is almost entirely composed of
+them. So it's important to stick to conventions that makes reading the
+code easier.
+
+-   Use Kernighan & Ritchie coding conventions in the .h files.
+
+-   After editing a .h file (say file.h), run: *slash79 file.h*.
+
+-   Use the Linux Kernel coding conventions in the .c files.
+
+-   Place the end-of-line slash \**\** in column 79.
+
+-   All macros in CAGL start CAG\_.
+
+-   All C functions (there aren't many of them) start cag\_.
+
+-   Macros that are strictly for internal use should be prefixed
+    CAG\_P\_ (the "P" stands for private).
+
 ## Tools to help work with CAGL {-}
 
 Compiling and debugging macro code can be tricky. Here are tools to help.
@@ -282,7 +247,7 @@ Compiling and debugging macro code can be tricky. Here are tools to help.
 
 In the *bin* directory of the distribution is a script called *cpp_gcc* which compiles a single source file to a file called *tmp.c*. You can use this to find compiler errors.
 
-#### Test scripts
+#### Test scripts {-}
 
 The makefile runs several test scripts. Before checking in code, you should pass all the tests. These include compiling the code with different compilers, doing a release build, running the test suite and running the test suite through Valgrind.
 

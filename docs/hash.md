@@ -12,6 +12,12 @@ HASH container types are intended to provide similar functionality to the C++11 
 - [CAG_DEF_CMPP_HASH](#cag_def_cmpp_hash)
 - [CAG_DEC_DEF_CMPP_HASH](#cag_dec_def_cmpp_hash)
 - [CAG_DEF_ALL_CMP_HASH](#cag_def_all_cmp_hash)
+- [CAG_DEC_STR_HASH](#cag_dec_str_hash)
+- [CAG_DEF_STR_HASH](#cag_def_str_hash)
+- [CAG_DEC_DEF_STR_HASH](#cag_dec_def_str_hash)
+- [CAG_DEC_STR_STR_HASH](#cag_dec_str_str_hash)
+- [CAG_DEF_STR_STR_HASH](#cag_def_str_str_hash)
+- [CAG_DEC_DEF_STR_STR_HASH](#cag_dec_def_str_str_hash)
 
 ### HASH function blueprints {-}
 
@@ -47,9 +53,10 @@ HASH container types are intended to provide similar functionality to the C++11 
 - [new_with_buckets_C](#new_with_buckets_C-h)
 - [next_C](#next_C-adhst)
 - [put_C](#put_C-adhst)
+- [putp_C](#putp_C)
 - [rehash_C](#rehash_C-h)
 - [remove_C](#remove_C-ht)
-- [removep_C](#removep_C-h)
+- [removep_C](#removep_C)
 - [swap_C](#swap_C-adhst)
 
 
@@ -71,8 +78,8 @@ typedef iterator_C *it_C;
 ```C
 struct C {
     size_t buckets; /* Number of buckets in hash table. Treat as read-only */
-    size_t size; /* Number of elements in table. Treat as read-only. */
-    ... /* internal variables */
+    size_t size;    /* Number of elements in table. Treat as read-only. */
+    ...             /* internal variables */
 };
 typedef struct C C;
 ```

@@ -624,6 +624,20 @@ CAG_DEC_ERASE_TREE(function, container, iterator_type, type) \
             return NULL; \
     }
 
+#define CAG_DEC_REMOVEP_TREE(function, container, iterator_type, type) \
+    iterator_type function(container *tree, const type *element)
+
+#define CAG_DEF_REMOVEP_TREE(function, container, iterator_type, type) \
+    CAG_DEC_REMOVEP_TREE(function, container, iterator_type, type) \
+    { \
+        iterator_type n = getp_ ## container(tree, element); \
+        if (n) \
+            return erase_ ## container(tree, n); \
+        else \
+            return NULL; \
+    }
+
+
 /*! \brief Function declaration and definition to calculate distance between two
    iterators in a list.
 */
@@ -898,6 +912,8 @@ CAG_DEC_CHECK_INTEGRITY_TREE(function, container, iterator_type) \
                         it_ ## container); \
     CAG_DEC_REMOVE_TREE(remove_ ## container, container, \
                         it_ ## container, type); \
+    CAG_DEC_REMOVEP_TREE(removep_ ## container, container, \
+                         it_ ## container, type); \
     CAG_P_DEC_FREE_NODE(free_node_p_## container, container, it_ ## container); \
     CAG_DEC_FREE_TREE(free_## container, container); \
     CAG_DEC_CHECK_INTEGRITY_TREE(check_integrity_ ## container, container, \
@@ -953,6 +969,8 @@ CAG_DEF_ERASE_RANGE(erase_range_ ## container, container, \
                     it_ ## container, erase_ ## container, CAG_NO_OP_3) \
 CAG_DEF_REMOVE_TREE(remove_ ## container, container, \
                     it_ ## container, type) \
+CAG_DEF_REMOVEP_TREE(removep_ ## container, container, \
+                     it_ ## container, type) \
 CAG_P_DEF_FREE_NODE(free_node_p_## container, container, it_ ## container, \
                   free_func, val_adr) \
 CAG_DEF_FREE_TREE(free_ ## container, container) \

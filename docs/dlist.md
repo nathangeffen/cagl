@@ -1,8 +1,8 @@
 # Doubly-linked lists
 
-CAGL doubly-linked lists (DLIST) are containers that support efficiently inserting and removing elements at any point in the container, if there is an iterator already pointing to a place near to the place where the item must be inserted.
+CAGL doubly-linked lists (DLIST) are containers that support efficiently inserting and removing elements at any point in the container if there is an iterator already pointing to a place near to where the item must be inserted.
 
-Iterators for these container types are bidirectional. DLISTs can be unordered  or ordered. Ordered DLISTs should be declared and defined with *CMP* macros. It is ok for an ordered list to become unordered, but certain functions (like *search_C*) will then give undefined results. A list can be ordered again by calling one of the sorting functions, e.g. *sort_C* or *stable_sort_C*.
+Iterators for these container types are bidirectional. DLISTs can be unordered  or ordered. Ordered DLISTs should be declared and defined with *CMP* macros. It is ok for an ordered list to become unordered, but functions that depend on the list to be ordered then give undefined results. A list can be ordered again by calling one of the sorting functions, e.g. *sort_C* or *stable_sort_C*.
 
 ### DLIST declaration and definition macros {-}
 
@@ -17,13 +17,16 @@ Iterators for these container types are bidirectional. DLISTs can be unordered  
 - [CAG_DEC_DEF_CMPP_DLIST](#cag_dec_def_cmpp_dlist)
 - [CAG_DEF_ALL_DLIST](#cag_def_all_dlist)
 - [CAG_DEF_ALL_CMP_DLIST](#cag_def_all_cmp_dlist)
+- [CAG_DEC_STR_DLIST](#cag_dec_str_dlist)
+- [CAG_DEF_STR_DLIST](#cag_def_str_dlist)
+- [CAG_DEC_DEF_STR_DLIST](#cag_dec_def_str_dlist)
 
 ### DLIST function blueprints {-}
 
 - [append_C](#append_C-ad)
 - [appendp_C](#appendp_C-ad)
 - [at_C](#at_C-adhst)
-- [back_C](#back_C-adst)
+- [back_C](#back_C)
 - [begin_C](#begin_C-adhst)
 - [cmp_C](#cmp_C-adst)
 - [cmp_all_C](#cmp_all_C-adst)
@@ -72,7 +75,7 @@ Iterators for these container types are bidirectional. DLISTs can be unordered  
 - [prependp_C](#prependp_C-ads)
 - [prev_C](#prev_C-adt)
 - [put_C](#put_C-adhst)
-- [putp_C](#putp_C-ad)
+- [putp_C](#putp_C)
 - [random_shuffle_C](#random_shuffle_C-ad)
 - [random_shuffle_all_C](#random_shuffle_all_C-ad)
 - [rat_C](#rat_C-adt)

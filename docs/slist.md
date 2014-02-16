@@ -2,9 +2,11 @@
 
 CAGL singly-linked lists (SLIST) are containers that support efficiently inserting and removing elements at any point in the container, if there is an iterator already pointing to a place near and prior to the place where the item must be inserted.
 
-SLISTs support forward iterators. SLISTs can be unordered  or ordered. Ordered SLISTs should be declared and defined with *CMP* macros. It is ok for an ordered list to become unordered, but certain functions (like *search_C*) will then give undefined results. A list can be ordered again by calling one of the sorting functions, e.g. *sort_C* or *stable_sort_C*.
+SLISTs support forward iterators. SLISTs can be unordered  or ordered. Ordered SLISTs should be declared and defined with *CMP* macros. It is ok for an ordered list to become unordered,  but functions that depend on the list to be ordered then give undefined results. A list can be ordered again by calling one of the sorting functions, e.g. *sort_C* or *stable_sort_C*.
 
-In contrast to the other standard types of containers, the SLIST iterators have been designed to work without standalone, without. containers. You can, if you wish, work solely with an SLIST iterator instead of the container itself. SLIST iterators are the very simplest CAGL data structure and can be efficiently and elegantly used. Several macros have are provided to make using standalone SLIST iterators easier and safer, but working with SLIST iterators does require more programmer care to ensure memory leaks or invalid reads and writes to memory don't occur. To facilitate standard C list idioms, In contrast to other CAGL containers, the *end_C* function for an SLIST always returns NULL. Compare these similar code sketches, both of which are valid:
+In contrast to the other standard types of containers, the SLIST iterators have also been designed to work with or without containers. This means you can, if you wish, work solely with an SLIST iterator instead of the container itself.
+
+SLIST iterators are the very simplest CAGL data structure and can be efficiently and elegantly used. Several macros are provided to make using standalone SLIST iterators easier and safer, but working with SLIST iterators does require more programmer care to ensure memory leaks or invalid reads and writes to memory don't occur. To facilitate standard C list idioms, and in contrast to other CAGL containers, the *end_C* function for an SLIST always returns NULL. Compare these similar code sketches, both of which are valid:
 
 ```C
 it_C it;
@@ -19,6 +21,7 @@ while (it != NULL) {
     it = it->next;
 }
 ```
+
 
 ```C
 C list;
@@ -35,8 +38,6 @@ while (it != end_C(list)) {
 
 ### Working with standalone SLIST iterators {-}
 
-Singly-linked lists are arguably the simplest, most elegant data structure in computer science. CAGL allows you to use just iterators to an SLIST type, which is the simplest way to work with a single-liked list.
-
 Several macros have been defined to make it convenient to work with SLIST iterators without a container.
 
 These are:
@@ -50,7 +51,7 @@ These are:
 - [CAG_ERASE_AFTER_SLIST](#cag_erase_range_slist)
 - [CAG_ERASE_AFTER_RANGE_SLIST](#cag_erase_after_range_slist)
 - [CAG_ERASE_ALL_SLIST](#cag_erase_all_slist)
-- [CAG_REVERSE_SLIST](#cag_reverse_slist
+- [CAG_REVERSE_SLIST](#cag_reverse_slist)
 - [CAG_STABLE_SORT_SLIST](#cag_stable_sort_slist)
 - [CAG_STABLE_SORT_SLIST_DEFAULT](#cag_stable_sort_slist_default)
 
@@ -138,11 +139,15 @@ Reverse printing again
 - [CAG_DEC_DEF_CMPP_SLIST](#cag_dec_def_cmpp_slist)
 - [CAG_DEF_ALL_SLIST](#cag_def_all_slist)
 - [CAG_DEF_ALL_CMP_SLIST](#cag_def_all_cmp_slist)
+- [CAG_DEC_STR_SLIST](#cag_dec_str_slist)
+- [CAG_DEF_STR_SLIST](#cag_def_str_slist)
+- [CAG_DEC_DEF_STR_SLIST](#cag_dec_def_str_slist)
+
 
 ### SLIST function blueprints {-}
 
 - [at_C](#at_C-adhst)
-- [back_C](#back_c-adst)
+- [back_C](#back_C)
 - [begin_C](#begin_C-adhst)
 - [cmp_C](#cmp_C-adst)
 - [cmp_all_C](#cmp_all_C-adst)
@@ -182,6 +187,7 @@ Reverse printing again
 - [prepend_C](#prepend_C-ads)
 - [prependp_C](#prependp_C-ads)
 - [put_C](#put_C-adhst)
+- [putp_C](#putp_C)
 - [reverse_all_C](#reverse_all_C-ads)
 - [search_C](#search_C-adst)
 - [search_all_C](#search_all_C-adst)
@@ -203,7 +209,7 @@ struct iterator_C {
 };
 typedef struct iterator_C iterator_C;
 typedef iterator_C *it_C;
-```C
+```
 
 
 #### Container structs and typedefs {-}
@@ -214,4 +220,4 @@ struct C {
 };
 
 typedef struct C C;
-```C
+```

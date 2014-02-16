@@ -1,6 +1,6 @@
 # Balanced binary trees
 
-CAGL balanced binary trees (TREE) are containers that support efficiently inserting, accessing and removing elements from anywhere in the container. All these operations are O(log n). CAGL trees, so long as nothing invalid has been done to them (e.g. by the programmer doing something undocumented), are always sorted. A comparison function must be defined for a  tree container type.
+CAGL balanced binary trees (TREE) are containers that support efficiently inserting, accessing and removing elements from anywhere in the container. All these operations are $O(\log n)$, where $n$ is the number of elements in the tree. CAGL trees, so long as nothing invalid has been done to them (e.g. by the programmer doing something undocumented), are always sorted. A comparison function must be defined for a  tree container type.
 
 CAGL trees are implemented as red-black trees. They provide similar functionality to C++ STL maps.
 
@@ -14,11 +14,17 @@ Iterators for these container types are bidirectional.
 - [CAG_DEF_CMPP_TREE](#cag_def_cmpp_tree)
 - [CAG_DEC_DEF_CMPP_TREE](#cag_dec_def_cmpp_tree)
 - [CAG_DEF_ALL_CMP_TREE](#cag_def_all_cmp_tree)
+- [CAG_DEC_STR_TREE](#cag_dec_str_tree)
+- [CAG_DEF_STR_TREE](#cag_def_str_tree)
+- [CAG_DEC_DEF_STR_TREE](#cag_dec_def_str_tree)
+- [CAG_DEC_STR_STR_TREE](#cag_dec_str_str_tree)
+- [CAG_DEF_STR_STR_TREE](#cag_def_str_str_tree)
+- [CAG_DEC_DEF_STR_STR_TREE](#cag_dec_def_str_str_tree)
 
 ### TREE function blueprints {-}
 
 - [at_C](#at_C-adhst)
-- [back_C](#back_C-adst)
+- [back_C](#back_C)
 - [begin_C](#begin_C-adhst)
 - [check_integrity_C](#check_integrity_C-t)
 - [cmp_C](#cmp_C-adst)
@@ -62,6 +68,7 @@ Iterators for these container types are bidirectional.
 - [preorder_C](#preorder_C-t)
 - [prev_C](#prev_C-adt)
 - [put_C](#put_C-adhst)
+- [putp_C](#putp_C)
 - [rat_C](#rat_C-adt)
 - [rbegin_C](#rbegin_C-adt)
 - [rcmp_C](#rcmp_C-adt)
@@ -70,8 +77,8 @@ Iterators for these container types are bidirectional.
 - [rcopy_C](#rcopy_C-adt)
 - [rcopy_all_C](#rcopy_all_C-adt)
 - [rdistance_C](#rdistance_C-adt)
-- [rdistance_all_C](#rdistance_all_C-t)
 - [remove_C](#remove_C-ht)
+- [removep_C](#removep_C)
 - [rend_C](#rend_C-adt)
 - [requal_all_C](#requal_all_C-adt)
 - [requal_range_C](#requal_range_C-adt)

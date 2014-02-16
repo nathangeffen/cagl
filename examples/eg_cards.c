@@ -14,10 +14,7 @@ int cmp_cards(const struct card *c1, const struct card *c2)
 }
 
 
-CAG_DEC_CMP_ARRAY(deck, struct card);
-CAG_DEF_ALL_CMP_ARRAY(deck, struct card, cmp_cards, CAG_BYADR,
-			  CAG_NO_ALLOC_STYLE, CAG_NO_ALLOC_FUNC,
-			  CAG_NO_FREE_FUNC);
+CAG_DEC_DEF_CMPP_ARRAY(deck, struct card, cmp_cards);
 
 char *rank_names[] =
 {

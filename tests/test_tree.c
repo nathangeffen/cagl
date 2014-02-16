@@ -441,6 +441,31 @@ static void test_rb_insert_erase(struct cag_test_series *tests)
 		 "cag_tree: distance in rb insert/erase tests");
 	free_int_tree(&tree);
 
+
+	new_int_tree(&tree);
+	insert_int_tree(&tree, 10);
+	remove_int_tree(&tree, 10);
+	free_int_tree(&tree);
+
+	new_int_tree(&tree);
+	insert_int_tree(&tree, 10);
+	i = 5;
+	removep_int_tree(&tree, &i);
+	i = 10;
+	removep_int_tree(&tree, &i);
+	CAG_TEST(*tests, check_integrity_int_tree(&tree, tree.root),
+		 "cag_tree: integrity in rb insert/erase tests");
+	CAG_TEST(*tests, distance_all_int_tree(&tree) == 0,
+		 "cag_tree: distance in rb insert/erase tests");
+	insert_int_tree(&tree, 10);
+	insert_int_tree(&tree, 5);
+	removep_int_tree(&tree, &i);
+	CAG_TEST(*tests, check_integrity_int_tree(&tree, tree.root),
+		 "cag_tree: integrity in rb insert/erase tests");
+	CAG_TEST(*tests, distance_all_int_tree(&tree) == 1,
+		 "cag_tree: distance in rb insert/erase tests");
+	free_int_tree(&tree);
+
 	new_int_tree(&tree);
 	insert_int_tree(&tree, 10);
 	insert_int_tree(&tree, 5);

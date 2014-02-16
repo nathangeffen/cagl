@@ -1,6 +1,8 @@
 # Arrays
 
-CAGL arrays (ARRAY) are random access containers that grow automatically. Appending to and access elements in arrays is efficient. Inserting elements at arbitrary positions in the array is increasingly less efficient, the closer to the front of the array the insertion takes place (worst case is O(n), where n is the number of elements in the array).
+CAGL arrays (ARRAY) are random access containers that grow automatically. Functions that append to and access elements in arrays are efficient, random access, constant time operations.
+
+Inserting elements at arbitrary positions in an array is increasingly less efficient the closer to the front of the array the insertion takes place. In the worst case, insertion is a $\theta(n)$ operation, where n is the number of elements in the array. This occurs when insertion is at the front of the array.
 
 Iterators for these container types are random access. ARRAYs can be unordered  or ordered. Ordered ARRAYs should be declared and defined with *CMP* macros. It is ok for an ordered array to become unordered, but certain functions (like *binary_search_C*) will then give undefined results. An array can be ordered again by calling one of the sorting functions, e.g. *sort_C* or *stable_sort_C*.
 
@@ -18,7 +20,12 @@ ARRAYs are intended to provide similar functionality to the C++ STL vector.
 - [CAG_DEF_CMPP_ARRAY](#cag_def_cmpp_array)
 - [CAG_DEC_DEF_CMPP_ARRAY](#cag_dec_def_cmpp_array)
 - [CAG_DEF_ALL_ARRAY](#cag_def_all_array)
+- [CAG_DEC_DEF_ALL_ARRAY](#cag_dec_def_all_array)
 - [CAG_DEF_ALL_CMP_ARRAY](#cag_def_all_cmp_array)
+- [CAG_DEC_DEF_ALL_CMP_ARRAY](#cag_dec_def_all_cmp_array)
+- [CAG_DEC_STR_ARRAY](#cag_dec_str_array)
+- [CAG_DEF_STR_ARRAY](#cag_def_str_array)
+- [CAG_DEC_DEF_STR_ARRAY](#cag_dec_def_str_array)
 
 ### ARRAY other useful macros {-}
 
@@ -29,7 +36,7 @@ ARRAYs are intended to provide similar functionality to the C++ STL vector.
 - [append_C](#append_C-ad)
 - [appendp_C](#appendp_C-ad)
 - [at_C](#at_C-adhst)
-- [back_C](#back_C-adst)
+- [back_C](#back_C)
 - [begin_C](#begin_C-adhst)
 - [binary_rsearch_C](#binary_rsearch_C-a)
 - [binary_rsearchp_C](#binary_rsearchp_C-a)
@@ -90,7 +97,7 @@ ARRAYs are intended to provide similar functionality to the C++ STL vector.
 - [prependp_C](#prependp_C-ads)
 - [prev_C](#prev_C-adt)
 - [put_C](#put_C-adhst)
-- [putp_C](#putp_C-ad)
+- [putp_C](#putp_C)
 - [random_shuffle_C](#random_shuffle_C-ad)
 - [random_shuffle_all_C](#random_shuffle_all_C-ad)
 - [rappend_C](#rappend_C-a)

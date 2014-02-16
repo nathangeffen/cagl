@@ -1,8 +1,8 @@
 # CAGL's main macros and functions
 
-Every CAGL macro and function is prefixed *CAG_* (for macros) or *cag_* (for functions). Please consider this the namespace for CAGL and do not prefix your own code with *CAG_*.
+Every CAGL macro and function is prefixed *CAG_* (for macros) or *cag_* (for functions). Please consider this the namespace for CAGL and do not prefix your own variables and types with *CAG_*.
 
-The CAGL container include files are:
+The CAGL container header files are:
 
 cagl/array.h
   ~ For declaring and defining automatically sized arrays similar to a C++ STL *vector*.
@@ -25,13 +25,17 @@ The simplest way to declare and define a container whose elements are a particul
 CAG_DEC_DEF_[ARRAY/DLIST/SLIST/HASH/TREE](name of container type, element type, ... other parameters ...);
 ```
 
-This declares a doubly-linked list of doubles type and forward and reverse iterators for it. It also defines its supporting functions:
+This declares a doubly-linked list of doubles container type. It also declares forward and reverse iterators for the list. It defines a bunch of functions to manipulate the list:
 
 ```C
 CAG_DEC_DEF_DLIST(dbl_list, double);
 ```
 
-The first parameter is the name of the container type. You can give this any legal C type name. The second parameter is an already existing C pointer, primitive type or struct (or *typedef*ed version thereof). The *DEC* stands for *declare* and the *DEF* stands for *define*. In C you should declare functions you use in each module that uses it, but you may only define the functions once. Therefore if you need a list of doubles two C files, say file1.c and file2.c, you would declare the type in, say, file1.h as follows:
+The first parameter is the name of the container type. You can give this any legal C type name. The second parameter is an already existing C pointer, primitive type or struct (or *typedef*ed version thereof).
+
+The *DEC* stands for *declare* and the *DEF* stands for *define*.
+
+In C you should declare functions you use in each module that uses it, but you may only define the functions once. Therefore if you need a list of doubles in two C files, say file1.c and file2.c, you would declare the type in, say, file1.h as follows:
 
 ```C
 CAG_DEC_DLIST(dbl_list, double);
@@ -43,13 +47,15 @@ You would need to include file1.h in both file1.c and file2. Then in one C sourc
 CAG_DEF_DLIST(dbl_list, double);
 ```
 
-Arrays and lists may be ordered. Balanced binary trees have to be ordered. To declare an ordered CAGL container, you need to pass the definition macro a comparison function. For example, this declares a binary tree of integers:
+Arrays and lists may be ordered. Balanced binary trees have to be ordered. To declare an ordered CAGL container, you need to pass the definition macro a comparison function or macro. For example, this declares a binary tree of integers:
 
 ```C
 CAG_DEC_DEF_CMP_TREE(int_tree, int, CAG_CMP_PRIMITIVE);
 ```
 
-*CAG_CMP_PRIMITIVE* is a CAGL macro that correctly compares the C primitive types. You could also do it this way:
+The comparison mechanism we've provided is a CAGL macro called *CAG_CMP_PRIMITIVE*. It compares primitive types. Instead of using *CAG_CMP_PRIMITIVE* You could define your own comparison macro or function that takes two integer parameters by value. It should returns zero if the two parameters are equal, a negative integer if the first parameter is less than the second and a positive integer if it is bigger.
+
+You could also declare and define *int_tree* this way:
 
 ```C
 CAG_DEC_CMP_TREE(int_tree, int);
@@ -67,12 +73,20 @@ Hash tables require a comparison function but are not ordered. Hash table contai
 CAG_DEC_DEF_CMP_HASH(str_hash, char *, strcmp, CAG_STRING_HASH, strlen);
 ```
 
-The first parameter is the name of the container type. The second parameter is the C string type, _char *_, which tells CAGL that the elements of this container are strings. The third parameter is the comparison function, which in this example is the C standard library function *strcmp*. The fourth parameter is the default CAGL string hash function, *CAG_STRING_HASH*. The final parameter is a function for calculating the length of each element, the C standard library function *strcmp*.
+- The first parameter, *str_hash*, is the name of the container type.
+
+- The second parameter is the C string type, _char *_, which tells CAGL that the elements of this container are strings.
+
+- The third parameter is the comparison function, which in this example is the C standard library function *strcmp*.
+
+- The fourth parameter is the default CAGL string hash function, *CAG_STRING_HASH*.
+
+- The final parameter is a function for calculating the length of each element, the C standard library function *strcmp*. This is needed by *CAG_STRING_HASH*.
 
 The following code snippet is an example of how to populate the hash table:
 
 ```C
-static void populate_str_hash(str_hash *h)
+static void populate_my_hash_table(str_hash *h)
 {
 	char *k0 = "k0";
 	char *k1 = "k1";
@@ -106,25 +120,25 @@ The parameters of the call to CAG_DEF_ALL_CMP_TREE are as follows:
 
 1. *string_tree* is the name of the container type.
 
-1. _char *_ is the C string type.
+1. _char *_ is the C string type. This is the element type of the container.
 
 1. *strcmp* is the C standard function for comparing strings.
 
-1. *CAG_BYVAL* is a CAGL macro which tells CAGL that the comparison function for this container takes its parameters by value and there is therefore no need to prefix the parameters with the & sign. See below for an alternative to this.
+1. *CAG_BYVAL* is a CAGL macro which tells CAGL that the comparison function for this container, *strcmp*, takes its parameters by value and there is therefore no need to prefix the parameters with the & sign. Inside CAGL, all calls to *strcmp* with C strings (e.g. _char *s1_ and _char *s2_) will therefore be of the correct form *strcmp(s1, s2);* and not the incorrect *strcmp(&s1, &s2);*.  The alternative to *CAG_BYVAL* is *CAG_BYADR*. See the [Deck of cards](#deck-of-cards) example to understand when you'd use *CAG_BYADR*.
 
-1. *CAG_SIMPLE_ALLOC_STYLE* is a CAGL macro for how the allocation function should be invoked. You should almost never need to define your own allocation style macro or function, but there are alternative styles which are discussed elsewhere.
+1. *CAG_SIMPLE_ALLOC_STYLE* is a CAGL macro which specifies how the allocation function should be invoked. For pointer elements, like _char *_, *CAG_SIMPLE_ALLOC_STYLE* is almost always sufficient. See [Allocation style macros](#allocation-style) for other options.
 
-1. *cag_strdup* is a function in the CAGL cag_common.c module that allocates a C string from the heap. Most C libraries provide a *strdup* function which you could also use, or you could write your own.
+1. *cag_strdup* is a CAGL function that allocates a C string from the heap. Most C libraries provide a *strdup* function which you could also use, or you could write your own.
 
 1. *free* is the standard C free function that will deallocate a string once it is no longer needed.
 
-Now you can insert strings into a *string_tree* container without worrying about allocating or deallocating its memory. CAGL will handle this for you. When the container is freed, all the elements will be freed too.
+Now you can insert C strings into a *string_tree* container without worrying about managing their memory in the container. CAGL will handle this for you. When the container is freed using the *free_string_tree* that has been generated, all the elements will be freed too.
 
 # Examples
 
-## Euclidean points {-}
+There are numerous examples of how to use CAGL in the test suite programs. Here are several examples explained in detail.
 
-There are numerous examples of how to use the CAGL in the test suite programs. Here is a simple example with Euclidean points.
+## Euclidean points {-}
 
 Let's generate a set of points, store them in a list and then find the two closest points. To demonstrate how you can write modular code with CAGL we're going to have three files:
 
@@ -132,7 +146,13 @@ Let's generate a set of points, store them in a list and then find the two close
 - eg_points2.c which will contain our functions that operate on points and list of points.
 - eg_points.h which will contain our declarations common to eg_points1.c and eg_points2.c
 
-In eg_points.h we'll declare our struct as follows:
+In eg_points.h we'll first include our CAGL dlist header as follows:
+
+```C
+#include <cagl/dlist.h>
+```
+
+Then we declare our struct:
 
 ```C
 struct point {
@@ -144,31 +164,20 @@ struct point {
 We also need a list to store the points:
 
 ```C
-#include <cagl/dlist.h>
 CAG_DEC_DLIST(points, struct point);
 ```
 
-We've declared a type called *points* which is a list of *struct point*. We've also declared prototypes for functions that operate *points*. In *eg_points2.c* we need to define our functions that operate on the *points* type:
+We've declared a type called *points* which is a list of *struct point*. We've also declared prototypes for functions that operate on *points*. In *eg_points2.c* we need to define our functions that operate on the *points* type:
 
 ```C
 CAG_DEF_DLIST(points, struct point);
 ```
-
-We'll implement two ways of calculating the shortest distance. One will use indices and the other will use iterators.
-
-Here are the prototypes for our two functions:
-
-```C
-double shortest_distance_using_index(points *);
-double shortest_distance_using_iterators(points *);
-```
-
-We'll implement two ways of populating our points. One will populate a list with points in an ordered way. Here is how we could do it:
+We'll implement two ways of populating our points. One will populate a list with points in an ordered way. Here is how we could do it in *eg_points1.c*:
 
 
 ```C
-void populate_ordered(points *a, int numpoints, double x_start,
-		     double x_step, double gradient)
+void populate_ordered(points *a, int numpoints,
+                      double x_start, double x_step, double gradient)
 {
 	int i;
 	struct point p;
@@ -183,7 +192,7 @@ void populate_ordered(points *a, int numpoints, double x_start,
 
 This function takes a list by address as its first parameter. It will populate it with *numpoints* points. The first *x* point will be *x_start* and each *y* point will be the corresponding *x* point multiplied by gradient.
 
-We use the CAGL generated *append_points* function to put each new point at the back of the list. For doubly-linked lists and arrays, the efficiency of the *append* function is constant.
+We use the CAGL generated *append_points* function to put each new point at the back of the list. For doubly-linked lists and arrays, this is an efficient constant time operation.
 
 For minor or personal-use programs, the above is sufficient, but for a production ready system, there is a problem. The *append_points* function can fail. It might not be able to allocate memory for the new point. If the append was successful, *append_points* will return a pointer to the newly appended point, but if it fails it will return NULL.
 
@@ -209,7 +218,7 @@ int populate_ordered(points *a, int numpoints, double x_start,
 }
 ```
 
-*CAG_TRUE* and *CAG_FALSE* are simply macros equal to 1 and 0 respectively. You don't have to use them. (Why haven't we used the C99 bool type? We could, but unless otherwise specified all the examples here are C89 compatible.)
+*CAG_TRUE* and *CAG_FALSE* are macros equal to 1 and 0 respectively. You don't have to use them. (Why haven't we used the C99 bool type? We could, but unless otherwise specified all the examples here are C89 compatible.)
 
 Now here's code in our *main()* function that declares a list of points and calls the *populate_ordered* function. It also prints out all the points.
 
@@ -250,7 +259,7 @@ struct iterator_points *it;
 
 In all our examples and in the actual CAGL code, we use the *typedef* version. The two declarations are effectively identical. Which you chose to use is up to you.
 
-Here's a function to populate the list with randomly generated points. But notice that here we call *appendp_points* instead of *append_points*. In CAGL, if the verb of the function ends with a *p*, then the function takes its element parameter by address -- as a pointer --  not by value. In this example it makes little difference, but if the elements of our container are large then the *appendp* version will be much more efficient because it won't copy the entire structure when calling the append function.
+Here's a function to populate the list with randomly generated points. But notice that here we call *appendp_points* instead of *append_points*. In CAGL, if the verb of the function ends with a *p*, then the function takes its element parameter by address not by value. In this example it makes little difference, but if the elements of our container are large then the *appendp* version will be much more efficient because it won't copy the entire structure when calling the append function.
 
 ```C
 int populate_random(points *a, int numpoints, int maxval)
@@ -276,7 +285,7 @@ Now for the corresponding code in *main()*. Here too we do something different.
 
 Instead of iterating using an explicitly defined for loop, we use the *CAG_FOR_ALL* macro. It takes four parameters: the name of the container type, *points*, the container variable, *random*, which must be a pointer hence we pass it by address, an iterator over the container, *it*, and code to execute on each iteration of the loop. Here we only execute one statement, a *printf*. But if we had multiple statements, we would have to enclose the code in curly brackets.
 
-Note that *it* is iterated by the macro over all the elements in our container variable called *random*. Using a macro to abstract away a for loop is not every C programmer's cup of tea. In which case, feel free to ignore the idiom below and use the method above.
+Note that *it* is iterated by the macro over all the elements in our container variable called *random*. Using a macro to abstract away a for loop is not every C programmer's cup of tea. In which case, feel free to ignore the idiom below and use the one above.
 
 ```C
 	points random;
@@ -296,9 +305,18 @@ Note that *it* is iterated by the macro over all the elements in our container v
 	free_points(&random);
 ```
 
-Now in file2.c we will implement our two shortest distance functions. They use a brute force algorithm which is simple but inefficient. For our purposes, the brute force method is sufficient. The algorithm steps through each point in the list except the last and calculates its Euclidean distance to every point in front of it, updating the smallest distance found if necessary.
+We'll implement two ways of calculating the shortest distance. One will use indices and the other will use iterators.
 
-Here's our implementation X:
+Here are the prototypes for our two functions in *eg_points.h*:
+
+```C
+double shortest_distance_using_index(points *);
+double shortest_distance_using_iterators(points *);
+```
+
+Now in *eg_points2.c* we will implement our two shortest distance functions. They use a brute force algorithm which is simple but inefficient. For our purposes, the brute force method is sufficient. The algorithm steps through each point in the list except the last and calculates its Euclidean distance to every point in front of it, updating the smallest distance found if necessary.
+
+Here's our implementation:
 
 ```C
 double shortest_distance_using_index(points *a)
@@ -323,7 +341,7 @@ double shortest_distance_using_index(points *a)
 }
 ```
 
-This method uses indices, *i* and *j*, to step through the list. It uses two CAGL functions, *distance_all_points*, which returns the number of elements in the list, and *index_points_points*, which returns an iterator to the *i*'th or *j*'th element in the container.
+This method uses indices, *i* and *j*, to step through the list. It uses two CAGL functions, *distance_all_points*, which returns the number of elements in the list, and *index_points*, which returns an iterator to the *i*th or *j*th element in the container.
 
 Here's another way of doing it using iterators:
 
@@ -472,41 +490,22 @@ int cmp_cards(const struct card *c1, const struct card *c2)
 }
 ```
 
-CAGL supports this possibility but we have to use a slightly more complicated macro: *CAG_DEC_DEF_ALL_CMP_ARRAY*. The *ALL* means there are no default parameters to the macro.
-
-The correct way to declare and define the *deck* array using the pass-by-address version of *cmp_cards* is:
+To do this we simply use the *CAG_DEC_DEF_CMPP_ARRAY* macro. The extra *P* in *CMPP* means that the comparison function takes its parameters by address (or as pointers, hence the *P*).
 
 ```C
-CAG_DEC_DEF_ALL_CMP_ARRAY(deck, struct card, cmp_card, CAG_BYADR,
-			  CAG_NO_ALLOC_STYLE, CAG_NO_ALLOC_FUNC,
-			  CAG_NO_FREE_FUNC);
+CAG_DEC_DEF_CMPP_ARRAY(deck, struct card, cmp_cards);
 ```
 
-That might look a bit intimidating, but usually for *struct*s the fourth parameter onwards are either the same as above, or one variation of it.
-
-Incidentally, you could declare this in two macros as follows:
+You could declare this in two macros as follows:
 
 ```C
 CAG_DEC_CMP_ARRAY(deck, struct card);
-CAG_DEF_ALL_CMP_ARRAY(deck, struct card, cmp_cards, CAG_BYADR,
-			  CAG_NO_ALLOC_STYLE, CAG_NO_ALLOC_FUNC,
-			  CAG_NO_FREE_FUNC);
+CAG_DEF_CMPP_ARRAY(deck, struct card, cmp_cards);
 ```
-It's identical except that you would use the two-macro version if *deck* was needed in multiple modules.
 
-Here are what the parameters from the fourth one onwards mean:
+It's identical except that you would use the two-macro version if *deck* was needed in multiple modules. Also *CAG_DEC_CMPP_ARRAY* is identical to *CAG_DEC_CMP_ARRAY*; you can use them interchangeably.
 
-- *CAG_BYADR* is a CAGL supplied macro telling CAGL that the comparison function takes its parameter by address. Actually *CAG_BYADR* is simply equal to the ampersand *&*, and each time CAGL calls the *cmp_cards* it will now put an ampersand before the parameters. The alternative is *CAG_BYVAL* which tells CAGL the comparison function is by value.
-
-- *CAG_NO_ALLOC_STYLE* is a macro which tells CAGL not to do any special heap allocation for the elements of this array.
-
-- *CAG_NO_ALLOC_FUNC* is a macro used by *CAG_NO_ALLOC_STYLE*.
-
-- *CAG_NO_FREE_FUNC* is a macro telling CAGL not to deallocate (free) the elements of the array when its finished with them.
-
-(Our next example looks at a variation of this where we do need the elements to be allocated and freed from the heap.)
-
-Moving on, we want to populate our deck of cards so we write this function, which intentionally does not load the cards in order.
+We want to populate our deck of cards so we write this function, which intentionally does not load the cards in order.
 
 ```C
 int populate_deck(deck *d)
@@ -588,7 +587,7 @@ That's not the correct order of a pack though. We can use the CAGL generated sor
 sort_deck(beg_deck(&d), end_deck(&d));
 ```
 
-The *sort_[container]* function takes two iterators over the same container as parameters and sorts the elements in that range. Many CAGL functions work this way. But operating on an entire container is so common, that the CAGL also often provides a short-hand function so we don't have to type *beg_deck(&d), end_deck(&d)*. This does the trick:
+The *sort_deck* function takes two iterators pointing to elements in a *deck* and sorts the elements in that range. Many CAGL functions work this way. But operating on an entire container is so common, that CAGL also often provides a short-hand function so we don't have to type *beg_deck(&d), end_deck(&d)*. This does the trick:
 
 ```C
 sort_all_deck(&d);
@@ -661,9 +660,11 @@ The output might look like this:
     After shuffling the deck
     AD 6D KC AH 4H 4S 10H 9C 5S 2C 3S 7C 7H JC 10C 3D 6C 6H 3H 10D QH QC 8S KD JD 9S 2S 6S 4D 7D AC JS 5D 3C KS QS AS 4C KH 8C 8H 2H 5C 9D 2D 7S 9H 8D JH 5H 10S QD
 
+The full code for this example is in *eg_cards.c* in the *examples* sub-directory.
+
 ## Dictionary {-}
 
-In this example, we want to create a dictionary for storing words and their meanings. In other words we want a balanced binary tree whose elements are this:
+In this example, we want to create a dictionary for storing words and their meanings. The obvious implementation is a balanced binary tree whose elements are this:
 
 ```C
 struct entry {
@@ -690,7 +691,7 @@ int cmp_entry(const struct entry *e1, const struct entry *e2)
 }
 ```
 
-We are lazy (or very cautious) and want the CAGL to manage the memory of our dictionary entries. But the *entry struct* members are pointers whose memory needs to be managed. In C++ you would do this by writing a constructor and destructor for *entry* and a *map<entry>* would manage the allocation and deletion of its members by calling these implicitly whenever you added or erased an element in the map. Although C doesn't have constructors or destructors, you can pass two functions to the CAGL definition which effectively serve the same purpose. Actually a copy constructor is the more appropriate analogy. When we insert an entry into the tree we will copy it from an existing *struct entry*.
+We are lazy (or very cautious) and want CAGL to manage the memory of our dictionary entries. But the *struct entry* members are pointers whose memory needs to be managed. In C++ you would do this by writing a constructor and destructor for *entry* and a *map<entry>* would manage the allocation and deletion of its members by calling these implicitly whenever you added or erased an element in the map. Although C doesn't have constructors or destructors, you can pass two functions to the CAGL definition which effectively serve the same purpose (actually a copy constructor is the more appropriate analogy with C++). When we insert an entry into the tree we will copy it from an existing *struct entry*.
 
 Here is a function to allocate (or copy-construct if you like) a new entry:
 
@@ -721,19 +722,29 @@ void free_entry(struct entry *e)
 }
 ```
 
-Now we can create our CAGL dictionary type:
+We need to use a definition macro with more parameters than in our previous examples.
+
 
 ```C
 CAG_DEC_DEF_ALL_CMP_TREE(dictionary, struct entry, cmp_entry, CAG_BYADR,
 			             CAG_STRUCT_ALLOC_STYLE, alloc_entry, free_entry);
 ```
 
-Here's what the fourth parameter onwards mean:
+The definition macros we've used until now actually call one like this with default parameters from the fourth one onwards.
 
-- *CAG_BYADR*: means our comparison function, *cmp_entry* in this case, takes its parameters by address.
-- *CAG_STRUCT_ALLOC_STYLE*: is a CAGL macro that allocates the memory for *struct*s. Since *entry* is a struct and we want CAGL to manage its memory, this is the correct allocation style parameter to use.
-- *alloc_entry*: is our function for allocating the memory of an entry. It will be called by the code in *CAG_STRUCT_ALLOC_STYLE*.
-- *free_entry*: is our function to return an entry's memory to the heap.
+Here's what the parameters mean:
+
+- *dictionary* is the name of our tree container type.
+
+- *struct entry* is the element type of *dictionary*.
+
+- *CAG_BYADR* means our comparison function, *cmp_entry* in this case, takes its parameters by address. If it took its parameters by value, we'd set this to *CAG_BYVAL*.
+
+- *CAG_STRUCT_ALLOC_STYLE*: is a CAGL macro that allocates the memory for *struct*s. Since *entry* is a struct and we want CAGL to manage its memory, this is the correct allocation style parameter to use. If we didn't need CAGL to manage the memory of the elements, we'd set this to *CAG_NO_ALLOC_STYLE*. For more information on the different values this parameter can be, see [Allocation style macros](#allocation-style).
+
+- *alloc_entry* is the function we wrote for allocating the memory of an entry. It will be called by the code in *CAG_STRUCT_ALLOC_STYLE*. If we didn't want CAGL to manage the memory of our elements, we'd instead use *CAG_NO_ALLOC_FUNC*.
+
+- *free_entry* is the function we wrote to return an entry's memory to the heap. If we didn't want CAGL to manage the memory of our elements, we'd instead use *CAG_NO_FREE_FUNC*.
 
 Again, we could have declared and defined the dictionary in two steps like this instead with the same results:
 
@@ -743,7 +754,7 @@ CAG_DEF_ALL_CMP_TREE(dictionary, struct entry, cmp_entry, CAG_BYADR,
                      CAG_STRUCT_ALLOC_STYLE, alloc_entry, free_entry);
 ```
 
-The above method what we'd use if *dictionary* was needed across multiple modules.
+The above method is what we'd use if *dictionary* was needed across multiple modules.
 
 However, if we'd declared our dictionary like this:
 
@@ -761,7 +772,7 @@ CAG_DEC_DEF_ALL_CMP_ARRAY(deck, struct card, cmp_cards, CAG_BYADR,
 			              CAG_NO_FREE_FUNC);
 ```
 
-Then we would not have to rewrite our comparison function, but we would have to manage the memory of each entry. By now you should be understanding the differences between the container declaration and definition macros as well as the parameters they accept.
+Then we would not have to rewrite our comparison function, but we would have to manage the memory of each entry. By now you are hopefully understanding the differences between the container declaration and definition macros as well as the parameters they accept.
 
 Here's our code to populate the dictionary:
 
@@ -820,7 +831,7 @@ This is the output:
     mouse: type of cat food
     springbok: type of lion food
 
-Note that it's in alphabetical order even though we inserted the entries arbitrarily. The CAGL binary tree container modification functions maintain entries in alphabetical order and unless you intentionally invalidate the order of the tree, it will remain ordered. This is in contrast to arrays and lists. It's valid to scramble the order of any CAGL array or list, but the tree container is always ordered.
+Note that it's in alphabetical order even though we inserted the entries arbitrarily. The CAGL binary tree container modification functions maintain entries in alphabetical order and unless you intentionally invalidate the order of the tree (in which case results are undefined), it will remain ordered. This is in contrast to arrays and lists, even ones defined with *CMP* macros. It's valid to scramble the order of any CAGL array or list, but the tree container is always ordered.
 
 This example is ridiculously contrived because in practice you'd typically get the words and definitions from standard input. So let's rewrite our *populate_dictionary* function to do just that:
 
@@ -876,24 +887,28 @@ int populate_dictionary(dictionary *d)
 }
 ```
 
+The code for this example is in *eg_dictionary.c* in the *examples* sub-directory. The *input.txt* file in the same directory can be used as example input redirected from *stdin*.
+
 Because C strings are often needed in containers, and because hash tables and binary trees frequently store dictionaries, CAGL makes it easier by supplying macros that are abbreviations for the declarations and definitions we've used above. Here's a quick description of each of them. They all maintain the memory of their elements, similarly to the way C++ STL containers manage the memory of strings.
 
-CAG_DEC_STR_HASH(string_hash)
-  ~ Declares a hash table called *string_hash* whose elements are _char *_.
-CAG_DEF_STR_HASH(string_hash)
-  ~ Defines a hash table called *string_hash* whose elements are _char *_.
-CAG_DEC_DEF_STR_HASH(string_hash)
-  ~ Combines the above two macros in one.
+- CAG_DEC_STR_HASH(string_hash): Declares a hash table called *string_hash* whose elements are _char *_.
+- CAG_DEF_STR_HASH(string_hash): Defines a hash table called *string_hash* whose elements are _char *_.
+- CAG_DEC_DEF_STR_HASH(string_hash): Combines the above two macros in one.
 - CAG_DEC_STR_TREE(string_tree), CAG_DEF_STR_TREE(string_tree) and CAG_DEC_DEF_STR_TREE(string_tree) which are the tree equivalents of the above hash table declarations and definitions.
+- CAG_DEC_STR_ARRAY(string_array), CAG_DEF_STR_ARRAY(string_array) and CAG_DEC_DEF_STR_ARRAY(string_array) which are the array equivalents of the above hash table declarations and definitions.
+- CAG_DEC_STR_DLIST(string_dlist), CAG_DEF_STR_DLIST(string_dlist) and CAG_DEC_DEF_STR_DLIST(string_dlist) which are the doubly linked list equivalents of the above hash table declarations and definitions.
+- CAG_DEC_STR_SLIST(string_slist), CAG_DEF_STR_SLIST(string_slist) and CAG_DEC_DEF_STR_SLIST(string_slist) which are the singly linked list equivalents of the above hash table declarations and definitions.
 
 There's only one way to define a C string, _char *_. But there are many ways to define a struct that stores dictionaries, so you have to do a bit more work. First make sure you have declared a struct that holds a dictionary. This must be a struct that consists of two _char *_ elements.
 
 For example:
 
+```C
 struct dictionary {
 	char *w;
 	char *d;
 };
+```
 
 Then we can do this:
 
@@ -904,6 +919,8 @@ Then we can do this:
 - CAG_DEC_STR_STR_TREE(dict_tree, struct dictionary );
 - CAG_DEF_STR_STR_TREE(dict_tree, struct dictionary);
 - CAG_DEC_DEF_STR_STR_TREE(dict_tree, struct dictionary);
+
+Default dictionary declaration and definition macros are only available for trees and hash tables.
 
 ## Adjacency list {-}
 
@@ -918,9 +935,9 @@ We first declare and define our list.
 CAG_DEC_DEF_SLIST(islist, int);
 ```
 
+Among the functions automatically generated when we declare any container type are *new_from_C* and *free_C* where *C* is the name of our container type. So *new_from_islist* and *free_islist* now exist.
 
-
-Then we declare and define our array of lists:
+These functions are essential when we declare and define our array of lists:
 
 ```C
 CAG_DEC_DEF_ALL_ARRAY(adj_slist, islist, CAG_STRUCT_ALLOC_STYLE,
@@ -1011,7 +1028,7 @@ static void populate_adj_slist_efficient(adj_slist *m, int num)
 }
 ```
 
-For several examples of containers containing containers as elements, as well as a complicated example of a container within a container within a container, see *test_compound.c* in the tests directory of the CAGL distribution.
+For several examples of containers containing containers as elements, as well as a complicated example of a container within a container within a container, see *test_compound.c* in the *tests* sub-directory of the CAGL distribution.
 
 
 # Understanding CAGL macro, struct, type and function names {#names}
@@ -1037,7 +1054,7 @@ CAGL is easier to use if you understand the naming conventions:
 	- Macros with TREE in their names deal with balanced binary tree container types.
 
 
-- The container declaration and definition macros are the foundation of CAGL. Their naming conventions are used consistently across the different types of containers.
+- The container declaration and definition macros are the foundation of CAGL. Their naming conventions are used consistently across the different types of containers. See also the [reference for these macros](#decdef).
 
     - 	These declare the container and iterator struct, and function prototypes. Any module that uses a CAGL container must declare its structs and prototypes. \
 	\
@@ -1089,7 +1106,7 @@ CAGL is easier to use if you understand the naming conventions:
 	CAG_DEC_DEF_DLIST \
 	CAG_DEC_DEF_SLIST
 
-	- These combine declarations and definitions in one call for container that require comparison functions that take two elements by value. \
+	- These combine declarations and definitions in one call for containers that require comparison functions that take two elements by value. \
 	\
 	CAG_DEC_DEF_CMP_ARRAY \
 	CAG_DEC_DEF_CMP_DLIST \
@@ -1121,17 +1138,19 @@ CAGL is easier to use if you understand the naming conventions:
 
 - The generated functions for a container type are suffixed with the name of the container type. E.g. if you declare an array type of integers called *int_array* then all the generated structs, types and functions are suffixed *int_array*.
 
-- Functions that take an element as a parameter often come in two forms: by value or by address. The verb of the by address version will be suffixed with a *p*. E.g. *append_[container](&container variable, element)* and *appendp_[container](&container variable, &element)* are by value and by address functions respectively.
+- A *function blueprint* is represented by the name of a function followed by *_C*. It corresponds to a function that will be generated for a container type when a CAG_DEC or CAG_DEF macro is called. For example, consider these declaration and definition macros: *CAG_DEC_DEF_ARRAY(int_array, int)* *CAG_DEC_DEF_DLIST(char_dlist, char)*. Then *new_C* is the function blueprint for *new_int_array*, *new_char_dlist* and any new_[container type] function. Function blueprints are a fiction. They are merely a convenient way to talk about CAGL functions in the documentation. The same goes for iterator blueprints such as it_C and rit_C
 
-- Every container type has an iterator type defined for it: *it_[container]* or _struct iterator_[container] *_.
+- Functions that take an element as a parameter often come in two forms: by value or by address. The verb of the by address version will be suffixed with a *p*. E.g. *append_C(&container variable, element)* and *appendp_C(&container variable, &element)* are by value and by address functions respectively, where *C* is the name of the container type.
 
-- Bidirectional containers (arrays, doubly-linked lists and trees) also have a reverse iterator type defined: *rit_[container]* or *struct iterator_[container] **.
+- Every container type has an iterator type defined for it: *it_C* or _struct iterator\_C *_ where *C* is the name of the container type.
+
+- Bidirectional containers (arrays, doubly-linked lists and trees) also have a reverse iterator type defined: *rit_C* or _struct iterator\_[container] *_.
 
 - Bidirectional containers have reverse iterator versions defined for several functions. Reverse functions are prefixed with an *r*, e.g. *rsort_all_[container]*.
 
-- Some functions have variations that can operate on a single element and a range of elements. The version that operates on a range will have its verb suffixed with *range_*. E.g. *erase_[container]*, *erase_range_[container]*. However, if a function only sensibly can operate on a range, then the *range_* suffix is omitted. E.g. there is a *sort_* function but not a *sort_range_* one.
+- Some functions have variations that can operate on a single element and a range of elements. The version that operates on a range will have its verb suffixed with *range\_*. E.g. *erase_C*, *erase_range_C*. However, if a function only sensibly can operate on a range, then the *range\_* suffix is omitted. E.g. there is a *sort\_C* function but not a *sort_range_C* one.
 
-- Functions that operate on a range typically can also operate on the entire container and a *_all* version will be defined. E.g. *sort_all_[container]* and *random_shuffle_all_[container]*.
+- Functions that operate on a range typically can also operate on the entire container and an *_all* version will be defined. E.g. *sort_all_C* and *random_shuffle_all_C*.
 
 # Design principles
 
@@ -1164,3 +1183,14 @@ The test suite currently compiles without warnings and executes 100% successfull
 It is intended that the test suite of future versions of CAGL will also be compiled, without generating warnings, and executed with Microsoft's and Intel's C compilers.
 
 Currently CAGL is tested under GNU/Linux. Future tests should also be carried out under Windows and OS X.
+
+
+# Reference
+
+The rest of the manual is a reference guide. It is a work in progress and much needs to be done to improve and complete it.
+
+In this reference:
+
+*C* in a function, struct or iterator blueprint name denotes a container type.
+
+*T* denotes the type of an element.

@@ -5,7 +5,7 @@ FUNCTION | ARRAY | DLIST | HASH | TREE | SLIST |
 | append_C                       | [a](#append_C-ad) | [d](#append_C-ad) |  |  |  |
 | appendp_C                      | [a](#appendp_C-ad) | [d](#appendp_C-ad) |  |  |  |
 | at_C                           | [a](#at_C-adhst) | [d](#at_C-adhst) | [h](#at_C-adhst) | [s](#at_C-adhst) | [t](#at_C-adhst) |
-| back_C                         | [a](#back_C-adst) | [d](#back_C-adst) |  | [s](#back_C-adst) | [t](#back_C-adst) |
+| back_C                         | [a](#back_C) | [d](#back_C) |  | [s](#back_C) | [t](#back_C) |
 | begin_C                        | [a](#begin_C-adhst) | [d](#begin_C-adhst) | [h](#begin_C-adhst) | [s](#begin_C-adhst) | [t](#begin_C-adhst) |
 | binary_rsearch_C               | [a](#binary_rsearch_C-a) |  |  |  |  |
 | binary_rsearchp_C              | [a](#binary_rsearchp_C-a) |  |  |  |  |
@@ -82,7 +82,7 @@ FUNCTION | ARRAY | DLIST | HASH | TREE | SLIST |
 | prependp_C                     | [a](#prependp_C-ads) | [d](#prependp_C-ads) |  | [s](#prependp_C-ads) |  |
 | prev_C                         | [a](#prev_C-adt) | [d](#prev_C-adt) |  |  | [t](#prev_C-adt) |
 | put_C                          | [a](#put_C-adhst) | [d](#put_C-adhst) | [h](#put_C-adhst) | [s](#put_C-adhst) | [t](#put_C-adhst) |
-| putp_C                         | [a](#putp_C-ad) | [d](#putp_C-ad) |  |  |  |
+| putp_C                         | [a](#putp_C) | [d](#putp_C) | [h](#putp_C) | [s](#putp_C) | [t](#putp_C) |
 | random_shuffle_C               | [a](#random_shuffle_C-ad) | [d](#random_shuffle_C-ad) |  |  |  |
 | random_shuffle_all_C           | [a](#random_shuffle_all_C-ad) | [d](#random_shuffle_all_C-ad) |  |  |  |
 | rappend_C                      | [a](#rappend_C-a) |  |  |  |  |
@@ -95,10 +95,9 @@ FUNCTION | ARRAY | DLIST | HASH | TREE | SLIST |
 | rcopy_C                        | [a](#rcopy_C-adt) | [d](#rcopy_C-adt) |  |  | [t](#rcopy_C-adt) |
 | rcopy_all_C                    | [a](#rcopy_all_C-adt) | [d](#rcopy_all_C-adt) |  |  | [t](#rcopy_all_C-adt) |
 | rdistance_C                    | [a](#rdistance_C-adt) | [d](#rdistance_C-adt) |  |  | [t](#rdistance_C-adt) |
-| rdistance_all_C                |  |  |  |  | [t](#rdistance_all_C-t) |
 | rehash_C                       |  |  | [h](#rehash_C-h) |  |  |
 | remove_C                       |  |  | [h](#remove_C-ht) |  | [t](#remove_C-ht) |
-| removep_C                      |  |  | [h](#removep_C-h) |  |  |
+| removep_C                      |  |  | [h](#removep_C) |  |  [t](#removep_C)  |
 | rend_C                         | [a](#rend_C-adt) | [d](#rend_C-adt) |  |  | [t](#rend_C-adt) |
 | requal_all_C                   | [a](#requal_all_C-adt) | [d](#requal_all_C-adt) |  |  | [t](#requal_all_C-adt) |
 | requal_range_C                 | [a](#requal_range_C-adt) | [d](#requal_range_C-adt) |  |  | [t](#requal_range_C-adt) |
