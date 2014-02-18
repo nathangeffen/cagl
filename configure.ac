@@ -1,6 +1,4 @@
 ## configure.ac
-## LibExample:
-## an example of using Automake and Libtool to build a shared library
 
 AC_INIT([libcagl], [0.1], [nathangeffen@gmail.com], [cagl],
         [https://github.com/nathangeffen/libcag])
@@ -16,11 +14,9 @@ AC_PROG_CC
 LT_INIT([disable-static])
 
 AC_CHECK_FUNCS([memmove])
-AC_CHECK_FUNCS([sqrt])
 AC_CHECK_HEADERS([limits.h])
 AC_CHECK_HEADERS([stdlib.h])
 AC_CHECK_HEADERS([string.h])
-AC_CHECK_HEADERS([float.h])
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_TYPE_SIZE_T
