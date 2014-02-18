@@ -9,7 +9,7 @@ FUNCTION | ARRAY | DLIST | HASH | TREE | SLIST |
 | begin_C                        | [a](#begin_C-adhst) | [d](#begin_C-adhst) | [h](#begin_C-adhst) | [s](#begin_C-adhst) | [t](#begin_C-adhst) |
 | binary_rsearch_C               | [a](#binary_rsearch_C-a) |  |  |  |  |
 | binary_rsearchp_C              | [a](#binary_rsearchp_C-a) |  |  |  |  |
-| binary_search_C                | [a](#binary_search_C-a) |  |  |  |  |
+| binary_search_C                | [a](#binary_search_C) |  |  |  |  |
 | binary_search_all_C            | [a](#binary_search_all_C-a) |  |  |  |  |
 | binary_searchp_C               | [a](#binary_searchp_C-a) |  |  |  |  |
 | binary_searchp_all_C           | [a](#binary_searchp_all_C-a) |  |  |  |  |

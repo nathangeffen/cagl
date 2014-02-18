@@ -1137,7 +1137,7 @@ CAG_DEC_DEF_ALL_CMP_TREE(container, type, cmp_func, val_adr, alloc_style,
 
 Convenience macro that declares an array of C strings. Use in conjunction with *CAG_DEF_STR_ARRAY*. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++ STL std::vector<std::string>.
+All memory is managed for you. This is similar to the C++ STL std::vector\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_array* but this is arbitrary.
 
@@ -1149,7 +1149,7 @@ CAG_DEC_STR_ARRAY(string_array);
 
 Convenience macro that defines an array of C strings. Use in conjunction with *CAG_DEC_STR_ARRAY*. The element type is _char *_.
 
-ALL memory is managed for you. This is similar to the C++ STL std::vector<std::string>.
+ALL memory is managed for you. This is similar to the C++ STL std::vector\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_array* but this is arbitrary.
 
@@ -1161,7 +1161,7 @@ CAG_DEF_STR_ARRAY(string_array);
 
 Convenience macro to declare and define an array of C strings. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++ STL std::vector<std::string>.
+All memory is managed for you. This is similar to the C++ STL std::vector\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_array* but this is arbitrary.
 
@@ -1173,7 +1173,7 @@ CAG_DEC_DEF_STR_ARRAY(string_array);
 
 Convenience macro that declares a doubly-linked list of C strings. Use in conjunction with *CAG_DEF_STR_DLIST*. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++ STL std::list<std::string>.
+All memory is managed for you. This is similar to the C++ STL std::list\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
 
@@ -1185,7 +1185,7 @@ CAG_DEC_STR_DLIST(string_list);
 
 Convenience macro that defines a doubly-linked list of C strings. Use in conjunction with *CAG_DEC_STR_DLIST*. The element type is _char *_.
 
-ALL memory is managed for you. This is similar to the C++ STL std::list<std::string>.
+ALL memory is managed for you. This is similar to the C++ STL std::list\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
 
@@ -1197,7 +1197,7 @@ CAG_DEF_STR_DLIST(string_list);
 
 Convenience macro to declare and define a doubly-linked list of C strings. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++ STL std::list<std::string>.
+All memory is managed for you. This is similar to the C++ STL std::list\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
 
@@ -1209,7 +1209,7 @@ CAG_DEC_DEF_STR_DLIST(string_list);
 
 Convenience macro that declares a singly-linked list of C strings. Use in conjunction with *CAG_DEF_STR_SLIST*. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++11 STL std::forward_list<std::string>.
+All memory is managed for you. This is similar to the C++11 STL std::forward_list\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
 
@@ -1221,7 +1221,7 @@ CAG_DEC_STR_SLIST(string_list);
 
 Convenience macro that defines a singly-linked list of C strings. Use in conjunction with *CAG_DEC_STR_SLIST*. The element type is _char *_.
 
-ALL memory is managed for you. This is similar to the C++11 STL std::forward_list<std::string>.
+ALL memory is managed for you. This is similar to the C++11 STL std::forward_list\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
 
@@ -1233,7 +1233,7 @@ CAG_DEF_STR_SLIST(string_list);
 
 Convenience macro to declare and define a singly-linked list of C strings. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++11 STL std::forward_list<std::string>.
+All memory is managed for you. This is similar to the C++11 STL std::forward_list\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_list* but this is arbitrary.
 
@@ -1245,7 +1245,7 @@ CAG_DEC_DEF_STR_SLIST(string_list);
 
 Convenience macro that declares a hash table of C strings. Use in conjunction with *CAG_DEF_STR_HASH*. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++11 STL std::unordered_map<std::string>.
+All memory is managed for you. This is similar to the C++11 STL std::unordered_map\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_hash_table* but this is arbitrary.
 
@@ -1258,7 +1258,7 @@ CAG_DEC_STR_HASH(string_hash_table);
 
 Convenience macro that defines a hash table of C strings. Use in conjunction with *CAG_DEC_STR_HASH*. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++11 STL std::unordered_map<std::string>.
+All memory is managed for you. This is similar to the C++11 STL std::unordered_map\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_hash_table* but this is arbitrary.
 
@@ -1270,7 +1270,7 @@ CAG_DEF_STR_HASH(string_hash_table);
 
 Convenience macro to declare and define a hash table of C strings. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++11 STL std::unordered_map<std::string>.
+All memory is managed for you. This is similar to the C++11 STL std::unordered_map\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_hash_table* but this is arbitrary.
 
@@ -1282,7 +1282,7 @@ CAG_DEC_DEF_STR_HASH(string_hash_table);
 
 Convenience macro that declares a tree of C strings. Use in conjunction with *CAG_DEF_STR_TREE*. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++ STL std::map<std::string>.
+All memory is managed for you. This is similar to the C++ STL std::map\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_tree* but this is arbitrary.
 
@@ -1296,7 +1296,7 @@ CAG_DEC_STR_TREE(string_tree);
 
 Convenience macro that defines a tree of C strings. Use in conjunction with *CAG_DEC_STR_TREE*. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++ STL std::map<std::string>.
+All memory is managed for you. This is similar to the C++ STL std::map\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_tree* but this is arbitrary.
 
@@ -1309,7 +1309,7 @@ CAG_DEF_STR_TREE(string_tree);
 
 Convenience macro that declares and defines a tree of C strings. The element type is _char *_.
 
-All memory is managed for you. This is similar to the C++ STL std::map<std::string>.
+All memory is managed for you. This is similar to the C++ STL std::map\<std::string\>.
 
 You can give the container any valid identifier name. In the example syntax below we've chosen *string_tree* but this is arbitrary.
 
@@ -1323,7 +1323,7 @@ CAG_DEC_DEF_STR_TREE(string_tree);
 
 Convenience macro that declares a hash table of dictionary entries. Use in conjunction with *CAG_DEF_STR_STR_HASH*.
 
-All memory is managed for you. This is similar to the C++11 STL *std::unordered_map< std::pair< std::string, std::string > >*.
+All memory is managed for you. This is similar to the C++11 STL *std::unordered_map\< std::pair\< std::string, std::string \> \>*.
 
 
 ```C
@@ -1340,7 +1340,7 @@ CAG_DEC_STR_STR_HASH(dict_hash, struct dictionary);
 
 Convenience macro that defines a hash table of dictionary entries. Use in conjunction with *CAG_DEC_STR_STR_HASH*.
 
-All memory is managed for you. This is similar to the C++ STL *std::unordered_map< std::pair< std::string, std::string > >*.
+All memory is managed for you. This is similar to the C++ STL *std::unordered_map\< std::pair\< std::string, std::string \> \>*.
 
 
 ```C
@@ -1356,7 +1356,7 @@ CAG_DEF_STR_STR_HASH(dict_hash, struct dictionary);
 
 Convenience macro that declares and defines a hash table of dictionary entries.
 
-All memory is managed for you. This is similar to the C++ STL *std::unordered_map< std::pair< std::string, std::string > >*.
+All memory is managed for you. This is similar to the C++ STL *std::unordered_map\< std::pair\< std::string, std::string \> \>*.
 
 
 ```C
@@ -1372,7 +1372,7 @@ CAG_DEC_DEF_STR_STR_HASH(dict_hash, struct dictionary);
 
 Convenience macro that declares a tree of dictionary entries. Use in conjunction with *CAG_DEF_STR_STR_TREE*.
 
-All memory is managed for you. This is similar to the C++ STL *std::map< std::pair< std::string, std::string > >*.
+All memory is managed for you. This is similar to the C++ STL *std::map\< std::pair\< std::string, std::string \> \>*.
 
 
 ```C
@@ -1388,7 +1388,7 @@ CAG_DEC_STR_STR_TREE(dict_tree, struct dictionary );
 
 Convenience macro that defines a tree of dictionary entries. Use in conjunction with *CAG_DEC_STR_STR_TREE*.
 
-All memory is managed for you. This is similar to the C++ STL *std::map< std::pair< std::string, std::string > >*.
+All memory is managed for you. This is similar to the C++ STL *std::map\< std::pair\< std::string, std::string \> \>*.
 
 
 ```C
@@ -1404,7 +1404,7 @@ CAG_DEF_STR_STR_TREE(dict_tree, struct dictionary );
 
 Convenience macro that declares and defines a tree of dictionary entries.
 
-All memory is managed for you. This is similar to the C++ STL *std::map< std::pair< std::string, std::string > >*.
+All memory is managed for you. This is similar to the C++ STL *std::map\< std::pair\< std::string, std::string \> \>*.
 
 
 ```C
@@ -1442,7 +1442,7 @@ c_to
 result
   ~ Integer that will be set to false if the copy fails, else it is set to true.
 
-#### CAG_COPY_IF {#cag-copy-if}
+#### CAG_COPY_IF {#cag_copy_if}
 
 Copy elements meeting a user specified condition from one container to another. The elements of the two containers should be the same type. The container to be copy to is assumed to be empty. The macro copies using the *put_C* function which allocates memory for the copied to container.
 
@@ -1466,7 +1466,7 @@ result
   ~ Integer that will be set to false if the copy fails, else it is set to true.
 
 
-#### CAG_COPY_OVER {#cag-copy-over -}
+#### CAG_COPY_OVER {#cag_copy_over -}
 
 Copy elements from one container to another. There should be sufficient space in the copied to container.
 
@@ -1485,7 +1485,7 @@ container_to
 c_to
   ~ Container variable to copy to.
 
-#### CAG_COPY_OVER_IF {#cag-copy-over-if -}
+#### CAG_COPY_OVER_IF {#cag_copy_over_if -}
 
 Copy elements meeting a specified condition from one container to another. There should be sufficient space in the copied to container.
 
@@ -1502,19 +1502,19 @@ c_to
 cond_func
   ~ User supplied macro expression or function that takes one argument, an element by value, and returns either true or false. If it returns true, the corresponding element from *c_from* will be copied to *c_to*.
 
-#### CAG_RCOPY {#cag_copy -}
+#### CAG_RCOPY {#cag_rcopy -}
 
 Reverse copy from one container to another. Parameters are identical to [CAG_COPY](#cag_copy). The container being copied from should support bidirectional iterators.
 
-#### CAG_RCOPY_IF {#cag-copy-if -}
+#### CAG_RCOPY_IF {#cag-rcopy-if -}
 
 Reverse copy elements meeting a user-specified condition from one container to another. Parameters are identical to [CAG_COPY_IF](#cag_copy_if). The container being copied from should support bidirectional iterators.
 
-#### CAG_RCOPY_OVER {#cag-copy-over -}
+#### CAG_RCOPY_OVER {#cag-rcopy-over -}
 
 Reverse copy elements from one container over the elements in another. Parameters are identical to [CAG_COPY_OVER](#cag_copy_over). The container being copied from should support bidirectional iterators.
 
-#### CAG_RCOPY_OVER_IF {#cag-copy-over-if -}
+#### CAG_RCOPY_OVER_IF {#cag-rcopy-over-if -}
 
 Reverse copy elements meeting a user-specified condition from one container over the elements in another. Parameters are identical to [CAG_COPY_OVER_IF](#cag_copy_over_if). The container being copied from should support bidirectional iterators.
 

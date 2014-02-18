@@ -40,7 +40,7 @@ ARRAYs are intended to provide similar functionality to the C++ STL vector.
 - [begin_C](#begin_C-adhst)
 - [binary_rsearch_C](#binary_rsearch_C-a)
 - [binary_rsearchp_C](#binary_rsearchp_C-a)
-- [binary_search_C](#binary_search_C-a)
+- [binary_search_C](#binary_search_C)
 - [binary_search_all_C](#binary_search_all_C-a)
 - [binary_searchp_C](#binary_searchp_C-a)
 - [binary_searchp_all_C](#binary_searchp_all_C-a)

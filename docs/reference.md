@@ -207,7 +207,7 @@ The container is modified.
 
 ##### See also {-}
 
-- [append_C](#append__C-ad)
+- [append_C](#append_C-ad)
 - [rappend_C](#rappend_C-a)
 - [prepend_C](#prepend_C-ads)
 - [prependp_C](#prependp_C-ads)
@@ -508,7 +508,7 @@ The iterator parameters *first* and *last* are modified, but not their elements.
 #### See also {-}
 
 - [binary_rsearchp_C](#binary_rsearchp_C-a)
-- [binary_search_C](#binary_search_C-a)
+- [binary_search_C](#binary_search_C)
 - [binary_search_all_C](#binary_search_all_C-a)
 - [binary_searchp_C](#binary_searchp_C-a)
 - [binary_searchp_all_C](#binary_searchp_all_C-a)
@@ -561,7 +561,7 @@ The iterator parameters *first* and *last* are modified, but not their elements.
 #### See also {-}
 
 - [binary_rsearch_C](#binary_rsearch_C-a)
-- [binary_search_C](#binary_search_C-a)
+- [binary_search_C](#binary_search_C)
 - [binary_search_all_C](#binary_search_all_C-a)
 - [binary_searchp_C](#binary_searchp_C-a)
 - [binary_searchp_all_C](#binary_searchp_all_C-a)
@@ -569,7 +569,7 @@ The iterator parameters *first* and *last* are modified, but not their elements.
 ------
 
 
-#### binary_search_C {#binary_search_C-a - }
+#### binary_search_C {#binary_search_C - }
 
 Binary search for an element, with a specified key. The container should be sorted in the order specified by the *cmp_func* function passed to the definition macro.
 
@@ -720,7 +720,7 @@ The iterator parameters *first* and *last* are modified, but not their elements.
 - [binary_rsearch_C](#binary_rsearch_C-a)
 - [binary_rsearchp_C](#binary_rsearchp_C-a)
 - [binary_search_all_C](#binary_search_all_C-a)
-- [binary_search_C](#binary_search_C-a)
+- [binary_search_C](#binary_search_C)
 - [binary_searchp_all_C](#binary_searchp_all_C-a)
 
 ------
@@ -1806,7 +1806,7 @@ This is an $O(n)$ operation where $n$ is the number of elements in the range.
 - [searchp_all_C](#searchp_all_C-adst)
 - [rsearch_C](#rsearch_C-adt)
 - [rsearchp_C](#rsearchp_C-adt)
-- [binary_search_C](#binary_search_C-a)
+- [binary_search_C](#binary_search_C)
 - [binary_search_all_C](#binary_search_all_C-a)
 - [binary_searchp_C](#binary_searchp_C-a)
 - [binary_searchp_all_C](#binary_searchp_all_C-a)
@@ -1863,7 +1863,7 @@ This is a $O(n)$ operation where $n$ is the number of elements in the container.
 - [searchp_all_C](#searchp_all_C-adst)
 - [rsearch_C](#rsearch_C-adt)
 - [rsearchp_C](#rsearchp_C-adt)
-- [binary_search_C](#binary_search_C-a)
+- [binary_search_C](#binary_search_C)
 - [binary_search_all_C](#binary_search_all_C-a)
 - [binary_searchp_C](#binary_searchp_C-a)
 - [binary_searchp_all_C](#binary_searchp_all_C-a)
@@ -1922,7 +1922,7 @@ Iterator pointing to found element. If the element was not found, it returns *la
 - [searchp_all_C](#searchp_all_C-adst)
 - [rsearch_C](#rsearch_C-adt)
 - [rsearchp_C](#rsearchp_C-adt)
-- [binary_search_C](#binary_search_C-a)
+- [binary_search_C](#binary_search_C)
 - [binary_search_all_C](#binary_search_all_C-a)
 - [binary_searchp_C](#binary_searchp_C-a)
 - [binary_searchp_all_C](#binary_searchp_all_C-a)
@@ -1980,7 +1980,7 @@ Iterator pointing to found element. If the element was not found, it returns *en
 - [searchp_all_C](#searchp_all_C-adst)
 - [rsearch_C](#rsearch_C-adt)
 - [rsearchp_C](#rsearchp_C-adt)
-- [binary_search_C](#binary_search_C-a)
+- [binary_search_C](#binary_search_C)
 - [binary_search_all_C](#binary_search_all_C-a)
 - [binary_searchp_C](#binary_searchp_C-a)
 - [binary_searchp_all_C](#binary_searchp_all_C-a)
@@ -4544,7 +4544,7 @@ array	dlist	tree
 
 #### rdistance_C {#rdistance_C-adt - }
 
-Calculates the distance between two iterators in a container. Reverse iterator version of [distance_C](#rdistance_C-adhst)
+Calculates the distance between two iterators in a container. Reverse iterator version of [distance_C](#distance_C-adhst)
 
 ```C
 size_t rdistance_C(const rit_C from, const rit_C to);
@@ -4981,7 +4981,7 @@ TO DO.
 - [searchp_all_C](#searchp_all_C-adst)
 - [rsearch_C](#rsearch_C-adt)
 - [rsearchp_C](#rsearchp_C-adt)
-- [binary_search_C](#binary_search_C-a)
+- [binary_search_C](#binary_search_C)
 - [binary_search_all_C](#binary_search_all_C-a)
 - [binary_searchp_C](#binary_searchp_C-a)
 - [binary_searchp_all_C](#binary_searchp_all_C-a)
@@ -4989,7 +4989,6 @@ TO DO.
 
 
 ------
-
 
 #### rfront_C {#rfront_C-a - }
 
@@ -5449,7 +5448,7 @@ TO DO.
 
 #### rstable_sort_C {#rstable_sort_C-ad - }
 
-Reverse iterator version of [stable_sort_C](#stable_sort_C-ads). Sorts a container in reverse order.
+Reverse iterator version of [stable_sort_C](#stable_sort_C-ad). Sorts a container in reverse order.
 
 ```C
 rit_C rstable_sort_C(rit_C from, rit_C to);

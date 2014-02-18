@@ -2,7 +2,10 @@
 
 set -e
 
-DOCS="docs/top.md docs/readme.md docs/userguide.md docs/array.md docs/dlist.md docs/hash.md docs/slist.md docs/tree.md  docs/developer.md  docs/macros.md  docs/reference.md docs/funcmatrix.md"
+
+DOCS="docs/top.md docs/readme.md docs/userguide.md docs/array.md docs/dlist.md docs/hash.md docs/slist.md docs/tree.md  docs/developer.md  docs/macros.md  docs/reference.md "
+
+ALLDOCS=$DOCS" docs/funcmatrix.md"
 
 SUFFIX=$1
 
@@ -13,9 +16,9 @@ fi
 
 if [ "$SUFFIX" = "multi" ]
 then
-    pandoc -s -S -c style.css --toc --toc-depth=3 -t docbook $DOCS -o docs/manual.db
-    xmlto xhtml -m config.xsl docs/manual.db -o docs/manual/
+    pandoc -s -S -c style.css -f markdown -t docbook $DOCS -o docs/manual.db
+    xmlto xhtml --skip-validation  docs/manual.db -o docs/manual/
 else
-    pandoc -s -S -c style.css --toc --toc-depth=3 -N --columns=80 $DOCS -o docs/manual.$SUFFIX
+    pandoc -s -S -c style.css --toc --toc-depth=3 -N --columns=80 $ALLDOCS -o docs/manual.$SUFFIX
 
 fi

@@ -62,7 +62,7 @@ CAG_DEC_CMP_TREE(int_tree, int);
 CAG_DEF_CMP_TREE(int_tree, int, CAG_CMP_PRIMITIVE);
 ```
 
-For C++ STL users, the *int_tree* type is similar to a std::map<int>.
+For C++ STL users, the *int_tree* type is similar to a std::map\<int\>.
 
 The *CMP* part of the macro indicates that this is a container that requires a comparison function (or comparison macro such as CAG_CMP_PRIMITIVE), usually to maintain the container in a particular order. However, not all all containers that require a comparison function are ordered.
 
@@ -691,7 +691,7 @@ int cmp_entry(const struct entry *e1, const struct entry *e2)
 }
 ```
 
-We are lazy (or very cautious) and want CAGL to manage the memory of our dictionary entries. But the *struct entry* members are pointers whose memory needs to be managed. In C++ you would do this by writing a constructor and destructor for *entry* and a *map<entry>* would manage the allocation and deletion of its members by calling these implicitly whenever you added or erased an element in the map. Although C doesn't have constructors or destructors, you can pass two functions to the CAGL definition which effectively serve the same purpose (actually a copy constructor is the more appropriate analogy with C++). When we insert an entry into the tree we will copy it from an existing *struct entry*.
+We are lazy (or very cautious) and want CAGL to manage the memory of our dictionary entries. But the *struct entry* members are pointers whose memory needs to be managed. In C++ you would do this by writing a constructor and destructor for *entry* and a *std::map\<entry\>* would manage the allocation and deletion of its members by calling these implicitly whenever you added or erased an element in the map. Although C doesn't have constructors or destructors, you can pass two functions to the CAGL definition which effectively serve the same purpose (actually a copy constructor is the more appropriate analogy with C++). When we insert an entry into the tree we will copy it from an existing *struct entry*.
 
 Here is a function to allocate (or copy-construct if you like) a new entry:
 

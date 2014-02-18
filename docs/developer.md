@@ -4,6 +4,8 @@ You are encouraged to help improve the C Almost Generic Library (CAGL).
 This document describes some of the technical "under-the-hood" details
 of how the library works.
 
+These notes currently assume you use *gcc* and *autotools* in a GNU/Linux environment. However, in time it must be possible to develop CAGL in other environments.
+
 ## CAGL structure {-}
 
 Specific code for each container is placed in its own header (.h) file. So arrays are handled in array.h. Let's say you wanted to implement a container called *stack*. You would create a file called stack.h. Examine the code in array.h to get an idea of what should go in stack.h. Pay special attention to the implementations of CAG_DEC_ARRAY, CAG_DEF_ALL_ARRAY, CAG_DEC_CMP_ARRAY and CAG_DEF_ALL_CMP_ARRAY.
@@ -238,6 +240,10 @@ code easier.
 
 -   Macros that are strictly for internal use should be prefixed
     CAG\_P\_ (the "P" stands for private).
+
+## Compiling and running in development
+
+To compile in development the *cagl* sub-directory has to be in the *C_INCLUDE_PATH* environment variable. If you use any CAGL provided functions, as opposed to macros, you'll also need to compile and link cagl/common.c when compiling your own source code.
 
 ## Tools to help work with CAGL {-}
 
