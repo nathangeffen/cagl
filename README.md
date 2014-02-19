@@ -1,5 +1,5 @@
 
-# Quick start to C Almost Generic Library
+# Getting started with the C Almost Generic Library
 
 The C Almost Generic Library (CAGL) provides *almost* generic containers and algorithms to manipulate them.
 

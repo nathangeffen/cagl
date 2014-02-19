@@ -66,8 +66,9 @@ pkgconfig_DATA = cagl-$(CAGL_API_VERSION).pc
 ## archive.  However, it will not be installed on an end user's system due to
 ## the noinst_ prefix.
 
-dist_noinst_SCRIPTS = autogen.sh
+## dist_noinst_SCRIPTS = autogen.sh
 
+EXTRA_DIST = docs/ bin/ tests/*.c examples/*.c examples/*.h
 
 ## Set up tests
 TESTS = bin/runtest1 bin/runtest2 bin/runtest3 bin/runtest4 bin/runtest5
