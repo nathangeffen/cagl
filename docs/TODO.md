@@ -67,3 +67,5 @@
 - Proofread the documentation closely.
 
 - Simplify documentation for users.
+
+- Too much of the documentation is reliant on manual processes. Ideally the documentation needs to be automated from sources all the way to the website. That's a big ask, but even automating a bit more of it would reduce drudgery and errors.

@@ -107,7 +107,7 @@ Compiling with the *-flto* option can be slow, so you will likely only use it wh
 
 ## Documentation
 
-The CAGL manual is available at <http://www.cagl.nathangeffen.webfactional.com>.
+The CAGL manual is available at <http://almostgeneric.org/wp-content/manual.html>.
 
 If you wish to generate the documentation from sources, you need to have *pandoc* installed. CAGL documentation is written in [Pandoc Markdown](http://johnmacfarlane.net/pandoc/README.html).
 

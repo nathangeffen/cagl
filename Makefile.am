@@ -68,7 +68,7 @@ pkgconfig_DATA = cagl-$(CAGL_API_VERSION).pc
 
 ## dist_noinst_SCRIPTS = autogen.sh
 
-EXTRA_DIST = docs/*.md docs/style.css bin docs/manual.html tests/*.c tests/Makefile examples/*.c examples/*.h
+EXTRA_DIST = docs/*.md docs/cagl.css bin docs/manual.html tests/*.c tests/Makefile examples/*.c examples/*.h
 
 ## Set up tests
 TESTS = bin/runtest1 bin/runtest2 bin/runtest3 bin/runtest4 bin/runtest5

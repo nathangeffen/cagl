@@ -16,11 +16,13 @@ fi
 
 if [ "$SUFFIX" = "multi" ]
 then
-    for i in $DOCS do
+    test -e docs/manual/ || mkdir docs/manual
+    test -e docs/manual/cagl.css || ln -s ../cagl.css docs/manual/cagl.css
+    for i in $DOCS
     do
 	filename=$(basename "$i")
 	filename="${filename%.*}"
-	pandoc -S -c cagl.css --columns=80 $i -o docs/$filename.html
+	pandoc -S -c cagl.css --columns=80 $i -o docs/manual/$filename.html
     done
 else
     pandoc -s -S -c cagl.css --toc --toc-depth=3 -N --columns=80 $ALLDOCS -o docs/manual.$SUFFIX
