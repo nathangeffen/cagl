@@ -1,4 +1,4 @@
-## Deck of cards {-}
+## Example: Deck of cards {-}
 
 Let's use CAGL to manage a deck of cards which we'll store in an array. To keep things simple, we'll write all the code in one file this time. We'll also order our cards according to the [high-card by suit](http://en.wikipedia.org/wiki/High_card_by_suit) convention. To compare the order of two cards, first compare their rank. If the ranks are the same, compare their suits alphabetically. So clubs is lowest, followed by diamonds, hearts and spades.
 

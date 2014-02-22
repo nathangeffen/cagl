@@ -1,4 +1,4 @@
-## Euclidean points {-}
+## Example: Euclidean points {-}
 
 Let's generate a set of points, store them in a list and then find the two closest points. To demonstrate how you can write modular code with CAGL we're going to have three files:
 

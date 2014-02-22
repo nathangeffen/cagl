@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"$if(lang)$ lang="$lang$" xml:lang="$lang$"$endif$>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+$for(author-meta)$
+  <meta name="author" content="$author-meta$" />
+$endfor$
+$if(date-meta)$
+  <meta name="date" content="$date-meta$" />
+$endif$
+  <title>$if(title-prefix)$$title-prefix$ - $endif$$pagetitle$</title>
+  <style type="text/css">code{white-space: pre;}</style>
+$if(quotes)$
+  <style type="text/css">q { quotes: "“" "”" "‘" "’"; }</style>
+$endif$
+$if(highlighting-css)$
+  <style type="text/css">
+$highlighting-css$
+  </style>
+$endif$
+$for(css)$
+  <link rel="stylesheet" href="$css$" $if(html5)$$else$type="text/css" $endif$/>
+$endfor$
+$if(math)$
+  $math$
+$endif$
+$for(header-includes)$
+  $header-includes$
+$endfor$
+</head>
+<body>
+$for(include-before)$
+$include-before$
+$endfor$
+<div id="header">
+<h1 class="title">C Almost Generic Library</h1>
+<h2 class="strapline">More fun, less drudgery for C programmers</h1>
+$if(title)$
+<h1 class="sub-title">$title$</h1>
+$for(author)$
+<h2 class="author">$author$</h2>
+$endfor$
+$if(date)$
+<h3 class="date">$date$</h3>
+$endif$
+</div>
+$endif$
+<div id="main">
+$if(toc)$
+<div id="$idprefix$TOC">
+$toc$
+</div>
+$endif$
+$body$
+$for(include-after)$
+$include-after$
+$endfor$
+</div>
+<div id="sidebar">
+<p><a href="http://www.almostgeneric.org/index.html">Home</a></p>
+<h2>Latest news</h2>
+<ul>
+<li>22 Feb 2014: <a href="rel_0_1.html">CAGL 0.1 released</a>
+</ul>
+<h2>Resources</h2>
+<ul>
+<li><a href="http://www.almostgeneric.org/cagl-latest.tar.gz">Download latest stable version</a></li>
+<li><a href="http://www.almostgeneric.org/manual.html">Documentation (HTML)</a></li>
+<li><a href="http://www.almostgeneric.org/manual.pdf">Documentation (PDF)</a></li>
+<li><a href="https://github.com/nathangeffen/cagl/">Github repository</a></li>
+<li>Report bugs on <a href="https://github.com/nathangeffen/cagl/issues">Github</a> or by <a href="mailto:bugs@almostgeneric.org">email</a></li>
+<li><a href="http://www.gnu.org/copyleft/lesser.html">License: GNU LGPL ver. 3</a></li>
+</ul>
+</div>
+<div id="footer">
+<p>Copyright 2014 <a href="http://nathangeffen.webfactional.com/">Nathan Geffen</a>. <br />
+Page licensed under <a rel="license" href="http://creativecommons.org/licenses/by-nd/3.0/">Creative Commons Attribution-NoDerivs 3.0</a>.</p>
+</div>
+</body>
+</html>

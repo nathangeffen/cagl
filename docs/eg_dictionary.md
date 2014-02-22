@@ -1,4 +1,4 @@
-## Dictionary {-}
+## Example: Dictionary {-}
 
 In this example, we want to create a dictionary for storing words and their meanings. The obvious implementation is a balanced binary tree whose elements are this:
 

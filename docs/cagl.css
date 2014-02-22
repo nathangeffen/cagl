@@ -1,12 +1,31 @@
 p {
     font-size: 12pt;
 }
+h1, h2 {
+    font-family:Arial,Helvetica,sans-serif;
+}
 h1 {font-size: 16pt; }
 h2 {font-size: 15pt; }
 h3 {font-size: 14pt; }
 h4 {font-size: 13pt;}
 h5 {font-size: 12pt;}
 h6 {font-size: 12pt;}
+
+.title {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+.strapline {
+    padding-top: 0;
+    margin-top: 0;
+    font-size: 11pt;
+    font-style:italic;
+    color: #C0C0C0;
+}
+
+.sub-title {
+    font-size: 14pt;
+}
 
 pre {
     background-color: #F0F0F0;
@@ -17,4 +36,52 @@ pre {
 
 dt {
     font-style:italic;
+}
+
+.title {
+    font-family:Arial,Helvetica,sans-serif;
+    font-size: 18pt;
+}
+
+.author {
+    font-family:Arial,Helvetica,sans-serif;
+    font-size: 14pt;
+    font-style:italic;
+}
+
+
+#header {
+    clear: both;
+    position: relative;
+}
+
+#main {
+    float:left;
+    width:70%;
+    margin-right: 15px;
+}
+#sidebar {
+    float:right;
+    width:25%;
+    margin-left: 15px;
+    border-left-style:solid;
+    border-left-width:1px;
+    padding: 5px;
+    font-size: 90%;
+}
+#sidebar h2 {
+    font-size: 100%;
+}
+
+#sidebar ul
+{
+list-style-type: none;
+padding: 0px;
+margin: 0px;
+}
+
+#footer {
+    clear: both;
+    position: relative;
+    border-top: solid;
 }

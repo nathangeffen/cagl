@@ -14,17 +14,29 @@ if [ "$SUFFIX" = "" ]
     SUFFIX="html"
 fi
 
+if [ "$SUFFIX" = "html" ]
+    then
+    TEMPLATE=--template=docs/htmltemplate.pdoc
+fi
+
 if [ "$SUFFIX" = "multi" ]
 then
     test -e docs/manual/ || mkdir docs/manual
     test -e docs/manual/cagl.css || ln -s ../cagl.css docs/manual/cagl.css
+    pandoc -s -S -c cagl.css --columns=80 --template=docs/htmltemplate.pdoc docs/index.md -o docs/index.html
     for i in $DOCS
     do
 	filename=$(basename "$i")
 	filename="${filename%.*}"
-	pandoc -S -c cagl.css --columns=80 $i -o docs/manual/$filename.html
+	pandoc -s -S -c cagl.css --columns=80 --template=docs/htmltemplate.pdoc $i -o docs/manual/$filename.html
+    done
+    for i in docs/posts/*.md
+    do
+	filename=$(basename "$i")
+	filename="${filename%.*}"
+	pandoc -s -S -c cagl.css --columns=80 --template=docs/htmltemplate.pdoc $i -o docs/posts/$filename.html
     done
 else
-    pandoc -s -S -c cagl.css --toc --toc-depth=3 -N --columns=80 $ALLDOCS -o docs/manual.$SUFFIX
+    pandoc -s -S -c cagl.css --toc --toc-depth=3 -N --columns=80  $TEMPLATE $ALLDOCS -o docs/manual.$SUFFIX
 
 fi

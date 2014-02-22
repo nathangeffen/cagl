@@ -1,4 +1,4 @@
-## Adjacency list {-}
+## Example: Adjacency list {-}
 
 This example shows how to declare and define a container whose elements are containers. An adjacency list is used to represent graphs in computer science. It is typically implemented as an array of lists. In our example, the list elements are integers. This is simple to do.
 

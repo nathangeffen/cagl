@@ -1,4 +1,3 @@
-
 # Getting started with the C Almost Generic Library
 
 The C Almost Generic Library (CAGL) provides *almost* generic containers and algorithms to manipulate them.
@@ -50,7 +49,7 @@ int main(void)
 
 ## Installation
 
-CAGL can be downloaded from <http://almostgeneric.org/wp-content/uploads/cagl-latest.tar.gz>.
+CAGL can be downloaded from <http://www.almostgeneric.org/cagl-latest.tar.gz>.
 
 CAGL uses a standard autotools installation. These instructions would work on a **typical** GNU/Linux distribution:
 
@@ -107,7 +106,7 @@ Compiling with the *-flto* option can be slow, so you will likely only use it wh
 
 ## Documentation
 
-The CAGL manual is available at <http://almostgeneric.org/wp-content/manual.html>.
+This CAGL manual is available at <http://www.almostgeneric.org/manual.html>.
 
 If you wish to generate the documentation from sources, you need to have *pandoc* installed. CAGL documentation is written in [Pandoc Markdown](http://johnmacfarlane.net/pandoc/README.html).
 
