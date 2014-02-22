@@ -50,12 +50,11 @@ int main(void)
 
 ## Installation
 
-The CAGL source code is available on github at <https://github.com/nathangeffen/cagl>.
+CAGL can be downloaded from <http://almostgeneric.org/wp-content/uploads/cagl-latest.tar.gz>.
 
 CAGL uses a standard autotools installation. These instructions would work on a **typical** GNU/Linux distribution:
 
-1. Download and unpack the latest version from Github:
-   <https://github.com/nathangeffen/cagl/latest.tar.gz>.
+1. Download and unpack the latest version.
 
 1. In the CAGL root directory run these commands:
 
@@ -77,11 +76,15 @@ This shell command will likely resolve the problem:
 
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
-To test that the library is working, type this on the command line in the unpacked cagl directory. You need [gcc](http://gcc.gnu.org/), [clang](http://clang.llvm.org/) and [valgrind](http://valgrind.org/) installed to pass all the tests.
+To test that the library is working, type this on the command line in the unpacked cagl directory. You need [gcc](http://gcc.gnu.org/), [clang](http://clang.llvm.org/) and [Valgrind](http://valgrind.org/) installed to pass all the tests.
 
     make check
 
-It will likely take a couple of minutes to run all the tests.
+It will likely take a couple of minutes to run all the tests. A possible reason for the scripts to fail is because the header files cannot be found. On GNU/Linux systems modifying *C_INCLUDE_PATH* should fix this. For example:
+
+    export C_INCLUDE_PATH-$C_INCLUDE_PATH:/usr/local/include
+
+The test scripts do more than most users need. If you only need to make sure CAGL works with your compiler in your environment, change to the *tests* directory and simply run make without arguments.
 
 To uninstall CAGL, type this on the command line in the CAGL root directory:
 
@@ -197,17 +200,21 @@ CAGL has been tested using gcc and clang. It is C89 compatible, which means code
 
 It needs to be tested with other compilers, including Intel's and Microsoft's C compilers. Please help with this.
 
+## License
+
+CAGL is free software licensed under the GNU Lesser General Public License version 3. See *COPYING* in the CAGL root directory or [read the license online](http://www.gnu.org/copyleft/lesser.html).
+
+## Contributing
+
+CAGL is currently alpha phase software and needs to be improved. The repository is on [Github](https://github.com/nathangeffen/cagl). You are encouraged to fork it.
 
 ## Bugs
 
-CAGL bugs are managed using the Github's issue tracker. Please report bugs there or by emailing nathangeffen at gmail.com. please start the subject line with *CAGL:*.
+CAGL bugs may be reported using the [Github issue tracker](https://github.com/nathangeffen/cagl/issues). You may also email bug reports to [bugs@almostgeneric.org](mailto:bugs@almostgeneric.org).
 
-## License
 
-CAGL is free software licensed under the GNU Lesser General Public License version 3. See *COPYING*.
+## Credits
 
-## Contributors
+Contributors will be listed here.
 
-Contributors will be listed here:
-
-- Nathan Geffen (email: nathangeffen at gmail.com - please start the subject line with *CAGL:*)
+- Nathan Geffen: [nathan@almostgeneric.org](mailto:nathan@almostgeneric.org)

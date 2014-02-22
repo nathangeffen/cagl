@@ -3,7 +3,7 @@
 set -e
 
 
-DOCS="docs/top.md docs/readme.md docs/userguide.md docs/array.md docs/dlist.md docs/hash.md docs/slist.md docs/tree.md  docs/developer.md  docs/macros.md  docs/reference.md "
+DOCS="docs/top.md docs/readme.md docs/userguide.md docs/examples.md docs/eg_euclid.md docs/eg_cards.md docs/eg_dictionary.md docs/eg_adjacency.md docs/names.md docs/design.md docs/portability.md docs/refintro.md docs/array.md docs/dlist.md docs/hash.md docs/slist.md docs/tree.md  docs/developer.md  docs/macros.md  docs/reference.md "
 
 ALLDOCS=$DOCS" docs/funcmatrix.md"
 
@@ -16,9 +16,13 @@ fi
 
 if [ "$SUFFIX" = "multi" ]
 then
-    pandoc -s -S -c style.css -f markdown -t docbook $DOCS -o docs/manual.db
-    xmlto xhtml --skip-validation  docs/manual.db -o docs/manual/
+    for i in $DOCS do
+    do
+	filename=$(basename "$i")
+	filename="${filename%.*}"
+	pandoc -S -c cagl.css --columns=80 $i -o docs/$filename.html
+    done
 else
-    pandoc -s -S -c style.css --toc --toc-depth=3 -N --columns=80 $ALLDOCS -o docs/manual.$SUFFIX
+    pandoc -s -S -c cagl.css --toc --toc-depth=3 -N --columns=80 $ALLDOCS -o docs/manual.$SUFFIX
 
 fi

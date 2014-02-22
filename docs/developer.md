@@ -241,7 +241,7 @@ code easier.
 -   Macros that are strictly for internal use should be prefixed
     CAG\_P\_ (the "P" stands for private).
 
-## Compiling and running in development
+## Compiling and running in development {-}
 
 To compile in development the *cagl* sub-directory has to be in the *C_INCLUDE_PATH* environment variable. If you use any CAGL provided functions, as opposed to macros, you'll also need to compile and link cagl/common.c when compiling your own source code.
 
